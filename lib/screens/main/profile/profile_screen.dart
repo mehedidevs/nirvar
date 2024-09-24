@@ -1,0 +1,291 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:nirvar/bloc/logout/logout_bloc.dart';
+import 'package:nirvar/screens/auth/sign_in_screen.dart';
+import 'package:nirvar/screens/main/profile/edit_profile_screen.dart';
+import 'package:nirvar/screens/utils/app_colors.dart';
+import 'package:nirvar/screens/utils/assets_path.dart';
+import 'package:nirvar/screens/utils/helper.dart';
+import 'package:nirvar/screens/widgets/custom_button.dart';
+
+import '../../../injection_container.dart';
+import 'account_settings_screen.dart';
+
+class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return _buildUI(context);
+  }
+
+  Scaffold _buildUI(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Stack(
+          children: [
+            // Top background and profile info
+            Container(
+              height: ScreenUtil().screenHeight,
+              color: AppColors.primary,
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: SvgPicture.asset(AssetsPath.profileDesignSvg),
+                  ),
+                  // Positioned(
+                  //   top: 20.h,
+                  //   left: 16.w,
+                  //   child: IconButton(
+                  //     icon: SvgPicture.asset(AssetsPath.backArrowSvg),
+                  //     onPressed: () {
+                  //       // Navigator.of(context).pop();
+                  //     },
+                  //   ),
+                  // ),
+                  Positioned(
+                    top: 20.h,
+                    right: 16.w,
+                    child: IconButton(
+                      icon:
+                          SvgPicture.asset(AssetsPath.notificationWithBadgeSvg),
+                      onPressed: () {
+                        // Handle notification click
+                      },
+                    ),
+                  ),
+                  Positioned(
+                    top: 25.h,
+                    left: 0,
+                    right: 0,
+                    child: Center(
+                      child: Text(
+                        'Settings',
+                        style: TextStyle(
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: ScreenUtil().screenHeight * .1.h,
+                    left: 0,
+                    right: 0,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Stack(
+                          children: [
+                            CircleAvatar(
+                              radius: 50.r,
+                              backgroundColor: AppColors.white,
+                              child: Icon(Icons.person, size: 60.sp),
+                            ),
+                            // Positioned Camera Icon Button
+                            Positioned(
+                              bottom: 2,
+                              right: 0,
+                              child: SvgPicture.asset(
+                                AssetsPath.cameraSvg,
+                                height: 25.h,
+                                width: 25.w,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 12.h),
+                        Text(
+                          'Esmail Khalifa',
+                          style: TextStyle(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'esmailkhalifa010@gmail.com',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Colors.white.withOpacity(0.7),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // White rounded container with list items
+            Positioned(
+              top: ScreenUtil().screenHeight * 0.35.h,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(40.r),
+                    topRight: Radius.circular(40.r),
+                  ),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 10,
+                      spreadRadius: 5,
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.person_outline,
+                          color: AppColors.black),
+                      title: Text('Edit Profile',
+                          style: TextStyle(fontSize: 16.sp)),
+                      trailing: Icon(Icons.arrow_forward_ios, size: 16.sp),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EditProfileScreen()),
+                        );
+                      },
+                    ),
+                    const Divider(),
+                    ListTile(
+                      leading: const Icon(Icons.settings_outlined,
+                          color: AppColors.black),
+                      title: Text('Account settings',
+                          style: TextStyle(fontSize: 16.sp)),
+                      trailing: Icon(Icons.arrow_forward_ios, size: 16.sp),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AccountSettingsScreen()),
+                        );
+                      },
+                    ),
+                    const Divider(),
+                    ListTile(
+                      leading: SvgPicture.asset(AssetsPath.logoutSvg,
+                          colorFilter: const ColorFilter.mode(
+                              AppColors.red, BlendMode.srcIn)),
+                      title: Text(
+                        'Logout',
+                        style: TextStyle(color: AppColors.red, fontSize: 16.sp),
+                      ),
+                      onTap: () {
+                        WidgetsBinding.instance.addPostFrameCallback(
+                            (_) => showLogoutDialog(context));
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+void showLogoutDialog(context) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.r),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(16.w),
+          child: BlocConsumer<LogOutBloc, LogoutState>(
+            listener: (context, state) {
+              if (state.status == LogoutStatus.success && context.mounted) {
+
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SignInScreen()),
+                        (route) => false);
+
+                // WidgetsBinding.instance.addPostFrameCallback((_) {
+                //   if (context.mounted) {
+                //
+                //   }
+                // });
+              } else if (state.status == LogoutStatus.failure) {
+                context.flushBarErrorMessage(message: state.errorMessage);
+                Navigator.of(context).pop();
+              }
+            },
+            builder: (context, state) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SvgPicture.asset(AssetsPath.logoutDialogueSvg),
+                  SizedBox(height: 16.h),
+                  Text(
+                    'Are you sure to log out of your account?',
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 24.h),
+
+                  state.status == LogoutStatus.loading
+                      ? SpinKitChasingDots(
+                          color: AppColors.primary, size: 25.sp)
+                      : Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 0.h, horizontal: 16.w),
+                          child: CustomButton(
+                              text: 'Log Out',
+                              onPressed: () {
+                                context.read<LogOutBloc>().add(LogOutApiCall());
+                              }),
+                        ),
+
+                  SizedBox(height: 8.h),
+                  // Cancel Button
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop(); // Close the dialog
+                    },
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: AppColors.primary, // Adjust the color as needed
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
+      );
+    },
+  );
+}
