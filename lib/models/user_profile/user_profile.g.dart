@@ -15,8 +15,8 @@ _$UserProfileImpl _$$UserProfileImplFromJson(Map<String, dynamic> json) =>
       bloodGroup: json['bloodGroup'] as String?,
       dateOfBirth: json['dateOfBirth'] as String?,
       age: (json['age'] as num?)?.toInt(),
-      weight: (json['weight'] as num?)?.toDouble(),
-      height: (json['height'] as num?)?.toDouble(),
+      weight: json['weight'] as String?,
+      height: json['height'] as String?,
       gender: json['gender'] as String?,
       address: json['address'] as String?,
     );

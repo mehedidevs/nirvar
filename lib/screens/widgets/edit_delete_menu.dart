@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 
 class EditDeleteMenu extends StatelessWidget {
@@ -28,19 +29,20 @@ class EditDeleteMenu extends StatelessWidget {
           value: 1,
           child: Row(
             children: [
-              Icon(Icons.edit, color: Colors.blueAccent),
-              SizedBox(width: 8),
-              Text("Edit"),
+              Text('Edit', style: TextStyle(fontSize: 16.sp)),
+              Spacer(),
+              const Icon(Icons.edit, color: Colors.black),
             ],
           ),
         ),
+        PopupMenuDivider(),
         PopupMenuItem(
           value: 2,
           child: Row(
             children: [
-              Icon(Icons.delete, color: Colors.red),
-              SizedBox(width: 8),
-              Text("Delete"),
+              Text('Delete', style: TextStyle(fontSize: 16.sp, color: Color(0xFFE39087))),
+              Spacer(),
+              Icon(Icons.delete, color: Color(0xFFE39087)),
             ],
           ),
         ),

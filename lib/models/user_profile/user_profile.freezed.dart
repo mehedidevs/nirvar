@@ -24,12 +24,11 @@ mixin _$UserProfile {
   String? get email => throw _privateConstructorUsedError;
   String? get number => throw _privateConstructorUsedError;
   String? get photo => throw _privateConstructorUsedError;
-  String? get bloodGroup =>
-      throw _privateConstructorUsedError; // Adjusting the spelling for "blood_group"
+  String? get bloodGroup => throw _privateConstructorUsedError;
   String? get dateOfBirth => throw _privateConstructorUsedError;
   int? get age => throw _privateConstructorUsedError;
-  double? get weight => throw _privateConstructorUsedError;
-  double? get height => throw _privateConstructorUsedError;
+  String? get weight => throw _privateConstructorUsedError;
+  String? get height => throw _privateConstructorUsedError;
   String? get gender => throw _privateConstructorUsedError;
   String? get address => throw _privateConstructorUsedError;
 
@@ -57,8 +56,8 @@ abstract class $UserProfileCopyWith<$Res> {
       String? bloodGroup,
       String? dateOfBirth,
       int? age,
-      double? weight,
-      double? height,
+      String? weight,
+      String? height,
       String? gender,
       String? address});
 }
@@ -122,11 +121,11 @@ class _$UserProfileCopyWithImpl<$Res, $Val extends UserProfile>
       weight: freezed == weight
           ? _value.weight
           : weight // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as String?,
       height: freezed == height
           ? _value.height
           : height // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as String?,
       gender: freezed == gender
           ? _value.gender
           : gender // ignore: cast_nullable_to_non_nullable
@@ -155,8 +154,8 @@ abstract class _$$UserProfileImplCopyWith<$Res>
       String? bloodGroup,
       String? dateOfBirth,
       int? age,
-      double? weight,
-      double? height,
+      String? weight,
+      String? height,
       String? gender,
       String? address});
 }
@@ -218,11 +217,11 @@ class __$$UserProfileImplCopyWithImpl<$Res>
       weight: freezed == weight
           ? _value.weight
           : weight // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as String?,
       height: freezed == height
           ? _value.height
           : height // ignore: cast_nullable_to_non_nullable
-              as double?,
+              as String?,
       gender: freezed == gender
           ? _value.gender
           : gender // ignore: cast_nullable_to_non_nullable
@@ -264,15 +263,14 @@ class _$UserProfileImpl implements _UserProfile {
   final String? photo;
   @override
   final String? bloodGroup;
-// Adjusting the spelling for "blood_group"
   @override
   final String? dateOfBirth;
   @override
   final int? age;
   @override
-  final double? weight;
+  final String? weight;
   @override
-  final double? height;
+  final String? height;
   @override
   final String? gender;
   @override
@@ -333,8 +331,8 @@ abstract class _UserProfile implements UserProfile {
       final String? bloodGroup,
       final String? dateOfBirth,
       final int? age,
-      final double? weight,
-      final double? height,
+      final String? weight,
+      final String? height,
       final String? gender,
       final String? address}) = _$UserProfileImpl;
 
@@ -350,15 +348,15 @@ abstract class _UserProfile implements UserProfile {
   @override
   String? get photo;
   @override
-  String? get bloodGroup; // Adjusting the spelling for "blood_group"
+  String? get bloodGroup;
   @override
   String? get dateOfBirth;
   @override
   int? get age;
   @override
-  double? get weight;
+  String? get weight;
   @override
-  double? get height;
+  String? get height;
   @override
   String? get gender;
   @override

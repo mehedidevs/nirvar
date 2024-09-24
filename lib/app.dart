@@ -6,6 +6,7 @@ import 'package:nirvar/screens/auth/register_user_credentials_screen.dart';
 import 'package:nirvar/screens/auth/splash_screen.dart';
 import 'package:nirvar/config/theme/app_themes.dart';
 
+import 'bloc/user_profile_details/user_profile_details_bloc.dart';
 import 'injection_container.dart';
 
 class NirvarApp extends StatefulWidget {
@@ -25,6 +26,7 @@ class _NirvarAppState extends State<NirvarApp> {
       builder: (BuildContext context, Widget? child) {
         return MultiBlocProvider(
           providers: [
+            BlocProvider(create: (context) => sl<UserProfileDetailsBloc>()),
             BlocProvider(create: (context) => sl<LogOutBloc>()),
           ],
           child: MaterialApp(

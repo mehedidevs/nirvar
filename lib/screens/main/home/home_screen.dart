@@ -1,11 +1,16 @@
+import 'package:dartz/dartz.dart' as dartz;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/widgets/file_card.dart';
-
+import '../../../core/resources/api_exception.dart';
+import '../../../injection_container.dart';
+import '../../../models/patient_folder/patient_folder.dart';
+import '../../../repository/patient_folder/patient_folder_repository.dart';
 import '../../notification/notification_screen.dart';
 import '../../widgets/health_card.dart';
 
@@ -117,24 +122,65 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _myFilesTab() {
-    return GridView.count(
-      shrinkWrap: true,
-      crossAxisCount: 2,
-      crossAxisSpacing: 16.w,
-      mainAxisSpacing: 16.h,
-      childAspectRatio: 1,
-      physics: const NeverScrollableScrollPhysics(),
-      children: [
-        FileCard(folderName: 'Medicine', fileCount: 2,),
-        FileCard(folderName: 'Heart', fileCount: 2,),
-        FileCard(folderName: 'Eye', fileCount: 2,),
-        FileCard(folderName: 'Blood Glucose', fileCount: 2,),
-        FileCard(folderName: 'Blood Glucose', fileCount: 2,),
-        FileCard(folderName: 'Blood Glucose', fileCount: 2,),
-        FileCard(folderName: 'Blood Glucose', fileCount: 2,),
-      ],
+    final patientFolderRepository = sl<PatientFolderRepository>();
+    return StreamBuilder<dartz.Either<ApiException, List<PatientFolder>>>(
+      stream: patientFolderRepository.getAllFolders(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: SpinKitChasingDots(
+              color: AppColors.primary, size: 50.sp)); // Show a loading indicator while waiting for data
+        }
+
+        if (snapshot.hasData) {
+          return snapshot.data!.fold(
+                (error) => Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.h,horizontal: 8.w),
+                  child: Center(child: Text(error.message,style: const TextStyle(color: AppColors.primary),)),
+                ), // Display error if there's an issue
+                (folders) {
+              if (folders.isEmpty) {
+                return const Center(child: Text('No folders available',style: TextStyle(color: AppColors.primary),)); // Handle empty list
+              }
+              return GridView.count(
+                shrinkWrap: true,
+                crossAxisCount: 2,
+                crossAxisSpacing: 16.w,
+                mainAxisSpacing: 16.h,
+                childAspectRatio: 1,
+                physics: const NeverScrollableScrollPhysics(),
+                children: folders.map((folder) {
+                  return FileCard(patientFolder: folder,);
+                }).toList(),
+              );
+            },
+          );
+        }
+
+        return Center(child: Text('Something went wrong')); // Fallback if no data is available
+      },
     );
   }
+
+
+  // Widget _myFilesTab() {
+  //   return GridView.count(
+  //     shrinkWrap: true,
+  //     crossAxisCount: 2,
+  //     crossAxisSpacing: 16.w,
+  //     mainAxisSpacing: 16.h,
+  //     childAspectRatio: 1,
+  //     physics: const NeverScrollableScrollPhysics(),
+  //     children: [
+  //       FileCard(folderName: 'Medicine', fileCount: 2,),
+  //       FileCard(folderName: 'Heart', fileCount: 2,),
+  //       FileCard(folderName: 'Eye', fileCount: 2,),
+  //       FileCard(folderName: 'Blood Glucose', fileCount: 2,),
+  //       FileCard(folderName: 'Blood Glucose', fileCount: 2,),
+  //       FileCard(folderName: 'Blood Glucose', fileCount: 2,),
+  //       FileCard(folderName: 'Blood Glucose', fileCount: 2,),
+  //     ],
+  //   );
+  // }
 
   Widget _myHealthTab() {
     return ListView(

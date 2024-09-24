@@ -1,5 +1,7 @@
+import 'package:dartz/dartz.dart' as dartz;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:nirvar/screens/details/report_details_screen.dart';
@@ -8,6 +10,10 @@ import 'package:nirvar/screens/main/my_files/scanner/qr_code_screen.dart';
 import 'package:nirvar/screens/main/my_files/upload/upload_screen.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 
+import '../../../core/resources/api_exception.dart';
+import '../../../injection_container.dart';
+import '../../../models/patient_folder/patient_folder.dart';
+import '../../../repository/patient_folder/patient_folder_repository.dart';
 import '../../notification/notification_screen.dart';
 import '../../utils/app_colors.dart';
 import '../../widgets/file_card.dart';
@@ -152,111 +158,151 @@ class _MyFilesState extends State<MyFiles> {
     return IndexedStack(
       index: _selectedIndex,
       children: [
-        _myTestReportTab(),
-        _myPrescriptionTab(),
+        _myFilesTab(),
+        _myFilesTab(),
       ],
     );
   }
 
-  Widget _myTestReportTab() {
-    return GridView.count(
-      shrinkWrap: true,
-      crossAxisCount: 2,
-      crossAxisSpacing: 16.w,
-      mainAxisSpacing: 16.h,
-      childAspectRatio: 1,
-      physics: const NeverScrollableScrollPhysics(),
-      children: [
-        FileCard(
-          folderName: 'Medicine',
-          fileCount: 2,
-        ),
-        FileCard(
-          folderName: 'Heart',
-          fileCount: 2,
-        ),
-        FileCard(
-          folderName: 'Eye',
-          fileCount: 2,
-        ),
-        FileCard(
-          folderName: 'Blood Glucose',
-          fileCount: 2,
-        ),
-        FileCard(
-          folderName: 'Dental',
-          fileCount: 2,
-        ),
-        FileCard(
-          folderName: 'Medicine',
-          fileCount: 2,
-        ),
-        FileCard(
-          folderName: 'Medicine',
-          fileCount: 2,
-        ),
-      ],
+  Widget _myFilesTab() {
+    final patientFolderRepository = sl<PatientFolderRepository>();
+    return StreamBuilder<dartz.Either<ApiException, List<PatientFolder>>>(
+      stream: patientFolderRepository.getAllFolders(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: SpinKitChasingDots(
+              color: AppColors.primary, size: 50.sp)); // Show a loading indicator while waiting for data
+        }
+
+        if (snapshot.hasData) {
+          return snapshot.data!.fold(
+                (error) => Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.h,horizontal: 8.w),
+                  child: Center(child: Text(error.message,style: const TextStyle(color: AppColors.primary),)),
+                ), // Display error if there's an issue // Display error if there's an issue
+                (folders) {
+              if (folders.isEmpty) {
+                return const Center(child: Text('No folders available',style: TextStyle(color: AppColors.primary),)); // Handle empty list
+              }
+              return GridView.count(
+                shrinkWrap: true,
+                crossAxisCount: 2,
+                crossAxisSpacing: 16.w,
+                mainAxisSpacing: 16.h,
+                childAspectRatio: 1,
+                physics: const NeverScrollableScrollPhysics(),
+                children: folders.map((folder) {
+                  return FileCard(patientFolder: folder,);
+                }).toList(),
+              );
+            },
+          );
+        }
+
+        return Center(child: Text('Something went wrong')); // Fallback if no data is available
+      },
     );
   }
 
-  Widget _myPrescriptionTab() {
-    DateTime now = DateTime.now();
-    String formattedDate = DateFormat('EEEE, MMMM yyyy').format(now);
-
-    return GridView.count(
-      shrinkWrap: true,
-      crossAxisCount: 2,
-      crossAxisSpacing: 16.w,
-      mainAxisSpacing: 16.h,
-      childAspectRatio: 1,
-      physics: const NeverScrollableScrollPhysics(),
-      children: [
-        FileCard(
-          folderName: 'Dr Jubaer - prescription',
-          fileCount: 2,
-        ),
-        FileCard(
-          folderName: 'Dr Yousuf - prescription',
-          fileCount: 2,
-        ),
-        FileCard(
-          folderName: 'Dr Imran - prescription',
-          fileCount: 2,
-        ),
-        FileCard(
-          folderName: 'Dr Jahirul - prescription',
-          fileCount: 2,
-        ),
-        FileCard(
-          folderName: 'Dr Yousuf - prescription',
-          fileCount: 2,
-        ),
-        FileCard(
-          folderName: 'Dr Jubaer - prescription',
-          fileCount: 2,
-        ),
-        FileCard(
-          folderName: 'Dr Imran - prescription',
-          fileCount: 2,
-        ),
-      ],
-    );
-
-    // return ListView(
-    //   shrinkWrap: true,
-    //   physics: const NeverScrollableScrollPhysics(),
-    //   children: [
-    //     _healthItem('Dr Jubaer - prescription', formattedDate,
-    //         AssetsPath.prescriptionPng),
-    //     _healthItem('Dr Yousuf - prescription', formattedDate,
-    //         AssetsPath.prescriptionPng),
-    //     _healthItem('Dr Imran - prescription', formattedDate,
-    //         AssetsPath.prescriptionPng),
-    //     _healthItem('Dr Jahirul - prescription', formattedDate,
-    //         AssetsPath.prescriptionPng),
-    //   ],
-    // );
-  }
+  // Widget _myTestReportTab() {
+  //   return GridView.count(
+  //     shrinkWrap: true,
+  //     crossAxisCount: 2,
+  //     crossAxisSpacing: 16.w,
+  //     mainAxisSpacing: 16.h,
+  //     childAspectRatio: 1,
+  //     physics: const NeverScrollableScrollPhysics(),
+  //     children: [
+  //       FileCard(
+  //         folderName: 'Medicine',
+  //         fileCount: 2,
+  //       ),
+  //       FileCard(
+  //         folderName: 'Heart',
+  //         fileCount: 2,
+  //       ),
+  //       FileCard(
+  //         folderName: 'Eye',
+  //         fileCount: 2,
+  //       ),
+  //       FileCard(
+  //         folderName: 'Blood Glucose',
+  //         fileCount: 2,
+  //       ),
+  //       FileCard(
+  //         folderName: 'Dental',
+  //         fileCount: 2,
+  //       ),
+  //       FileCard(
+  //         folderName: 'Medicine',
+  //         fileCount: 2,
+  //       ),
+  //       FileCard(
+  //         folderName: 'Medicine',
+  //         fileCount: 2,
+  //       ),
+  //     ],
+  //   );
+  // }
+  //
+  // Widget _myPrescriptionTab() {
+  //   DateTime now = DateTime.now();
+  //   String formattedDate = DateFormat('EEEE, MMMM yyyy').format(now);
+  //
+  //   return GridView.count(
+  //     shrinkWrap: true,
+  //     crossAxisCount: 2,
+  //     crossAxisSpacing: 16.w,
+  //     mainAxisSpacing: 16.h,
+  //     childAspectRatio: 1,
+  //     physics: const NeverScrollableScrollPhysics(),
+  //     children: [
+  //       FileCard(
+  //         folderName: 'Dr Jubaer - prescription',
+  //         fileCount: 2,
+  //       ),
+  //       FileCard(
+  //         folderName: 'Dr Yousuf - prescription',
+  //         fileCount: 2,
+  //       ),
+  //       FileCard(
+  //         folderName: 'Dr Imran - prescription',
+  //         fileCount: 2,
+  //       ),
+  //       FileCard(
+  //         folderName: 'Dr Jahirul - prescription',
+  //         fileCount: 2,
+  //       ),
+  //       FileCard(
+  //         folderName: 'Dr Yousuf - prescription',
+  //         fileCount: 2,
+  //       ),
+  //       FileCard(
+  //         folderName: 'Dr Jubaer - prescription',
+  //         fileCount: 2,
+  //       ),
+  //       FileCard(
+  //         folderName: 'Dr Imran - prescription',
+  //         fileCount: 2,
+  //       ),
+  //     ],
+  //   );
+  //
+  //   // return ListView(
+  //   //   shrinkWrap: true,
+  //   //   physics: const NeverScrollableScrollPhysics(),
+  //   //   children: [
+  //   //     _healthItem('Dr Jubaer - prescription', formattedDate,
+  //   //         AssetsPath.prescriptionPng),
+  //   //     _healthItem('Dr Yousuf - prescription', formattedDate,
+  //   //         AssetsPath.prescriptionPng),
+  //   //     _healthItem('Dr Imran - prescription', formattedDate,
+  //   //         AssetsPath.prescriptionPng),
+  //   //     _healthItem('Dr Jahirul - prescription', formattedDate,
+  //   //         AssetsPath.prescriptionPng),
+  //   //   ],
+  //   // );
+  // }
 
   Widget _healthItem(String title, String subtitle, String imageUrl) {
     return GestureDetector(

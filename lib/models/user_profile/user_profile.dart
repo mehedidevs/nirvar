@@ -10,11 +10,11 @@ class UserProfile with _$UserProfile {
     String? email,
     String? number,
     String? photo,
-    String? bloodGroup, // Adjusting the spelling for "blood_group"
+    String? bloodGroup,
     String? dateOfBirth,
     int? age,
-    double? weight,
-    double? height,
+    String? weight,
+    String? height,
     String? gender,
     String? address,
   }) = _UserProfile;

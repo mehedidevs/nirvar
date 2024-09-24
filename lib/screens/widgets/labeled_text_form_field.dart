@@ -9,8 +9,9 @@ class LabeledTextFormField extends StatelessWidget {
   final String? Function(String?)? validator;
   final bool obscureText;
   final bool enabled;
-  final bool hasToggle; // New property to control the visibility toggle
+  final bool hasToggle;
   final void Function()? onVisibilityToggle;
+  final bool readOnly;
 
   const LabeledTextFormField({
     Key? key,
@@ -22,6 +23,7 @@ class LabeledTextFormField extends StatelessWidget {
     this.enabled = true,
     this.hasToggle = false, // Initialize with default value as false
     this.onVisibilityToggle,
+    this.readOnly = false,
   }) : super(key: key);
 
   @override
@@ -42,6 +44,7 @@ class LabeledTextFormField extends StatelessWidget {
           validator: validator,
           obscureText: obscureText,
           enabled: enabled,
+          readOnly: readOnly,
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(

@@ -26,7 +26,7 @@ final class ForgotPasswordState extends Equatable {
       status: status ?? this.status,
       phoneNumber: phoneNumber ?? this.phoneNumber,
       successMessage: successMessage ?? this.successMessage,
-      errorMessage: errorMessage ?? this.successMessage
+      errorMessage: errorMessage ?? this.errorMessage
     );
 
   }
