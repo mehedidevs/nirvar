@@ -119,7 +119,7 @@ class _BloodPressureInputState extends State<BloodPressureInput> {
                           }, (success){
                             _systolicController.clear();
                             _diastolicController.clear();
-                            context.flushBarErrorMessage(message: success);
+                            context.flushBarSuccessMessage(message: success);
                           },);
                         }
                       },

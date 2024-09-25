@@ -36,7 +36,7 @@ const String patientFolderUpdate = '/patient/folder/update';
 const String patientFolderDelete = '/patient/folder/delete/'; // //need to Id
 
 //Files
-const String patientFiles = '/patient/files/1'; // //need to Id
+const String patientFiles = '/patient/files/'; // //need to Id
 const String patientFileUpload = '/patient/file/upload';
 const String patientFileDelete = '/patient/file/delete/3';
 

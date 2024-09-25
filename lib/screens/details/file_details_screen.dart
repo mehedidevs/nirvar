@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:nirvar/models/patient_files/patient_file.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 
 
 class ReportDetailsScreen extends StatelessWidget {
-  final String imageUrl;
-  final String title;
+  final PatientFile file;
 
-  const ReportDetailsScreen({super.key, required this.imageUrl, required this.title});
+  const ReportDetailsScreen({super.key, required this.file});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class ReportDetailsScreen extends StatelessWidget {
           child: const Icon(Icons.arrow_back_ios, color: Colors.black),
         ),
         title: Text(
-          title,
+          file.name ?? '',
           style: TextStyle(
             fontSize: 20.sp,
             fontWeight: FontWeight.bold,

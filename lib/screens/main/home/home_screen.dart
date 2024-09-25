@@ -149,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 childAspectRatio: 1,
                 physics: const NeverScrollableScrollPhysics(),
                 children: folders.map((folder) {
-                  return FileCard(patientFolder: folder,);
+                  return FileCard(patientFolder: folder);
                 }).toList(),
               );
             },
@@ -160,27 +160,6 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
   }
-
-
-  // Widget _myFilesTab() {
-  //   return GridView.count(
-  //     shrinkWrap: true,
-  //     crossAxisCount: 2,
-  //     crossAxisSpacing: 16.w,
-  //     mainAxisSpacing: 16.h,
-  //     childAspectRatio: 1,
-  //     physics: const NeverScrollableScrollPhysics(),
-  //     children: [
-  //       FileCard(folderName: 'Medicine', fileCount: 2,),
-  //       FileCard(folderName: 'Heart', fileCount: 2,),
-  //       FileCard(folderName: 'Eye', fileCount: 2,),
-  //       FileCard(folderName: 'Blood Glucose', fileCount: 2,),
-  //       FileCard(folderName: 'Blood Glucose', fileCount: 2,),
-  //       FileCard(folderName: 'Blood Glucose', fileCount: 2,),
-  //       FileCard(folderName: 'Blood Glucose', fileCount: 2,),
-  //     ],
-  //   );
-  // }
 
   Widget _myHealthTab() {
     return ListView(

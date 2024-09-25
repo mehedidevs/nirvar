@@ -20,14 +20,22 @@ PatientFile _$PatientFileFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$PatientFile {
-  int get id => throw _privateConstructorUsedError;
+  @JsonKey(name: 'id')
+  int get fileId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'folder_id')
   int get folderId => throw _privateConstructorUsedError;
-  String? get folderName => throw _privateConstructorUsedError;
+  @JsonKey(name: 'name')
   String? get name => throw _privateConstructorUsedError;
-  String? get rename => throw _privateConstructorUsedError;
+  @JsonKey(name: 'type')
   String? get type => throw _privateConstructorUsedError;
+  @JsonKey(name: 'rename')
+  String? get rename => throw _privateConstructorUsedError;
+  @JsonKey(name: 'path')
+  String? get path => throw _privateConstructorUsedError;
+  @JsonKey(name: 'folder_name')
+  String? get folderName => throw _privateConstructorUsedError;
+  @JsonKey(name: 'created_at')
   String? get createdAt => throw _privateConstructorUsedError;
-  String? get photo => throw _privateConstructorUsedError;
 
   /// Serializes this PatientFile to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -46,14 +54,14 @@ abstract class $PatientFileCopyWith<$Res> {
       _$PatientFileCopyWithImpl<$Res, PatientFile>;
   @useResult
   $Res call(
-      {int id,
-      int folderId,
-      String? folderName,
-      String? name,
-      String? rename,
-      String? type,
-      String? createdAt,
-      String? photo});
+      {@JsonKey(name: 'id') int fileId,
+      @JsonKey(name: 'folder_id') int folderId,
+      @JsonKey(name: 'name') String? name,
+      @JsonKey(name: 'type') String? type,
+      @JsonKey(name: 'rename') String? rename,
+      @JsonKey(name: 'path') String? path,
+      @JsonKey(name: 'folder_name') String? folderName,
+      @JsonKey(name: 'created_at') String? createdAt});
 }
 
 /// @nodoc
@@ -71,47 +79,47 @@ class _$PatientFileCopyWithImpl<$Res, $Val extends PatientFile>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = null,
+    Object? fileId = null,
     Object? folderId = null,
-    Object? folderName = freezed,
     Object? name = freezed,
-    Object? rename = freezed,
     Object? type = freezed,
+    Object? rename = freezed,
+    Object? path = freezed,
+    Object? folderName = freezed,
     Object? createdAt = freezed,
-    Object? photo = freezed,
   }) {
     return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
+      fileId: null == fileId
+          ? _value.fileId
+          : fileId // ignore: cast_nullable_to_non_nullable
               as int,
       folderId: null == folderId
           ? _value.folderId
           : folderId // ignore: cast_nullable_to_non_nullable
               as int,
-      folderName: freezed == folderName
-          ? _value.folderName
-          : folderName // ignore: cast_nullable_to_non_nullable
-              as String?,
       name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
-              as String?,
-      rename: freezed == rename
-          ? _value.rename
-          : rename // ignore: cast_nullable_to_non_nullable
               as String?,
       type: freezed == type
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
               as String?,
+      rename: freezed == rename
+          ? _value.rename
+          : rename // ignore: cast_nullable_to_non_nullable
+              as String?,
+      path: freezed == path
+          ? _value.path
+          : path // ignore: cast_nullable_to_non_nullable
+              as String?,
+      folderName: freezed == folderName
+          ? _value.folderName
+          : folderName // ignore: cast_nullable_to_non_nullable
+              as String?,
       createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
-              as String?,
-      photo: freezed == photo
-          ? _value.photo
-          : photo // ignore: cast_nullable_to_non_nullable
               as String?,
     ) as $Val);
   }
@@ -126,14 +134,14 @@ abstract class _$$PatientFileImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {int id,
-      int folderId,
-      String? folderName,
-      String? name,
-      String? rename,
-      String? type,
-      String? createdAt,
-      String? photo});
+      {@JsonKey(name: 'id') int fileId,
+      @JsonKey(name: 'folder_id') int folderId,
+      @JsonKey(name: 'name') String? name,
+      @JsonKey(name: 'type') String? type,
+      @JsonKey(name: 'rename') String? rename,
+      @JsonKey(name: 'path') String? path,
+      @JsonKey(name: 'folder_name') String? folderName,
+      @JsonKey(name: 'created_at') String? createdAt});
 }
 
 /// @nodoc
@@ -149,47 +157,47 @@ class __$$PatientFileImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = null,
+    Object? fileId = null,
     Object? folderId = null,
-    Object? folderName = freezed,
     Object? name = freezed,
-    Object? rename = freezed,
     Object? type = freezed,
+    Object? rename = freezed,
+    Object? path = freezed,
+    Object? folderName = freezed,
     Object? createdAt = freezed,
-    Object? photo = freezed,
   }) {
     return _then(_$PatientFileImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
+      fileId: null == fileId
+          ? _value.fileId
+          : fileId // ignore: cast_nullable_to_non_nullable
               as int,
       folderId: null == folderId
           ? _value.folderId
           : folderId // ignore: cast_nullable_to_non_nullable
               as int,
-      folderName: freezed == folderName
-          ? _value.folderName
-          : folderName // ignore: cast_nullable_to_non_nullable
-              as String?,
       name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
-              as String?,
-      rename: freezed == rename
-          ? _value.rename
-          : rename // ignore: cast_nullable_to_non_nullable
               as String?,
       type: freezed == type
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
               as String?,
+      rename: freezed == rename
+          ? _value.rename
+          : rename // ignore: cast_nullable_to_non_nullable
+              as String?,
+      path: freezed == path
+          ? _value.path
+          : path // ignore: cast_nullable_to_non_nullable
+              as String?,
+      folderName: freezed == folderName
+          ? _value.folderName
+          : folderName // ignore: cast_nullable_to_non_nullable
+              as String?,
       createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
-              as String?,
-      photo: freezed == photo
-          ? _value.photo
-          : photo // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
   }
@@ -199,38 +207,46 @@ class __$$PatientFileImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$PatientFileImpl implements _PatientFile {
   const _$PatientFileImpl(
-      {required this.id,
-      required this.folderId,
-      this.folderName,
-      this.name,
-      this.rename,
-      this.type,
-      this.createdAt,
-      this.photo});
+      {@JsonKey(name: 'id') required this.fileId,
+      @JsonKey(name: 'folder_id') required this.folderId,
+      @JsonKey(name: 'name') this.name,
+      @JsonKey(name: 'type') this.type,
+      @JsonKey(name: 'rename') this.rename,
+      @JsonKey(name: 'path') this.path,
+      @JsonKey(name: 'folder_name') this.folderName,
+      @JsonKey(name: 'created_at') this.createdAt});
 
   factory _$PatientFileImpl.fromJson(Map<String, dynamic> json) =>
       _$$PatientFileImplFromJson(json);
 
   @override
-  final int id;
+  @JsonKey(name: 'id')
+  final int fileId;
   @override
+  @JsonKey(name: 'folder_id')
   final int folderId;
   @override
-  final String? folderName;
-  @override
+  @JsonKey(name: 'name')
   final String? name;
   @override
-  final String? rename;
-  @override
+  @JsonKey(name: 'type')
   final String? type;
   @override
-  final String? createdAt;
+  @JsonKey(name: 'rename')
+  final String? rename;
   @override
-  final String? photo;
+  @JsonKey(name: 'path')
+  final String? path;
+  @override
+  @JsonKey(name: 'folder_name')
+  final String? folderName;
+  @override
+  @JsonKey(name: 'created_at')
+  final String? createdAt;
 
   @override
   String toString() {
-    return 'PatientFile(id: $id, folderId: $folderId, folderName: $folderName, name: $name, rename: $rename, type: $type, createdAt: $createdAt, photo: $photo)';
+    return 'PatientFile(fileId: $fileId, folderId: $folderId, name: $name, type: $type, rename: $rename, path: $path, folderName: $folderName, createdAt: $createdAt)';
   }
 
   @override
@@ -238,23 +254,23 @@ class _$PatientFileImpl implements _PatientFile {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PatientFileImpl &&
-            (identical(other.id, id) || other.id == id) &&
+            (identical(other.fileId, fileId) || other.fileId == fileId) &&
             (identical(other.folderId, folderId) ||
                 other.folderId == folderId) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.type, type) || other.type == type) &&
+            (identical(other.rename, rename) || other.rename == rename) &&
+            (identical(other.path, path) || other.path == path) &&
             (identical(other.folderName, folderName) ||
                 other.folderName == folderName) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.rename, rename) || other.rename == rename) &&
-            (identical(other.type, type) || other.type == type) &&
             (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt) &&
-            (identical(other.photo, photo) || other.photo == photo));
+                other.createdAt == createdAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, id, folderId, folderName, name,
-      rename, type, createdAt, photo);
+  int get hashCode => Object.hash(runtimeType, fileId, folderId, name, type,
+      rename, path, folderName, createdAt);
 
   /// Create a copy of PatientFile
   /// with the given fields replaced by the non-null parameter values.
@@ -274,34 +290,43 @@ class _$PatientFileImpl implements _PatientFile {
 
 abstract class _PatientFile implements PatientFile {
   const factory _PatientFile(
-      {required final int id,
-      required final int folderId,
-      final String? folderName,
-      final String? name,
-      final String? rename,
-      final String? type,
-      final String? createdAt,
-      final String? photo}) = _$PatientFileImpl;
+          {@JsonKey(name: 'id') required final int fileId,
+          @JsonKey(name: 'folder_id') required final int folderId,
+          @JsonKey(name: 'name') final String? name,
+          @JsonKey(name: 'type') final String? type,
+          @JsonKey(name: 'rename') final String? rename,
+          @JsonKey(name: 'path') final String? path,
+          @JsonKey(name: 'folder_name') final String? folderName,
+          @JsonKey(name: 'created_at') final String? createdAt}) =
+      _$PatientFileImpl;
 
   factory _PatientFile.fromJson(Map<String, dynamic> json) =
       _$PatientFileImpl.fromJson;
 
   @override
-  int get id;
+  @JsonKey(name: 'id')
+  int get fileId;
   @override
+  @JsonKey(name: 'folder_id')
   int get folderId;
   @override
-  String? get folderName;
-  @override
+  @JsonKey(name: 'name')
   String? get name;
   @override
-  String? get rename;
-  @override
+  @JsonKey(name: 'type')
   String? get type;
   @override
-  String? get createdAt;
+  @JsonKey(name: 'rename')
+  String? get rename;
   @override
-  String? get photo;
+  @JsonKey(name: 'path')
+  String? get path;
+  @override
+  @JsonKey(name: 'folder_name')
+  String? get folderName;
+  @override
+  @JsonKey(name: 'created_at')
+  String? get createdAt;
 
   /// Create a copy of PatientFile
   /// with the given fields replaced by the non-null parameter values.

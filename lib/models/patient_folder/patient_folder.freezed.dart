@@ -20,15 +20,16 @@ PatientFolder _$PatientFolderFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$PatientFolder {
-  String get name => throw _privateConstructorUsedError;
+  @JsonKey(name: 'id')
+  int get folderId => throw _privateConstructorUsedError;
   @JsonKey(name: 'user_id')
-  int get userId => throw _privateConstructorUsedError;
-  int get id => throw _privateConstructorUsedError;
-  @JsonKey(name: 'updated_at')
-  String? get updatedAt => throw _privateConstructorUsedError;
+  int? get userId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'name')
+  String? get name => throw _privateConstructorUsedError;
+  @JsonKey(name: 'file_count')
+  int? get fileCount => throw _privateConstructorUsedError;
   @JsonKey(name: 'created_at')
   String? get createdAt => throw _privateConstructorUsedError;
-  int? get fileCount => throw _privateConstructorUsedError;
 
   /// Serializes this PatientFolder to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -47,12 +48,11 @@ abstract class $PatientFolderCopyWith<$Res> {
       _$PatientFolderCopyWithImpl<$Res, PatientFolder>;
   @useResult
   $Res call(
-      {String name,
-      @JsonKey(name: 'user_id') int userId,
-      int id,
-      @JsonKey(name: 'updated_at') String? updatedAt,
-      @JsonKey(name: 'created_at') String? createdAt,
-      int? fileCount});
+      {@JsonKey(name: 'id') int folderId,
+      @JsonKey(name: 'user_id') int? userId,
+      @JsonKey(name: 'name') String? name,
+      @JsonKey(name: 'file_count') int? fileCount,
+      @JsonKey(name: 'created_at') String? createdAt});
 }
 
 /// @nodoc
@@ -70,38 +70,33 @@ class _$PatientFolderCopyWithImpl<$Res, $Val extends PatientFolder>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? name = null,
-    Object? userId = null,
-    Object? id = null,
-    Object? updatedAt = freezed,
-    Object? createdAt = freezed,
+    Object? folderId = null,
+    Object? userId = freezed,
+    Object? name = freezed,
     Object? fileCount = freezed,
+    Object? createdAt = freezed,
   }) {
     return _then(_value.copyWith(
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      userId: null == userId
+      folderId: null == folderId
+          ? _value.folderId
+          : folderId // ignore: cast_nullable_to_non_nullable
+              as int,
+      userId: freezed == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
-              as int,
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
-      updatedAt: freezed == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as String?,
-      createdAt: freezed == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
+              as int?,
+      name: freezed == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
               as String?,
       fileCount: freezed == fileCount
           ? _value.fileCount
           : fileCount // ignore: cast_nullable_to_non_nullable
               as int?,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -115,12 +110,11 @@ abstract class _$$PatientFolderImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String name,
-      @JsonKey(name: 'user_id') int userId,
-      int id,
-      @JsonKey(name: 'updated_at') String? updatedAt,
-      @JsonKey(name: 'created_at') String? createdAt,
-      int? fileCount});
+      {@JsonKey(name: 'id') int folderId,
+      @JsonKey(name: 'user_id') int? userId,
+      @JsonKey(name: 'name') String? name,
+      @JsonKey(name: 'file_count') int? fileCount,
+      @JsonKey(name: 'created_at') String? createdAt});
 }
 
 /// @nodoc
@@ -136,38 +130,33 @@ class __$$PatientFolderImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? name = null,
-    Object? userId = null,
-    Object? id = null,
-    Object? updatedAt = freezed,
-    Object? createdAt = freezed,
+    Object? folderId = null,
+    Object? userId = freezed,
+    Object? name = freezed,
     Object? fileCount = freezed,
+    Object? createdAt = freezed,
   }) {
     return _then(_$PatientFolderImpl(
-      name: null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      userId: null == userId
+      folderId: null == folderId
+          ? _value.folderId
+          : folderId // ignore: cast_nullable_to_non_nullable
+              as int,
+      userId: freezed == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
-              as int,
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
-      updatedAt: freezed == updatedAt
-          ? _value.updatedAt
-          : updatedAt // ignore: cast_nullable_to_non_nullable
-              as String?,
-      createdAt: freezed == createdAt
-          ? _value.createdAt
-          : createdAt // ignore: cast_nullable_to_non_nullable
+              as int?,
+      name: freezed == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
               as String?,
       fileCount: freezed == fileCount
           ? _value.fileCount
           : fileCount // ignore: cast_nullable_to_non_nullable
               as int?,
+      createdAt: freezed == createdAt
+          ? _value.createdAt
+          : createdAt // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -176,35 +165,34 @@ class __$$PatientFolderImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$PatientFolderImpl implements _PatientFolder {
   const _$PatientFolderImpl(
-      {required this.name,
-      @JsonKey(name: 'user_id') required this.userId,
-      required this.id,
-      @JsonKey(name: 'updated_at') this.updatedAt,
-      @JsonKey(name: 'created_at') this.createdAt,
-      this.fileCount});
+      {@JsonKey(name: 'id') required this.folderId,
+      @JsonKey(name: 'user_id') this.userId,
+      @JsonKey(name: 'name') this.name,
+      @JsonKey(name: 'file_count') this.fileCount,
+      @JsonKey(name: 'created_at') this.createdAt});
 
   factory _$PatientFolderImpl.fromJson(Map<String, dynamic> json) =>
       _$$PatientFolderImplFromJson(json);
 
   @override
-  final String name;
+  @JsonKey(name: 'id')
+  final int folderId;
   @override
   @JsonKey(name: 'user_id')
-  final int userId;
+  final int? userId;
   @override
-  final int id;
+  @JsonKey(name: 'name')
+  final String? name;
   @override
-  @JsonKey(name: 'updated_at')
-  final String? updatedAt;
+  @JsonKey(name: 'file_count')
+  final int? fileCount;
   @override
   @JsonKey(name: 'created_at')
   final String? createdAt;
-  @override
-  final int? fileCount;
 
   @override
   String toString() {
-    return 'PatientFolder(name: $name, userId: $userId, id: $id, updatedAt: $updatedAt, createdAt: $createdAt, fileCount: $fileCount)';
+    return 'PatientFolder(folderId: $folderId, userId: $userId, name: $name, fileCount: $fileCount, createdAt: $createdAt)';
   }
 
   @override
@@ -212,21 +200,20 @@ class _$PatientFolderImpl implements _PatientFolder {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PatientFolderImpl &&
-            (identical(other.name, name) || other.name == name) &&
+            (identical(other.folderId, folderId) ||
+                other.folderId == folderId) &&
             (identical(other.userId, userId) || other.userId == userId) &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.updatedAt, updatedAt) ||
-                other.updatedAt == updatedAt) &&
-            (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt) &&
+            (identical(other.name, name) || other.name == name) &&
             (identical(other.fileCount, fileCount) ||
-                other.fileCount == fileCount));
+                other.fileCount == fileCount) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, name, userId, id, updatedAt, createdAt, fileCount);
+  int get hashCode =>
+      Object.hash(runtimeType, folderId, userId, name, fileCount, createdAt);
 
   /// Create a copy of PatientFolder
   /// with the given fields replaced by the non-null parameter values.
@@ -246,31 +233,31 @@ class _$PatientFolderImpl implements _PatientFolder {
 
 abstract class _PatientFolder implements PatientFolder {
   const factory _PatientFolder(
-      {required final String name,
-      @JsonKey(name: 'user_id') required final int userId,
-      required final int id,
-      @JsonKey(name: 'updated_at') final String? updatedAt,
-      @JsonKey(name: 'created_at') final String? createdAt,
-      final int? fileCount}) = _$PatientFolderImpl;
+          {@JsonKey(name: 'id') required final int folderId,
+          @JsonKey(name: 'user_id') final int? userId,
+          @JsonKey(name: 'name') final String? name,
+          @JsonKey(name: 'file_count') final int? fileCount,
+          @JsonKey(name: 'created_at') final String? createdAt}) =
+      _$PatientFolderImpl;
 
   factory _PatientFolder.fromJson(Map<String, dynamic> json) =
       _$PatientFolderImpl.fromJson;
 
   @override
-  String get name;
+  @JsonKey(name: 'id')
+  int get folderId;
   @override
   @JsonKey(name: 'user_id')
-  int get userId;
+  int? get userId;
   @override
-  int get id;
+  @JsonKey(name: 'name')
+  String? get name;
   @override
-  @JsonKey(name: 'updated_at')
-  String? get updatedAt;
+  @JsonKey(name: 'file_count')
+  int? get fileCount;
   @override
   @JsonKey(name: 'created_at')
   String? get createdAt;
-  @override
-  int? get fileCount;
 
   /// Create a copy of PatientFolder
   /// with the given fields replaced by the non-null parameter values.

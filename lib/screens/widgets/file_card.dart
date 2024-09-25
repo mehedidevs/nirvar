@@ -15,19 +15,22 @@ import '../main/my_files/scanner/qr_code_screen.dart';
 import 'custom_button.dart';
 import 'edit_delete_menu.dart';
 
-class FileCard extends StatelessWidget {
+class FileCard extends StatefulWidget {
   final PatientFolder patientFolder;
 
 
  const FileCard({required this.patientFolder});
 
+  @override
+  State<FileCard> createState() => _FileCardState();
+}
 
-
+class _FileCardState extends State<FileCard> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => FolderDetailsScreen(title: patientFolder.name)));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => FolderDetailsScreen(folder: widget.patientFolder)));
       },
       child: Container(
         padding: EdgeInsets.all(12.w),  // Responsive padding
@@ -61,7 +64,7 @@ class FileCard extends StatelessWidget {
 
                   const Spacer(),  // Responsive spacing
                   Text(
-                    patientFolder.name,
+                    widget.patientFolder.name ?? '',
                     style: TextStyle(
                       fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
@@ -72,7 +75,7 @@ class FileCard extends StatelessWidget {
                   ),
                   SizedBox(height: 4.h),
                   Text(
-                    '${patientFolder.fileCount ?? 0} Files',
+                    '${widget.patientFolder.fileCount ?? 0} Files',
                     style: TextStyle(
                       fontSize: 14.sp,
                       color: Colors.grey,
@@ -103,7 +106,7 @@ class FileCard extends StatelessWidget {
                           builder: (context){
                           final _formKey = GlobalKey<FormState>();
                           TextEditingController _folderNameController = TextEditingController();
-                          _folderNameController.text = patientFolder.name;
+                          _folderNameController.text = widget.patientFolder.name ?? '';
                           final patientFolderRepository = sl<PatientFolderRepository>();
                           return Dialog(
                             shape: RoundedRectangleBorder(
@@ -117,7 +120,7 @@ class FileCard extends StatelessWidget {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Text(
-                                      patientFolder.name,
+                                      widget.patientFolder.name ?? '',
                                       style: TextStyle(
                                         fontSize: 24.sp,
                                         fontWeight: FontWeight.bold,
@@ -145,10 +148,18 @@ class FileCard extends StatelessWidget {
                                           text: 'Save',
                                           onPressed: () async {
                                             if(_formKey.currentState?.validate() ?? false){
-                                             final response = await patientFolderRepository.updateFolder(patientFolder.id, _folderNameController.text);
-                                             if(context.mounted){
-                                               Navigator.of(context).pop();
+                                             final response = await patientFolderRepository.updateFolder(widget.patientFolder.folderId, _folderNameController.text);
+                                             response.fold((failure){
+                                               if(context.mounted){
+                                                 Navigator.of(context).pop();
+                                               }
+                                             }, (success){
+                                                 if(context.mounted){
+                                                   Navigator.of(context).pop();
+                                                 }
                                              }
+                                             ,);
+
                                             }
                                           },
                                       ),
@@ -208,7 +219,7 @@ class FileCard extends StatelessWidget {
                                       child: CustomButton(
                                         text: 'Delete',
                                         onPressed: () async {
-                                          patientFolderRepository.deleteFolder(patientFolder.id);
+                                          patientFolderRepository.deleteFolder(widget.patientFolder.folderId);
                                           Navigator.of(context).pop();
                                         },
                                       ),
@@ -256,8 +267,6 @@ class FileCard extends StatelessWidget {
       ),
     );
   }
-
-
 
   void _deleteAction(BuildContext context, int folderId) {
 

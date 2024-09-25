@@ -98,7 +98,7 @@ class _BloodGlucoseInputState extends State<BloodGlucoseInput> {
                             },
                             (success) {
                               _bloodGlucoseController.clear();
-                              context.flushBarErrorMessage(message: success);
+                              context.flushBarSuccessMessage(message: success);
                             },
                           );
                         }

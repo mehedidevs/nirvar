@@ -6,15 +6,16 @@ part 'patient_file.g.dart';
 @freezed
 class PatientFile with _$PatientFile {
   const factory PatientFile({
-    required int id,
-    required int folderId,
-    String? folderName,
-    String? name,
-    String? rename,
-    String? type,
-    String? createdAt,
-    String? photo, // Optional photo field
+    @JsonKey(name: 'id') required int fileId,
+    @JsonKey(name: 'folder_id') required int folderId,
+    @JsonKey(name: 'name') String? name,
+    @JsonKey(name: 'type') String? type,
+    @JsonKey(name: 'rename') String? rename,
+    @JsonKey(name: 'path') String? path,
+    @JsonKey(name: 'folder_name') String? folderName,
+    @JsonKey(name: 'created_at') String? createdAt,
   }) = _PatientFile;
 
-  factory PatientFile.fromJson(Map<String, dynamic> json) => _$PatientFileFromJson(json);
+  factory PatientFile.fromJson(Map<String, dynamic> json) =>
+      _$PatientFileFromJson(json);
 }
