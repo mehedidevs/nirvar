@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:nirvar/screens/details/report_details_screen.dart';
+import 'package:nirvar/screens/details/file_details_screen.dart';
 import 'package:nirvar/screens/widgets/custom_app_bar.dart';
 
 import '../utils/app_colors.dart';
 import '../utils/assets_path.dart';
 
-class ReportScreen extends StatelessWidget {
+class FolderDetailsScreen extends StatelessWidget {
   final String title;
 
-  const ReportScreen({super.key, required this.title});
+  const FolderDetailsScreen({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {

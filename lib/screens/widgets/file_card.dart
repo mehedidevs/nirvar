@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nirvar/models/patient_folder/patient_folder.dart';
 import 'package:nirvar/screens/auth/change_password.dart';
-import 'package:nirvar/screens/details/report_screen.dart';
+import 'package:nirvar/screens/details/folder_details_screen.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/utils/helper.dart';
@@ -27,7 +27,7 @@ class FileCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ReportScreen(title: patientFolder.name)));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => FolderDetailsScreen(title: patientFolder.name)));
       },
       child: Container(
         padding: EdgeInsets.all(12.w),  // Responsive padding

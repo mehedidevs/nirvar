@@ -13,14 +13,23 @@ import 'package:nirvar/bloc/sign_up/signup_bloc.dart';
 import 'package:nirvar/bloc/user_profile_details/user_profile_details_bloc.dart';
 import 'package:nirvar/bloc/user_profile_update/user_profile_update_bloc.dart';
 import 'package:nirvar/core/constants/constants.dart';
+import 'package:nirvar/data/network/diabetes/diabetes_api_service.dart';
 import 'package:nirvar/data/preference/token_storage.dart';
 import 'package:nirvar/repository/authentication/auth_repository.dart';
 import 'package:nirvar/repository/authentication/auth_repository_impl.dart';
+import 'package:nirvar/repository/blood_pressure/blood_pressure_repository.dart';
+import 'package:nirvar/repository/blood_pressure/blood_pressure_repository_impl.dart';
+import 'package:nirvar/repository/diabetes/diabetes_repository.dart';
+import 'package:nirvar/repository/diabetes/diabetes_repository_impl.dart';
+import 'package:nirvar/repository/patient_file/patient_file_repository.dart';
+import 'package:nirvar/repository/patient_file/patient_file_repository_impl.dart';
 import 'package:nirvar/repository/patient_folder/patient_folder_repository.dart';
 import 'package:nirvar/repository/patient_folder/patient_folder_repository_impl.dart';
 
 
 import 'data/network/authentication/auth_api_service.dart';
+import 'data/network/blood_pressure/blood_pressure_api_service.dart';
+import 'data/network/file/file_api_service.dart';
 import 'data/network/folder/folder_api_service.dart';
 import 'data/preference/user_id_storage.dart';
 
@@ -47,14 +56,21 @@ Future<void> initializeDependencies() async {
   //API Service
   sl.registerLazySingleton<AuthApiService>(() => AuthApiService(sl<Dio>(), sl<TokenStorage>(), sl<UserIdStorage>()));
   sl.registerLazySingleton<FolderApiService>(() => FolderApiService(sl<Dio>(), sl<TokenStorage>(), sl<UserIdStorage>()));
+  sl.registerLazySingleton<FileApiService>(() => FileApiService(sl<Dio>(), sl<TokenStorage>(), sl<UserIdStorage>()));
+  sl.registerLazySingleton<BloodPressureApiService>(() => BloodPressureApiService(sl<Dio>(), sl<TokenStorage>(), sl<UserIdStorage>()));
+  sl.registerLazySingleton<DiabetesApiService>(() => DiabetesApiService(sl<Dio>(), sl<TokenStorage>(), sl<UserIdStorage>()));
 
 
   //Binding The Repository
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl<AuthApiService>()));
   sl.registerLazySingleton<PatientFolderRepository>(() => PatientFolderRepositoryImpl(sl<FolderApiService>()));
+  sl.registerLazySingleton<PatientFileRepository>(()=>PatientFileRepositoryImpl(sl<FileApiService>()));
+  sl.registerLazySingleton<BloodPressureRepository>(()=>BloodPressureRepositoryImpl(sl<BloodPressureApiService>()));
+  sl.registerLazySingleton<DiabetesRepository>(()=>DiabetesRepositoryImpl(sl<DiabetesApiService>()));
+
+
 
   //Bloc
-
   sl.registerFactory<LoginBloc>(() => LoginBloc(sl<AuthRepository>()));
   sl.registerFactory<LogOutBloc>(() => LogOutBloc(sl<AuthRepository>()));
 

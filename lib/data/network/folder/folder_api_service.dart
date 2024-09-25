@@ -123,7 +123,6 @@ class FolderApiService {
     }
   }
 
-
   Future<Either<ApiException, String>> deleteFolder(int folderId) async {
     try {
       final response = await _dio.get(

@@ -9,14 +9,14 @@ import 'package:nirvar/screens/widgets/custom_button.dart';
 import '../../../notification/notification_screen.dart';
 import '../../../widgets/custom_dropdown.dart';
 
-class UploadScreen extends StatefulWidget {
-  const UploadScreen({super.key});
+class TestReportUploadScreen extends StatefulWidget {
+  const TestReportUploadScreen({super.key});
 
   @override
-  State<UploadScreen> createState() => _UploadScreenState();
+  State<TestReportUploadScreen> createState() => _TestReportUploadScreenState();
 }
 
-class _UploadScreenState extends State<UploadScreen> {
+class _TestReportUploadScreenState extends State<TestReportUploadScreen> {
 
   String? _selectedCategory;
 

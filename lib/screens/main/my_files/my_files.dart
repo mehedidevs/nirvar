@@ -4,10 +4,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
-import 'package:nirvar/screens/details/report_details_screen.dart';
-import 'package:nirvar/screens/details/report_screen.dart';
+import 'package:nirvar/screens/details/file_details_screen.dart';
+import 'package:nirvar/screens/details/folder_details_screen.dart';
 import 'package:nirvar/screens/main/my_files/scanner/qr_code_screen.dart';
-import 'package:nirvar/screens/main/my_files/upload/upload_screen.dart';
+import 'package:nirvar/screens/main/my_files/upload/test_report_upload_screen.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 
 import '../../../core/resources/api_exception.dart';
@@ -398,7 +398,7 @@ Widget _headerSection(BuildContext context) {
           ElevatedButton.icon(
             onPressed: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => UploadScreen()));
+                  MaterialPageRoute(builder: (context) => TestReportUploadScreen()));
             },
             icon: Icon(Icons.add, size: 16.sp, color: Colors.white),
             label: Text(
