@@ -2,6 +2,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:nirvar/core/resources/api_exception.dart';
+import 'package:nirvar/models/patient_blood_pressure/patient_blood_pressure.dart';
 
 import '../../../core/constants/constants.dart';
 import '../../preference/token_storage.dart';
@@ -63,6 +64,70 @@ class BloodPressureApiService {
       return Left(ApiException.fromDioError(e));
     } catch (e) {
       return Left(ApiException(e.toString()));
+    }
+  }
+
+  Stream<Either<ApiException, List<PatientBloodPressure>>> getBloodPressureOfToday() async* {
+    try {
+      final response = await _dio.get(patientBloodPressureToday);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = response.data;
+
+        if (responseData['status'] == 1 && responseData['message'] == 'success') {
+          final List<dynamic> bloodPressureJson = responseData['data'] ?? [];
+
+          if (bloodPressureJson.isNotEmpty) {
+            final List<PatientBloodPressure> bloodPressureList = bloodPressureJson
+                .map((json) => PatientBloodPressure.fromJson(json as Map<String, dynamic>))
+                .toList();
+
+            yield Right(bloodPressureList);
+          } else {
+            yield Left(ApiException('No blood pressure data found.'));
+          }
+        } else {
+          yield Left(ApiException(responseData['message']));
+        }
+      } else {
+        yield Left(ApiException.fromStatusCode(response.statusCode ?? 0));
+      }
+    } on DioException catch (e) {
+      yield Left(ApiException.fromDioError(e));
+    } catch (e) {
+      yield Left(ApiException(e.toString()));
+    }
+  }
+
+  Stream<Either<ApiException, List<PatientBloodPressure>>> getBloodPressureOfLast7Days() async* {
+    try {
+      final response = await _dio.get(patientBloodPressureLastSevenDays);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = response.data;
+
+        if (responseData['status'] == 1 && responseData['message'] == 'success') {
+          final List<dynamic> bloodPressureJson = responseData['data'] ?? [];
+
+          if (bloodPressureJson.isNotEmpty) {
+            final List<PatientBloodPressure> bloodPressureList = bloodPressureJson
+                .map((json) => PatientBloodPressure.fromJson(json as Map<String, dynamic>))
+                .toList();
+
+            yield Right(bloodPressureList);
+          } else {
+            yield Left(ApiException('No blood pressure data found.'));
+          }
+        } else {
+          yield Left(ApiException(responseData['message']));
+        }
+      } else {
+        yield Left(ApiException.fromStatusCode(response.statusCode ?? 0));
+      }
+    } on DioException catch (e) {
+      yield Left(ApiException.fromDioError(e));
+    } catch (e) {
+      yield Left(ApiException(e.toString()));
     }
   }
 

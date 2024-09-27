@@ -100,6 +100,13 @@ class AuthApiService {
         if (responseData['status'] == 1) {
           _tokenStorage.clearToken();
           _userIdStorage.clearUserID();
+
+          final token = await _tokenStorage.getToken();
+          print(token);
+
+          final userId = await _userIdStorage.getUserID();
+          print(userId);
+
           return Right(responseData['message']);
         } else {
           return Left(ApiException(responseData['message']));
@@ -490,7 +497,6 @@ class AuthApiService {
         ),
     });
 
-
     try{
       final response = await _dio.get(
           patientProfileUpdate,
@@ -519,7 +525,6 @@ class AuthApiService {
     } catch (e) {
       return Left(ApiException(e.toString()));
     }
-
   }
 }
 

@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:nirvar/models/patient_blood_pressure/patient_blood_pressure.dart';
+import 'package:nirvar/repository/blood_pressure/blood_pressure_repository.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/widgets/file_card.dart';
@@ -22,13 +24,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
+  final patientFolderRepository = sl<PatientFolderRepository>();
+  final patientBloodPressureRepository = sl<BloodPressureRepository>();
+  List<PatientBloodPressure> bloodPressureList = [];
   int _selectedIndex = 0;
 
   void _onTabSelected(int index) {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -122,7 +131,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _myFilesTab() {
-    final patientFolderRepository = sl<PatientFolderRepository>();
     return StreamBuilder<dartz.Either<ApiException, List<PatientFolder>>>(
       stream: patientFolderRepository.getAllFolders(),
       builder: (context, snapshot) {
@@ -149,7 +157,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 childAspectRatio: 1,
                 physics: const NeverScrollableScrollPhysics(),
                 children: folders.map((folder) {
-                  return FileCard(patientFolder: folder);
+                  return FileCard(
+                    patientFolder: folder,
+                    onUpdateSuccess: ()async {
+                      setState(() {});
+                      print("API CALLED AGAIN");
+                  },
+                    onDeleteSuccess: ()async {
+                      setState(() {});
+                      print("API CALLED AGAIN");
+                  },
+                  );
                 }).toList(),
               );
             },

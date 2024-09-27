@@ -38,7 +38,8 @@ const String patientFolderDelete = '/patient/folder/delete/'; // //need to Id
 //Files
 const String patientFiles = '/patient/files/'; // //need to Id
 const String patientFileUpload = '/patient/file/upload';
-const String patientFileDelete = '/patient/file/delete/3';
+const String patientFileDelete = '/patient/file/delete/';
+const String patientFileRename = '/patient/file/rename';
 
 //Blood Pressure
 const String patientBloodPressure = '/patient/blood-pressure/store';

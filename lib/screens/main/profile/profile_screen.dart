@@ -191,8 +191,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         style: TextStyle(color: AppColors.red, fontSize: 16.sp),
                       ),
                       onTap: () {
-                        WidgetsBinding.instance.addPostFrameCallback(
-                            (_) => showLogoutDialog(context));
+                         showLogoutDialog(context,
+                              onSuccess: ()async{
+                              print('Is Backed Success');
+
+                              if(context.mounted){
+                                Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const SignInScreen()),
+                                        (route) => false);
+                              }
+
+                             // await Future.delayed(const Duration(seconds: 2), () {
+                             //
+                             //  });
+                            },
+                           onFailure:(message)async{
+                                print('Is Backed Error');
+                              context.flushBarErrorMessage(message: message);
+                            },);
                       },
                     ),
                   ],
@@ -206,7 +224,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-void showLogoutDialog(context) {
+void showLogoutDialog(context, {required Future<void> Function() onSuccess, required Future<void> Function(String message) onFailure,}) {
   showDialog(
     context: context,
     builder: (context) {
@@ -219,20 +237,15 @@ void showLogoutDialog(context) {
           child: BlocConsumer<LogOutBloc, LogoutState>(
             listener: (context, state) {
               if (state.status == LogoutStatus.success && context.mounted) {
+                Navigator.of(context).pop();
 
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SignInScreen()),
-                        (route) => false);
-
-                // WidgetsBinding.instance.addPostFrameCallback((_) {
-                //   if (context.mounted) {
-                //
-                //   }
-                // });
+                Future.delayed(Duration(milliseconds: 100), () {
+                  if (context.mounted) {
+                    onSuccess();
+                  }
+                });
               } else if (state.status == LogoutStatus.failure) {
-                context.flushBarErrorMessage(message: state.errorMessage);
+                onFailure(state.errorMessage);
                 Navigator.of(context).pop();
               }
             },

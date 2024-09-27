@@ -17,9 +17,11 @@ import 'edit_delete_menu.dart';
 
 class FileCard extends StatefulWidget {
   final PatientFolder patientFolder;
+  final Future<void> Function() onUpdateSuccess;
+  final Future<void> Function() onDeleteSuccess;
 
 
- const FileCard({required this.patientFolder});
+ const FileCard({super.key, required this.patientFolder, required this.onUpdateSuccess, required this.onDeleteSuccess});
 
   @override
   State<FileCard> createState() => _FileCardState();
@@ -154,6 +156,7 @@ class _FileCardState extends State<FileCard> {
                                                  Navigator.of(context).pop();
                                                }
                                              }, (success){
+                                                  widget.onUpdateSuccess();
                                                  if(context.mounted){
                                                    Navigator.of(context).pop();
                                                  }
@@ -219,8 +222,18 @@ class _FileCardState extends State<FileCard> {
                                       child: CustomButton(
                                         text: 'Delete',
                                         onPressed: () async {
-                                          patientFolderRepository.deleteFolder(widget.patientFolder.folderId);
-                                          Navigator.of(context).pop();
+                                         final response = await patientFolderRepository.deleteFolder(widget.patientFolder.folderId);
+                                         response.fold((failure){
+                                           if(context.mounted){
+                                             Navigator.of(context).pop();
+                                           }
+                                         }, (success){
+                                           widget.onDeleteSuccess();
+                                           if(context.mounted){
+                                             Navigator.of(context).pop();
+                                           }
+                                         },
+                                         );
                                         },
                                       ),
                                     ),

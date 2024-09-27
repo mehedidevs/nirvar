@@ -6,7 +6,10 @@ import 'package:flutter_svg/svg.dart';
 import 'package:nirvar/models/patient_files/patient_file.dart';
 import 'package:nirvar/models/patient_folder/patient_folder.dart';
 import 'package:nirvar/repository/patient_file/patient_file_repository.dart';
+import 'package:nirvar/screens/auth/change_password.dart';
 import 'package:nirvar/screens/details/file_details_screen.dart';
+import 'package:nirvar/screens/utils/file_type.dart';
+import 'package:nirvar/screens/utils/helper.dart';
 
 
 import '../../core/resources/api_exception.dart';
@@ -14,6 +17,9 @@ import '../../injection_container.dart';
 import '../notification/notification_screen.dart';
 import '../utils/app_colors.dart';
 import '../utils/assets_path.dart';
+import '../widgets/custom_button.dart';
+import '../widgets/edit_delete_menu.dart';
+import '../widgets/labeled_text_form_field.dart';
 
 class FolderDetailsScreen extends StatefulWidget {
   final PatientFolder folder;
@@ -191,7 +197,15 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 children: testReports.map((file) {
-                  return _healthItem(context,file);
+                  return _healthItem(context,file,
+                    onDeleteSuccess:(String message)async{
+                    setState(() {});
+                  },
+                    onRenameSuccess:(String message)async{
+                      setState(() {});
+                    },
+                      fileType: FileType.testReport.value
+                  );
                 }).toList(),
               );
             },
@@ -226,7 +240,18 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
                shrinkWrap: true,
                physics: const NeverScrollableScrollPhysics(),
                children: prescriptions.map((file) {
-                 return _healthItem(context,file);
+                 return _healthItem(
+                   context,
+                   file,
+                     onDeleteSuccess:(String message)async{
+                      setState(() {});
+                     },
+                     onRenameSuccess:(String message)async{
+                       setState(() {});
+                     },
+                     fileType: FileType.prescription.value
+
+                     );
                }).toList(),
              );
            },
@@ -238,7 +263,11 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
    );
  }
 
-  Widget _healthItem(BuildContext context,PatientFile file) {
+  Widget _healthItem(BuildContext context,PatientFile file,
+     {required Future<void> Function(String message)onDeleteSuccess,
+       required Future<void> Function(String message)onRenameSuccess,
+       required String fileType,
+     }) {
     return GestureDetector(
       onTap: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) => ReportDetailsScreen(file: file,)));
@@ -311,10 +340,166 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
             ],
           ),
 
-          trailing: Icon(
-            Icons.more_vert,
-            color: Colors.black38,
+          trailing: EditDeleteMenu(
+            onDelete: (){
+              showDialog(
+                context: context,
+                builder: (context){
+                  return Dialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16.r),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(16.w),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SvgPicture.asset(AssetsPath.deleteLogoSvg),
+                          SizedBox(height: 16.h),
+                          Text(
+                            'Are you sure you want to delete this folder?',
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                            maxLines: 2,
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: 32.h),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 0.h, horizontal: 16.w),
+                            child: CustomButton(
+                              text: 'Delete',
+                              onPressed: () async {
+                                final response = await _repository.deleteFile(file.fileId);
+                                response.fold((failure){
+                                  if(context.mounted){
+                                    Navigator.of(context).pop();
+                                  }
+                                }, (success){
+                                  onDeleteSuccess(success);
+                                  if(context.mounted){
+                                    Navigator.of(context).pop();
+                                  }
+                                },
+                                );
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 8.h),
+                          // Cancel Button
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Close the dialog
+                            },
+                            child: Text(
+                              'Cancel',
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                color: AppColors.primary, // Adjust the color as needed
+                              ),
+                            ),
+                          ),
+                        ],
+
+                      ),
+                    ),
+                  );
+                },);
+            },
+            onEdit: (){
+              showDialog(
+                context: context,
+                builder: (context){
+                  final _formKey = GlobalKey<FormState>();
+                  TextEditingController _fileReNameController = TextEditingController();
+                  _fileReNameController.text = file.rename ?? '';
+                  return Dialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16.r),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(16.w),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              file.name ?? '',
+                              style: TextStyle(
+                                fontSize: 24.sp,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(height: 32.h),
+                            LabeledTextFormField(
+                              label: 'Edit Folder Name',
+                              hint: '',
+                              controller: _fileReNameController,
+                              validator: (value){
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter Folder Name';
+                                }
+                                return null;
+                              },
+                            ),
+                            SizedBox(height: 32.h),
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 0.h, horizontal: 16.w),
+                              child: CustomButton(
+                                text: 'Save',
+                                onPressed: () async {
+                                  if(_formKey.currentState?.validate() ?? false){
+                                    final response = await _repository.renameFile(widget.folder.folderId, file.fileId, fileType, _fileReNameController.text);
+                                    response.fold((failure){
+                                      if(context.mounted){
+                                        Navigator.of(context).pop();
+                                      }
+                                    }, (success){
+                                     onRenameSuccess(success);
+                                      if(context.mounted){
+                                        Navigator.of(context).pop();
+                                      }
+                                    }
+                                      ,);
+
+                                  }
+                                },
+                              ),
+                            ),
+                            SizedBox(height: 8.h),
+                            // Cancel Button
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(); // Close the dialog
+                              },
+                              child: Text(
+                                'Cancel',
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: AppColors.primary, // Adjust the color as needed
+                                ),
+                              ),
+                            ),
+                          ],
+
+                        ),
+                      ),
+                    ),
+                  );
+                },);
+            },
           ),
+          // trailing: Icon(
+          //   Icons.more_vert,
+          //   color: Colors.black38,
+          // ),
         ),
       ),
     );

@@ -11,4 +11,6 @@ abstract class PatientFileRepository {
   Stream<Either<ApiException,List<PatientFile>>> getAllTestReports(int folderID);
 
   Future<Either<ApiException,String>> deleteFile(int fileId);
+
+  Future<Either<ApiException,String>> renameFile(int folderId,int fileId,String fileType,String fileName);
 }

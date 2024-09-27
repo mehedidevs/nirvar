@@ -136,6 +136,39 @@ class FileApiService{
     }
   }
 
+  Future<Either<ApiException,String>> renameFile(int folderId,int fileId,String fileType,String fileName) async{
+
+    try{
+      final response = await _dio.post(patientFileRename,data: {
+        "folder_id" : folderId,
+        "file_id" : fileId,
+        "file_type" : fileType,
+        "file_name" : fileName,
+      },);
+
+      print('REsponse : $response');
+      print('ResponseData : ${response.data}');
+
+      if(response.statusCode ==200){
+        final Map<String, dynamic> responseData = response.data;
+        if (responseData['status'] == 1){
+          String data = responseData['message'];
+          return Right(data);
+        }else{
+          return Left(ApiException(responseData['message']));
+        }
+      }else{
+        return Left(ApiException('Something Went Wrong'));
+      }
+
+    }on DioException catch (e) {
+      return Left(ApiException.fromDioError(e));
+    } catch (e) {
+      return Left(ApiException(e.toString()));
+    }
+
+  }
+
 
 
 
