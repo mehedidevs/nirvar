@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../notification/notification_screen.dart';
 import '../../../utils/app_colors.dart';
@@ -16,6 +19,19 @@ class PrescriptionUploadScreen extends StatefulWidget {
 }
 
 class _PrescriptionUploadScreenState extends State<PrescriptionUploadScreen> {
+
+  File? _selectedFile;
+
+  Future<void> _pickFile(ImageSource source) async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? pickedFile = await _picker.pickImage(source: source);
+    if (pickedFile != null) {
+      setState(() {
+        _selectedFile = File(pickedFile.path);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,7 +98,7 @@ class _PrescriptionUploadScreenState extends State<PrescriptionUploadScreen> {
                           SizedBox(height: 20.h),
                           GestureDetector(
                             onTap: (){
-
+                              _pickFile(ImageSource.camera);
                             },
                             child: Text(
                               'Scan',
@@ -130,7 +146,7 @@ class _PrescriptionUploadScreenState extends State<PrescriptionUploadScreen> {
                         SizedBox(height: 20.h),
                         ElevatedButton(
                           onPressed: () {
-                            // Handle file selection
+                            _pickFile(ImageSource.gallery);
                           },
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.black,

@@ -5,13 +5,17 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nirvar/screens/main/my_files/upload/test_report_upload_screen.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
+import 'package:popover/popover.dart';
 import '../../../core/resources/api_exception.dart';
 import '../../../injection_container.dart';
 import '../../../models/patient_folder/patient_folder.dart';
 import '../../../repository/patient_folder/patient_folder_repository.dart';
 import '../../notification/notification_screen.dart';
 import '../../utils/app_colors.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/edit_delete_menu.dart';
 import '../../widgets/file_card.dart';
+import '../../widgets/labeled_text_form_field.dart';
 
 class MyFiles extends StatefulWidget {
   const MyFiles({super.key});
@@ -22,8 +26,11 @@ class MyFiles extends StatefulWidget {
 
 class _MyFilesState extends State<MyFiles> {
 
+
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
@@ -36,7 +43,8 @@ class _MyFilesState extends State<MyFiles> {
               children: [
                 _searchAndNotification(context),
                 SizedBox(height: 16.h),
-                _headerSection(context),
+                _headerSection(context,
+                    onCreateSuccess:()async{}),
                 SizedBox(height: 16.h),
                 _myFilesSection(),
                 SizedBox(height: ScreenUtil().screenHeight * .1.h),
@@ -50,53 +58,52 @@ class _MyFilesState extends State<MyFiles> {
 
   Widget _searchAndNotification(context) {
     return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      print('Search icon tapped');
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.w),
-                      child: Icon(
-                        Icons.search,
-                        color: Colors.grey,
-                        size: 24.sp,
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                          const NotificationScreen(hasNotification: true),
-                        ),
-                      );
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: () {
+            print('Search icon tapped');
+          },
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8.w),
+            child: Icon(
+              Icons.search,
+              color: Colors.grey,
+              size: 24.sp,
+            ),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    const NotificationScreen(hasNotification: true),
+              ),
+            );
 
-                      print('Notification icon tapped');
-                    },
-                    child: Stack(
-                      children: [
-                        Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8.w),
-                            child: SvgPicture.asset(
-                                AssetsPath.notificationWithBadgeSvg)),
-                        // Positioned(
-                        //   right: 4.w,
-                        //   top: 4.h,
-                        //   child: CircleAvatar(
-                        //     radius: 4.r,
-                        //     backgroundColor: Colors.teal, // Badge color
-                        //   ),
-                        // ),
-                      ],
-                    ),
-                  ),
-                ],
-              );
+            print('Notification icon tapped');
+          },
+          child: Stack(
+            children: [
+              Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w),
+                  child: SvgPicture.asset(AssetsPath.notificationWithBadgeSvg)),
+              // Positioned(
+              //   right: 4.w,
+              //   top: 4.h,
+              //   child: CircleAvatar(
+              //     radius: 4.r,
+              //     backgroundColor: Colors.teal, // Badge color
+              //   ),
+              // ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _myFilesSection() {
@@ -105,19 +112,31 @@ class _MyFilesState extends State<MyFiles> {
       stream: patientFolderRepository.getAllFolders(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: SpinKitChasingDots(
-              color: AppColors.primary, size: 50.sp)); // Show a loading indicator while waiting for data
+          return Center(
+              child: SpinKitChasingDots(
+                  color: AppColors.primary,
+                  size: 50
+                      .sp)); // Show a loading indicator while waiting for data
         }
 
         if (snapshot.hasData) {
           return snapshot.data!.fold(
-                (error) => Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.h,horizontal: 8.w),
-                  child: Center(child: Text(error.message,style: const TextStyle(color: AppColors.primary),)),
-                ), // Display error if there's an issue // Display error if there's an issue
-                (folders) {
+            (error) => Padding(
+              padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 8.w),
+              child: Center(
+                  child: Text(
+                error.message,
+                style: const TextStyle(color: AppColors.primary),
+              )),
+            ),
+            // Display error if there's an issue // Display error if there's an issue
+            (folders) {
               if (folders.isEmpty) {
-                return const Center(child: Text('No folders available',style: TextStyle(color: AppColors.primary),)); // Handle empty list
+                return const Center(
+                    child: Text(
+                  'No folders available',
+                  style: TextStyle(color: AppColors.primary),
+                )); // Handle empty list
               }
               return GridView.count(
                 shrinkWrap: true,
@@ -127,16 +146,17 @@ class _MyFilesState extends State<MyFiles> {
                 childAspectRatio: 1,
                 physics: const NeverScrollableScrollPhysics(),
                 children: folders.map((folder) {
-                  return FileCard(patientFolder: folder,
-                    onUpdateSuccess: ()async{
-                    setState(() {});
-                  },
-                   onDeleteSuccess: () async {
-                    setState(() {
-
-                    });
-                   },
-                     onComingBack: ()async{setState(() {});},
+                  return FileCard(
+                    patientFolder: folder,
+                    onUpdateSuccess: () async {
+                      setState(() {});
+                    },
+                    onDeleteSuccess: () async {
+                      setState(() {});
+                    },
+                    onComingBack: () async {
+                      setState(() {});
+                    },
                   );
                 }).toList(),
               );
@@ -144,48 +164,177 @@ class _MyFilesState extends State<MyFiles> {
           );
         }
 
-        return Center(child: Text('Something went wrong')); // Fallback if no data is available
+        return Center(
+            child: Text(
+                'Something went wrong')); // Fallback if no data is available
       },
     );
   }
 
+  Widget _headerSection(context, {required Future<void> Function() onCreateSuccess}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          flex: 2,
+          child: Text(
+            "My Files",
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              color: AppColors.deepBlue,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        EditDeleteMenu(
+          onEdit: () {
+            showDialog(
+              context: context,
+              builder: (context) {
+                final _formKey = GlobalKey<FormState>();
+                TextEditingController _folderNameController =
+                TextEditingController();
+                final patientFolderRepository = sl<PatientFolderRepository>();
+                return Dialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.r),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(16.w),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Create Folder',
+                            style: TextStyle(
+                              fontSize: 24.sp,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(height: 32.h),
+                          LabeledTextFormField(
+                            label: 'Enter Folder Name',
+                            hint: '',
+                            controller: _folderNameController,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter Folder Name';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 32.h),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 0.h, horizontal: 16.w),
+                            child: CustomButton(
+                              text: 'Save',
+                              onPressed: () async {
+                                if (_formKey.currentState?.validate() ?? false) {
+                                  print(_folderNameController.text);
+                                  final response = await patientFolderRepository.createFolder(_folderNameController.text);
+                                  setState(() {});
+                                  if (context.mounted) {
+                                    Navigator.of(context).pop();
+                                  }
+                                }
+                              },
+                            ),
+                          ),
+                          SizedBox(height: 8.h),
+                          // Cancel Button
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Close the dialog
+                            },
+                            child: Text(
+                              'Cancel',
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                color: AppColors
+                                    .primary, // Adjust the color as needed
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+          onDelete: () {
 
+          },
+        ),
+
+        // ElevatedButton.icon(
+        //   onPressed: () {
+        //     print('Working...');
+        //
+        //   },
+        //   icon: Icon(Icons.add, size: 16.sp, color: Colors.white),
+        //   label: Text(
+        //     "New",
+        //     style: TextStyle(fontSize: 14.sp, color: Colors.white),
+        //   ),
+        //   style: ElevatedButton.styleFrom(
+        //     backgroundColor: AppColors.primary,
+        //     shape: RoundedRectangleBorder(
+        //       borderRadius: BorderRadius.circular(20.r),
+        //     ),
+        //     padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+        //   ),
+        // ),
+      ],
+    );
+  }
 }
 
-Widget _headerSection(BuildContext context) {
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+
+Widget _buildPopoverContent(context,
+    {required Future<void> Function() onCreateSuccess}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    mainAxisSize: MainAxisSize.min,
     children: [
-      Expanded(
-        flex: 2,
-        child: Text(
-          "My Files",
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: AppColors.deepBlue,
-                fontWeight: FontWeight.bold,
-              ),
-        ),
-      ),
-      ElevatedButton.icon(
-        onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => TestReportUploadScreen()));
+      _buildPopoverOption(
+        text: 'Create',
+        icon: Icons.create_new_folder,
+        onTap: () {
+
         },
-        icon: Icon(Icons.add, size: 16.sp, color: Colors.white),
-        label: Text(
-          "New",
-          style: TextStyle(fontSize: 14.sp, color: Colors.white),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.r),
-          ),
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-        ),
+      ),
+      Divider(color: Colors.grey),
+      _buildPopoverOption(
+        text: 'Upload',
+        icon: Icons.cloud_upload,
+        onTap: () {
+          print('Upload tapped');
+        },
+        color: Colors.redAccent,
       ),
     ],
   );
 }
 
-
+Widget _buildPopoverOption({
+  required String text,
+  required IconData icon,
+  required VoidCallback onTap,
+  Color? color,
+}) {
+  return ListTile(
+    leading: Icon(icon, color: color ?? Colors.black),
+    title: Text(
+      text,
+      style: TextStyle(color: color ?? Colors.black),
+    ),
+    onTap: onTap,
+  );
+}

@@ -38,6 +38,7 @@ dependencies:
   another_flushbar: ^1.12.30
   http_parser: ^4.0.0
   image_picker: ^1.1.2
+  popover: ^0.3.1
 
 
 

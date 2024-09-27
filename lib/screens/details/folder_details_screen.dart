@@ -6,12 +6,9 @@ import 'package:flutter_svg/svg.dart';
 import 'package:nirvar/models/patient_files/patient_file.dart';
 import 'package:nirvar/models/patient_folder/patient_folder.dart';
 import 'package:nirvar/repository/patient_file/patient_file_repository.dart';
-import 'package:nirvar/screens/auth/change_password.dart';
 import 'package:nirvar/screens/details/file_details_screen.dart';
 import 'package:nirvar/screens/utils/file_type.dart';
-import 'package:nirvar/screens/utils/helper.dart';
-
-
+import 'package:nirvar/screens/widgets/upload_dialog.dart';
 import '../../core/resources/api_exception.dart';
 import '../../injection_container.dart';
 import '../notification/notification_screen.dart';
@@ -532,7 +529,9 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
         ),
         ElevatedButton.icon(
           onPressed: () {
-            Navigator.pop(context);
+            showDialog(context: context, builder: (context){
+              return UploadDialog();
+            });
           },
           icon: Icon(Icons.add, size: 16.sp, color: Colors.white),
           label: Text(

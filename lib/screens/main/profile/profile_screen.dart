@@ -10,8 +10,6 @@ import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/utils/helper.dart';
 import 'package:nirvar/screens/widgets/custom_button.dart';
-
-import '../../../injection_container.dart';
 import 'account_settings_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -236,14 +234,12 @@ void showLogoutDialog(context, {required Future<void> Function() onSuccess, requ
           padding: EdgeInsets.all(16.w),
           child: BlocConsumer<LogOutBloc, LogoutState>(
             listener: (context, state) {
-              if (state.status == LogoutStatus.success && context.mounted) {
-                Navigator.of(context).pop();
-
-                Future.delayed(Duration(milliseconds: 100), () {
-                  if (context.mounted) {
-                    onSuccess();
-                  }
-                });
+              if (state.status == LogoutStatus.success) {
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SignInScreen()),
+                        (route) => false);
               } else if (state.status == LogoutStatus.failure) {
                 onFailure(state.errorMessage);
                 Navigator.of(context).pop();

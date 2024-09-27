@@ -69,7 +69,10 @@ class FolderApiService {
 
   Future<Either<ApiException, String>> createFolder(String folderName) async {
     try {
-      final response = await _dio.post(patientFolderCreate);
+      final response = await _dio.post(
+        patientFolderCreate,
+        data: {"name": folderName},
+      );
       print('REsponse : $response');
       print('ResponseData : ${response.data}');
 
@@ -92,7 +95,8 @@ class FolderApiService {
     }
   }
 
-  Future<Either<ApiException, String>> updateFolder(int folderId, String folderName) async {
+  Future<Either<ApiException, String>> updateFolder(
+      int folderId, String folderName) async {
     try {
       final response = await _dio.post(
         patientFolderUpdate,

@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/widgets/custom_button.dart';
@@ -19,6 +22,20 @@ class TestReportUploadScreen extends StatefulWidget {
 class _TestReportUploadScreenState extends State<TestReportUploadScreen> {
 
   String? _selectedCategory;
+
+  File? _selectedFile;
+
+  Future<void> _pickFile() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      setState(() {
+        _selectedFile = File(image.path); // Set the selected file
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +109,7 @@ class _TestReportUploadScreenState extends State<TestReportUploadScreen> {
                         SizedBox(height: 20.h),
                         ElevatedButton(
                           onPressed: () {
-                            // Handle file selection
+                            _pickFile();
                           },
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.black,
