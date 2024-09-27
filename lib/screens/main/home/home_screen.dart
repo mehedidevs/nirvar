@@ -167,6 +167,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       setState(() {});
                       print("API CALLED AGAIN");
                   },
+                    onComingBack: ()async{
+                      setState(() {
+
+                    });},
                   );
                 }).toList(),
               );

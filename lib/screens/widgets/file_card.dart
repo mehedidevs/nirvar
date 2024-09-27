@@ -19,9 +19,10 @@ class FileCard extends StatefulWidget {
   final PatientFolder patientFolder;
   final Future<void> Function() onUpdateSuccess;
   final Future<void> Function() onDeleteSuccess;
+  final Future<void> Function() onComingBack;
 
 
- const FileCard({super.key, required this.patientFolder, required this.onUpdateSuccess, required this.onDeleteSuccess});
+ const FileCard({super.key, required this.patientFolder, required this.onUpdateSuccess, required this.onDeleteSuccess, required this.onComingBack});
 
   @override
   State<FileCard> createState() => _FileCardState();
@@ -31,8 +32,12 @@ class _FileCardState extends State<FileCard> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => FolderDetailsScreen(folder: widget.patientFolder)));
+      onTap: () async{
+       final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => FolderDetailsScreen(folder: widget.patientFolder)));
+        if(result != null && result == true){
+          widget.onComingBack();
+        }
+
       },
       child: Container(
         padding: EdgeInsets.all(12.w),  // Responsive padding

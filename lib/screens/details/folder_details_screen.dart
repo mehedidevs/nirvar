@@ -48,54 +48,6 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
       length: 2,
       child: Scaffold(
         backgroundColor: AppColors.white,
-        appBar: AppBar(
-          backgroundColor: AppColors.white,
-          elevation: 0,
-          actions: [
-            GestureDetector(
-              onTap: () {
-                print('Search icon tapped');
-              },
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.w),
-                child: Icon(
-                  Icons.search,
-                  color: Colors.grey,
-                  size: 24.sp,
-                ),
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                    const NotificationScreen(hasNotification: true),
-                  ),
-                );
-
-                print('Notification icon tapped');
-              },
-              child: Stack(
-                children: [
-                  Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.w),
-                      child: SvgPicture.asset(
-                          AssetsPath.notificationWithBadgeSvg)),
-                  // Positioned(
-                  //   right: 4.w,
-                  //   top: 4.h,
-                  //   child: CircleAvatar(
-                  //     radius: 4.r,
-                  //     backgroundColor: Colors.teal, // Badge color
-                  //   ),
-                  // ),
-                ],
-              ),
-            ),
-          ],
-        ),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
@@ -104,6 +56,65 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () => Navigator.of(context).pop(true), // Pop with a boolean true
+                        child: const Icon(
+                          Icons.arrow_back_ios,
+                          color: Colors.black,
+                        ),
+                      ),
+
+                      Spacer(),
+
+                      GestureDetector(
+                        onTap: () {
+                          print('Search icon tapped');
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.w),
+                          child: Icon(
+                            Icons.search,
+                            color: Colors.grey,
+                            size: 24.sp,
+                          ),
+                        ),
+                      ),
+
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                              const NotificationScreen(hasNotification: true),
+                            ),
+                          );
+
+                          print('Notification icon tapped');
+                        },
+                        child: Stack(
+                          children: [
+                            Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 8.w),
+                                child: SvgPicture.asset(
+                                    AssetsPath.notificationWithBadgeSvg)),
+                            // Positioned(
+                            //   right: 4.w,
+                            //   top: 4.h,
+                            //   child: CircleAvatar(
+                            //     radius: 4.r,
+                            //     backgroundColor: Colors.teal, // Badge color
+                            //   ),
+                            // ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 16.h),
                   _headerSection(context,widget.folder.name ?? ''),
                   SizedBox(height: 16.h),
                   _tabBarSection(),
@@ -519,41 +530,22 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
             ),
           ),
         ),
-        Row(
-          children: [
-            // Scanner Button
-            CircleAvatar(
-              radius: 16.r,
-              backgroundColor: AppColors.primary,
-              child: Center(
-                child: SvgPicture.asset(
-                  AssetsPath.scannerSvg,
-                  width: 16.w,
-                  height: 16.h,
-                ),
-              ),
+        ElevatedButton.icon(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(Icons.add, size: 16.sp, color: Colors.white),
+          label: Text(
+            "Upload",
+            style: TextStyle(fontSize: 14.sp, color: Colors.white),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.r),
             ),
-            SizedBox(width: 10.w), // Add some spacing between the buttons
-
-            // Upload Button
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: Icon(Icons.add, size: 16.sp, color: Colors.white),
-              label: Text(
-                "Upload",
-                style: TextStyle(fontSize: 14.sp, color: Colors.white),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.r),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-              ),
-            ),
-          ],
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+          ),
         ),
       ],
     );

@@ -135,7 +135,9 @@ class _MyFilesState extends State<MyFiles> {
                     setState(() {
 
                     });
-                   },);
+                   },
+                     onComingBack: ()async{setState(() {});},
+                  );
                 }).toList(),
               );
             },
