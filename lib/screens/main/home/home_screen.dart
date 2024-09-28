@@ -9,11 +9,13 @@ import 'package:nirvar/repository/blood_pressure/blood_pressure_repository.dart'
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/widgets/file_card.dart';
+import 'package:path/path.dart';
 import '../../../core/resources/api_exception.dart';
 import '../../../injection_container.dart';
 import '../../../models/patient_folder/patient_folder.dart';
 import '../../../repository/patient_folder/patient_folder_repository.dart';
 import '../../notification/notification_screen.dart';
+import '../../utils/blood_pressure_utils.dart';
 import '../../widgets/health_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -25,8 +27,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final patientFolderRepository = sl<PatientFolderRepository>();
-  final patientBloodPressureRepository = sl<BloodPressureRepository>();
-  List<PatientBloodPressure> bloodPressureList = [];
   int _selectedIndex = 0;
 
   void _onTabSelected(int index) {
@@ -319,31 +319,115 @@ Widget _healthStatus() {
       children: [
         Expanded(
           flex: 1,
-          child: HealthCard(
-            value: '80/120',
-            average: 'Last 7 days Avg',
-            label: 'Blood Pressure',
-            onPressed: () {
-              // Define the action when the button is pressed
-            },
-          ),
+          child: _getBloodPressureAverage(),
         ),
         SizedBox(width: 8.w),
         Expanded(
           flex: 1,
-          child: HealthCard(
-            value: '11/10',
-            average: 'Last 7 days Avg',
-            label: 'Blood Glucose',
-            onPressed: () {
-              // Define the action when the button is pressed
-            },
-          ),
+          child: _getBloodGlucoseAverage(),
         ),
       ],
     ),
   );
 }
+
+Widget _getBloodGlucoseAverage() {
+
+  return HealthCard(
+          value: '11/10',
+          average: 'Last 7 days Avg',
+          label: 'Blood Glucose',
+          onPressed: () {
+            // Define the action when the button is pressed
+          },
+        );
+}
+
+Widget _getBloodPressureAverage() {
+
+  final patientBloodPressureRepository = sl<BloodPressureRepository>();
+  List<PatientBloodPressure> bloodPressureList = [];
+  String? systole;
+  String? diastole;
+
+  return StreamBuilder<dartz.Either<ApiException,List<PatientBloodPressure>>>(
+      stream: patientBloodPressureRepository.getBloodPressureOfLast7Days(),
+      builder: (context,snapshot){
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: SpinKitChasingDots(
+              color: AppColors.primary, size: 50.sp)); // Show a loading indicator while waiting for data
+        }
+        if (!snapshot.hasData) {
+          return HealthCard(
+            value: 'N/A',
+            average: 'Last 7 days Avg',
+            label: 'Blood Pressure',
+            onPressed: () {},
+          );
+        }
+
+        return snapshot.data!.fold(
+              (error){
+          return HealthCard(
+            value: 'N/A',
+            average: 'Last 7 days Avg',
+            label: 'Blood Pressure',
+            onPressed: () {
+              // Define the action when the button is pressed
+            },
+          );
+        },
+              (success){
+          bloodPressureList = success;
+          if(bloodPressureList.isEmpty){
+            return HealthCard(
+              value: 'N/A',
+              average: 'Last 7 days Avg',
+              label: 'Blood Pressure',
+              onPressed: () {
+                // Define the action when the button is pressed
+              },
+            );
+          }else{
+            final average = BloodPressureUtils.calculateAverage(bloodPressureList);
+            systole = average['systolic']?.toStringAsFixed(0);
+            diastole  = average['diastolic']?.toStringAsFixed(0);
+            return HealthCard(
+              value: '$systole/$diastole',
+              average: 'Last 7 days Avg',
+              label: 'Blood Pressure',
+              onPressed: () {
+                // Define the action when the button is pressed
+              },
+            );
+          }
+        },);
+
+        },
+  );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

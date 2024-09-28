@@ -2,6 +2,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:nirvar/core/resources/api_exception.dart';
+import 'package:nirvar/models/patient_glucose/patient_glucose.dart';
 
 import '../../../core/constants/constants.dart';
 import '../../preference/token_storage.dart';
@@ -62,5 +63,62 @@ class DiabetesApiService {
       return Left(ApiException(e.toString()));
     }
   }
+
+  Stream<Either<ApiException,List<PatientGlucose>>> getBloodGlucoseOfLast7Days() async*{
+    try {
+      final response = await _dio.get(patientDiabetesLastSevenDays);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = response.data;
+
+        if (responseData['status'] == 1 && responseData['message'] == 'success') {
+          final List<dynamic> bloodGlucoseJson = responseData['data'] ?? [];
+
+          if (bloodGlucoseJson.isNotEmpty) {
+            final List<PatientGlucose> bloodGlucoseList = bloodGlucoseJson
+                .map((json) => PatientGlucose.fromJson(json as Map<String, dynamic>))
+                .toList();
+
+            yield Right(bloodGlucoseList);
+          } else {
+            yield Left(ApiException('No blood pressure data found.'));
+          }
+        } else {
+          yield Left(ApiException(responseData['message']));
+        }
+      } else {
+        yield Left(ApiException.fromStatusCode(response.statusCode ?? 0));
+      }
+    } on DioException catch (e) {
+      yield Left(ApiException.fromDioError(e));
+    } catch (e) {
+      yield Left(ApiException(e.toString()));
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
