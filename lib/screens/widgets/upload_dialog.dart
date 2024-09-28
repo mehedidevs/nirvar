@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nirvar/models/patient_folder/patient_folder.dart';
 import 'package:nirvar/screens/main/my_files/upload/prescription_upload_screen.dart';
 import 'package:nirvar/screens/main/my_files/upload/test_report_upload_screen.dart';
 
@@ -6,6 +7,13 @@ import '../utils/app_colors.dart';
 import 'custom_button.dart';
 
 class UploadDialog extends StatefulWidget {
+
+  final PatientFolder folder;
+
+  const UploadDialog({super.key, required this.folder});
+
+
+
   @override
   _UploadDialogState createState() => _UploadDialogState();
 }
@@ -71,9 +79,9 @@ class _UploadDialogState extends State<UploadDialog> {
                 text: 'Proceed',
                 onPressed: () {
                   if (isTestReportSelected) {
-                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TestReportUploadScreen()));
+                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TestReportUploadScreen(folderId: widget.folder.folderId, folderName: widget.folder.name ?? "",)));
                   } else {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => PrescriptionUploadScreen()));
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => PrescriptionUploadScreen(folderId: widget.folder.folderId,)));
                   }
                 },
               ),

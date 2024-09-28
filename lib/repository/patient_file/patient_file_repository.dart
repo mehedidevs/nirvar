@@ -1,4 +1,6 @@
 
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
 
 import '../../core/resources/api_exception.dart';
@@ -13,4 +15,11 @@ abstract class PatientFileRepository {
   Future<Either<ApiException,String>> deleteFile(int fileId);
 
   Future<Either<ApiException,String>> renameFile(int folderId,int fileId,String fileType,String fileName);
+
+  Future<Either<ApiException,String>> uploadFile({
+    required String folderId,
+    required File file,
+    required String type,
+    required String fileName,
+  });
 }

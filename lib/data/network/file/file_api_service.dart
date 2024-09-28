@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:nirvar/core/resources/api_exception.dart';
@@ -170,6 +172,45 @@ class FileApiService{
   }
 
 
+  Future<Either<ApiException,String>> uploadFile({
+    required String folderId,
+    required File file,
+    required String type,
+    required String fileName,
+  }) async {
+    try{
+      FormData formData = FormData.fromMap({
+        'folder_id': folderId,
+        'file': await MultipartFile.fromFile(file.path, filename: fileName),
+        'type': type,
+        'file_name': fileName,
+      });
+
+      final response = await _dio.post(patientFileUpload, data: formData);
+
+      print('REsponse : $response');
+      print('ResponseData : ${response.data}');
+
+      if(response.statusCode ==200){
+        final Map<String, dynamic> responseData = response.data;
+        if (responseData['status'] == 1){
+          String data = responseData['message'];
+          return Right(data);
+        }else{
+          return Left(ApiException(responseData['message']));
+        }
+      }else if(response.statusCode == 403){
+        return Left(ApiException('File Size is too large'));
+      } else{
+        return Left(ApiException('Something Went Wrong'));
+      }
+    }on DioException catch (e) {
+      return Left(ApiException.fromDioError(e));
+    } catch (e) {
+      return Left(ApiException(e.toString()));
+    }
+
+  }
 
 
 

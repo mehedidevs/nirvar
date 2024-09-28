@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
 import 'package:nirvar/core/resources/api_exception.dart';
 import 'package:nirvar/data/network/file/file_api_service.dart';
@@ -28,6 +30,11 @@ class PatientFileRepositoryImpl extends PatientFileRepository{
   @override
   Future<Either<ApiException, String>> renameFile(int folderId, int fileId, String fileType, String fileName) {
    return _fileApiService.renameFile(folderId, fileId, fileType, fileName);
+  }
+
+  @override
+  Future<Either<ApiException, String>> uploadFile({required String folderId, required File file, required String type, required String fileName}) {
+    return _fileApiService.uploadFile(folderId: folderId, file: file, type: type, fileName: fileName);
   }
 
 }

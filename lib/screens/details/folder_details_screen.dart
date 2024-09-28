@@ -53,64 +53,7 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      GestureDetector(
-                        onTap: () => Navigator.of(context).pop(true), // Pop with a boolean true
-                        child: const Icon(
-                          Icons.arrow_back_ios,
-                          color: Colors.black,
-                        ),
-                      ),
-
-                      Spacer(),
-
-                      GestureDetector(
-                        onTap: () {
-                          print('Search icon tapped');
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.w),
-                          child: Icon(
-                            Icons.search,
-                            color: Colors.grey,
-                            size: 24.sp,
-                          ),
-                        ),
-                      ),
-
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                              const NotificationScreen(hasNotification: true),
-                            ),
-                          );
-
-                          print('Notification icon tapped');
-                        },
-                        child: Stack(
-                          children: [
-                            Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 8.w),
-                                child: SvgPicture.asset(
-                                    AssetsPath.notificationWithBadgeSvg)),
-                            // Positioned(
-                            //   right: 4.w,
-                            //   top: 4.h,
-                            //   child: CircleAvatar(
-                            //     radius: 4.r,
-                            //     backgroundColor: Colors.teal, // Badge color
-                            //   ),
-                            // ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                  _appBarSection(context),
                   SizedBox(height: 16.h),
                   _headerSection(context,widget.folder.name ?? ''),
                   SizedBox(height: 16.h),
@@ -125,6 +68,67 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
         ),
       ),
     );
+  }
+
+  Widget _appBarSection(BuildContext context) {
+    return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.of(context).pop(true), // Pop with a boolean true
+                      child: const Icon(
+                        Icons.arrow_back_ios,
+                        color: Colors.black,
+                      ),
+                    ),
+
+                    Spacer(),
+
+                    GestureDetector(
+                      onTap: () {
+                        print('Search icon tapped');
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.w),
+                        child: Icon(
+                          Icons.search,
+                          color: Colors.grey,
+                          size: 24.sp,
+                        ),
+                      ),
+                    ),
+
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                            const NotificationScreen(hasNotification: true),
+                          ),
+                        );
+
+                        print('Notification icon tapped');
+                      },
+                      child: Stack(
+                        children: [
+                          Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 8.w),
+                              child: SvgPicture.asset(
+                                  AssetsPath.notificationWithBadgeSvg)),
+                          // Positioned(
+                          //   right: 4.w,
+                          //   top: 4.h,
+                          //   child: CircleAvatar(
+                          //     radius: 4.r,
+                          //     backgroundColor: Colors.teal, // Badge color
+                          //   ),
+                          // ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
   }
 
   Widget _tabBarSection() {
@@ -277,8 +281,13 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
        required String fileType,
      }) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ReportDetailsScreen(file: file,)));
+      onTap: () async {
+      final result = await  Navigator.push(context, MaterialPageRoute(builder: (context) => ReportDetailsScreen(file: file,)));
+      if(result!=null && result == true){
+        setState(() {
+
+        });
+      }
       },
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 8.h, horizontal: 8.w),
@@ -530,7 +539,7 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
         ElevatedButton.icon(
           onPressed: () {
             showDialog(context: context, builder: (context){
-              return UploadDialog();
+              return UploadDialog(folder: widget.folder);
             });
           },
           icon: Icon(Icons.add, size: 16.sp, color: Colors.white),

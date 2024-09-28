@@ -5,14 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'package:nirvar/screens/utils/helper.dart';
+import '../../../../injection_container.dart';
+import '../../../../repository/patient_file/patient_file_repository.dart';
 import '../../../notification/notification_screen.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/assets_path.dart';
+import '../../../utils/file_type.dart';
 import '../../../widgets/custom_button.dart';
+import 'package:path/path.dart' as path;
+import '../../../widgets/disabled_button.dart';
 
 class PrescriptionUploadScreen extends StatefulWidget {
-  const PrescriptionUploadScreen({super.key});
+  final  int folderId;
+  const PrescriptionUploadScreen({super.key, required this.folderId});
 
   @override
   State<PrescriptionUploadScreen> createState() => _PrescriptionUploadScreenState();
@@ -21,6 +27,8 @@ class PrescriptionUploadScreen extends StatefulWidget {
 class _PrescriptionUploadScreenState extends State<PrescriptionUploadScreen> {
 
   File? _selectedFile;
+  final _repository = sl<PatientFileRepository>();
+  String? _fileName;
 
   Future<void> _pickFile(ImageSource source) async {
     final ImagePicker _picker = ImagePicker();
@@ -28,6 +36,7 @@ class _PrescriptionUploadScreenState extends State<PrescriptionUploadScreen> {
     if (pickedFile != null) {
       setState(() {
         _selectedFile = File(pickedFile.path);
+        _fileName = path.basename(pickedFile.path);
       });
     }
   }
@@ -165,11 +174,76 @@ class _PrescriptionUploadScreenState extends State<PrescriptionUploadScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: ScreenUtil().screenHeight *.2.h),
-                // Upload button
-                Center(
-                  child: CustomButton(text: 'Upload', onPressed: (){}),
-                ),
+          _selectedFile != null
+              ? Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: 32.w, vertical: 16.h),
+            child: Center(
+              child: CustomButton(
+                text: 'Upload',
+                onPressed: () async {
+                  final response =   await _repository.uploadFile(
+                    folderId: widget.folderId.toString(),
+                    file: _selectedFile!,
+                    type: FileType.prescription.value,
+                    fileName: _fileName!,
+                  );
+                  response.fold((failure){
+                    context.flushBarErrorMessage(message: failure.message);
+                  }, (success){
+                    context.flushBarSuccessMessage(message: success);
+                    setState(() {
+                      _fileName = null;
+                      _selectedFile = null;});
+                  },);
+                },
+              ),
+            ),
+          )
+              : Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: 16.w, vertical: 4.h),
+            child:
+            Center(child: DisabledButton(buttonText: 'Upload')),
+          ),
+
+          SizedBox(height: ScreenUtil().screenHeight * .02.h),
+          // Upload button
+          _selectedFile != null
+              ? ListTile(
+            contentPadding: EdgeInsets.symmetric(
+                horizontal: 10.w, vertical: 4.h),
+            leading: ClipRRect(
+              borderRadius: BorderRadius.circular(12.r),
+              child: Image.file(
+                _selectedFile!,
+                height: 50.h,
+                width: 50.w,
+                fit: BoxFit.cover,
+              ),
+            ),
+            title: Text(
+              _fileName ?? '',
+              style: TextStyle(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF2C3E50),
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.fade,
+            ),
+
+            trailing: const Text(
+              'Rename',
+              style: TextStyle(color: AppColors.red),
+            ),
+            // trailing: Icon(
+            //   Icons.more_vert,
+            //   color: Colors.black38,
+            // ),
+          )
+              : const SizedBox(),
+
               ],
             ),
           ),

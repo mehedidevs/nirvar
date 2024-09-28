@@ -113,7 +113,7 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
         text: 'Proceed',
         onPressed: (){
           if( selectedOption == 'Test Reports'){
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const TestReportUploadScreen()));
+            // Navigator.push(context, MaterialPageRoute(builder: (context) =>  TestReportUploadScreen(folderId: 14,)));
           } else if( selectedOption == 'Prescription'){
 
           }
