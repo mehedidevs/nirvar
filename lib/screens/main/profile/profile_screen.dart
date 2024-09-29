@@ -10,6 +10,8 @@ import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/utils/helper.dart';
 import 'package:nirvar/screens/widgets/custom_button.dart';
+import '../../../injection_container.dart';
+import '../../../repository/authentication/auth_repository.dart';
 import 'account_settings_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -81,45 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     top: ScreenUtil().screenHeight * .1.h,
                     left: 0,
                     right: 0,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Stack(
-                          children: [
-                            CircleAvatar(
-                              radius: 50.r,
-                              backgroundColor: AppColors.white,
-                              child: Icon(Icons.person, size: 60.sp),
-                            ),
-                            // Positioned Camera Icon Button
-                            Positioned(
-                              bottom: 2,
-                              right: 0,
-                              child: SvgPicture.asset(
-                                AssetsPath.cameraSvg,
-                                height: 25.h,
-                                width: 25.w,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 12.h),
-                        Text(
-                          'Esmail Khalifa',
-                          style: TextStyle(
-                            fontSize: 20.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          'esmailkhalifa010@gmail.com',
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            color: Colors.white.withOpacity(0.7),
-                          ),
-                        ),
-                      ],
-                    ),
+                    child: _getUserInformation(),
                   ),
                 ],
               ),
@@ -219,6 +183,140 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
     );
+  }
+
+  Widget _getUserInformation() {
+    final authRepository = sl<AuthRepository>();
+    return FutureBuilder(
+        future: authRepository.getUserProfile(),
+        builder: (context,snapshot){
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: SpinKitChasingDots(
+                color: AppColors.primary, size: 50.sp)); // Show a loading indicator while waiting for data
+          }
+
+          if (!snapshot.hasData) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 50.r,
+                      backgroundColor: AppColors.white,
+                      child: Icon(Icons.person, size: 60.sp),
+                    ),
+                    // Positioned Camera Icon Button
+                    Positioned(
+                      bottom: 2,
+                      right: 0,
+                      child: SvgPicture.asset(
+                        AssetsPath.cameraSvg,
+                        height: 25.h,
+                        width: 25.w,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 12.h),
+                Text(
+                  'N/A',
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            );
+          }
+
+          return snapshot.data!.fold(
+                  (error){
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Stack(
+                          children: [
+                            CircleAvatar(
+                              radius: 50.r,
+                              backgroundColor: AppColors.white,
+                              child: Icon(Icons.person, size: 60.sp),
+                            ),
+                            // Positioned Camera Icon Button
+                            Positioned(
+                              bottom: 2,
+                              right: 0,
+                              child: SvgPicture.asset(
+                                AssetsPath.cameraSvg,
+                                height: 25.h,
+                                width: 25.w,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 12.h),
+                        Text(
+                          error.message,
+                          style: TextStyle(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    );
+          },
+                  (success){
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Stack(
+                          children: [
+
+                            (success.photo == null || success.photo!.isEmpty) ? CircleAvatar(
+                              radius: 50.r,
+                              backgroundColor: AppColors.white,
+                              child: Icon(Icons.person, size: 60.sp),
+                            ): CircleAvatar(
+                              radius: 50.r,
+                              backgroundColor: AppColors.white,
+                              child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(50.r),
+                                  child: Image.network(success.photo ?? "",fit: BoxFit.cover)),
+                            ),
+                            // Positioned Camera Icon Button
+                            Positioned(
+                              bottom: 2,
+                              right: 0,
+                              child: SvgPicture.asset(
+                                AssetsPath.cameraSvg,
+                                height: 25.h,
+                                width: 25.w,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 12.h),
+                        Text(
+                          success.name ?? "N/A",
+                          style: TextStyle(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          success.email ?? 'N/A',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Colors.white.withOpacity(0.7),
+                          ),
+                        ),
+                      ],
+                    );
+                  });
+
+
+
+        },);
   }
 }
 

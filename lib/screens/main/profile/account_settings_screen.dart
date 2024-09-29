@@ -8,6 +8,7 @@ import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/helper.dart';
 import 'package:nirvar/screens/widgets/labeled_text_form_field.dart';
 import '../../../injection_container.dart';
+import '../../../repository/authentication/auth_repository.dart';
 import '../../utils/assets_path.dart';
 import '../../widgets/custom_button.dart';
 import '../main_screen.dart';
@@ -96,29 +97,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               top: ScreenUtil().screenHeight * .1.h,
               left: 0,
               right: 0,
-              child: Column(
-                children: [
-                  Stack(
-                    children: [
-                      CircleAvatar(
-                        radius: 50.r,
-                        backgroundColor: AppColors.white,
-                        child: Icon(Icons.person, size: 60.sp),
-                      ),
-                      // Positioned Camera Icon Button
-                      Positioned(
-                        bottom: 2,
-                        right: 0,
-                        child: SvgPicture.asset(
-                          AssetsPath.cameraSvg,
-                          height: 25.h,
-                          width: 25.w,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+              child: _getUserProfilePicture(),
             ),
             // Profile Card with Form Change Password API
 
@@ -293,6 +272,130 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
         ),
       ),
     );
+  }
+
+  Widget _getUserProfilePicture() {
+
+    final authRepository = sl<AuthRepository>();
+
+    return FutureBuilder(
+      future: authRepository.getUserProfile(),
+      builder: (context,snapshot){
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: SpinKitChasingDots(
+              color: AppColors.primary, size: 50.sp)); // Show a loading indicator while waiting for data
+        }
+
+        if (!snapshot.hasData) {
+          return Column(
+            children: [
+              Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 50.r,
+                    backgroundColor: AppColors.white,
+                    child: Icon(Icons.person, size: 60.sp),
+                  ),
+                  // Positioned Camera Icon Button
+                  Positioned(
+                    bottom: 2,
+                    right: 0,
+                    child: SvgPicture.asset(
+                      AssetsPath.cameraSvg,
+                      height: 25.h,
+                      width: 25.w,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        }
+
+
+        return snapshot.data!.fold((error){
+          return Column(
+            children: [
+              Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 50.r,
+                    backgroundColor: AppColors.white,
+                    child: Icon(Icons.person, size: 60.sp),
+                  ),
+                  // Positioned Camera Icon Button
+                  Positioned(
+                    bottom: 2,
+                    right: 0,
+                    child: SvgPicture.asset(
+                      AssetsPath.cameraSvg,
+                      height: 25.h,
+                      width: 25.w,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        }, (success){
+          if(success.photo == null || success.photo!.isEmpty){
+            return Column(
+              children: [
+                Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 50.r,
+                      backgroundColor: AppColors.white,
+                      child: Icon(Icons.person, size: 60.sp),
+                    ),
+                    // Positioned Camera Icon Button
+                    Positioned(
+                      bottom: 2,
+                      right: 0,
+                      child: SvgPicture.asset(
+                        AssetsPath.cameraSvg,
+                        height: 25.h,
+                        width: 25.w,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            );
+          }else{
+            return Column(
+              children: [
+                Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 50.r,
+                      backgroundColor: AppColors.white,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(50.r),
+                          child: Image.network(success.photo ?? "",fit: BoxFit.cover)),
+                    ),
+                    // Positioned Camera Icon Button
+                    Positioned(
+                      bottom: 2,
+                      right: 0,
+                      child: SvgPicture.asset(
+                        AssetsPath.cameraSvg,
+                        height: 25.h,
+                        width: 25.w,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            );
+          }
+        });
+      },);
+
+
+
+
+
   }
 
   @override

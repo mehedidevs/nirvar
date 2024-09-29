@@ -5,9 +5,13 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:nirvar/models/patient_blood_pressure/patient_blood_pressure.dart';
+import 'package:nirvar/models/patient_glucose/patient_glucose.dart';
+import 'package:nirvar/repository/authentication/auth_repository.dart';
 import 'package:nirvar/repository/blood_pressure/blood_pressure_repository.dart';
+import 'package:nirvar/repository/diabetes/diabetes_repository.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
+import 'package:nirvar/screens/utils/blood_sugar_utils.dart';
 import 'package:nirvar/screens/widgets/file_card.dart';
 import 'package:path/path.dart';
 import '../../../core/resources/api_exception.dart';
@@ -260,21 +264,7 @@ class _HomeScreenState extends State<HomeScreen> {
 Widget _headerSection(BuildContext context) {
   return Row(
     children: [
-      Container(
-        padding: EdgeInsets.all(4.w), // Border width
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: AppColors.primary, // Border color
-            width: 4.w, // Border thickness
-          ),
-        ),
-        child: CircleAvatar(
-          radius: 25.r, // Adjust the radius as needed
-          backgroundColor: Colors.transparent,
-          child: Icon(Icons.person,size: 25.r,),
-        ),
-      ),
+      _getUserProfilePicture(),
       const Spacer(),
       IconButton(
         onPressed: () {
@@ -289,6 +279,95 @@ Widget _headerSection(BuildContext context) {
       )
     ],
   );
+}
+
+Widget _getUserProfilePicture() {
+
+  //Future<Either<ApiException, UserProfile>> getUserProfile();
+
+  final authRepository = sl<AuthRepository>();
+
+
+  return FutureBuilder(future: authRepository.getUserProfile(),
+      builder: (context,snapshot){
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: SpinKitChasingDots(
+              color: AppColors.primary, size: 50.sp)); // Show a loading indicator while waiting for data
+        }
+
+        if (!snapshot.hasData) {
+          return Container(
+            padding: EdgeInsets.all(4.w), // Border width
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: AppColors.primary, // Border color
+                width: 4.w, // Border thickness
+              ),
+            ),
+            child: CircleAvatar(
+              radius: 25.r, // Adjust the radius as needed
+              backgroundColor: Colors.transparent,
+              child: Icon(Icons.person,size: 25.r,),
+            ),
+          );
+        }
+
+
+        return snapshot.data!.fold((error){
+          return Container(
+            padding: EdgeInsets.all(4.w), // Border width
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: AppColors.primary, // Border color
+                width: 4.w, // Border thickness
+              ),
+            ),
+            child: CircleAvatar(
+              radius: 25.r, // Adjust the radius as needed
+              backgroundColor: Colors.transparent,
+              child: Icon(Icons.person,size: 25.r,),
+            ),
+          );
+        }, (success){
+          if(success.photo == null || success.photo!.isEmpty){
+            return Container(
+              padding: EdgeInsets.all(4.w), // Border width
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppColors.primary, // Border color
+                  width: 4.w, // Border thickness
+                ),
+              ),
+              child: CircleAvatar(
+                radius: 25.r, // Adjust the radius as needed
+                backgroundColor: Colors.transparent,
+                child: Icon(Icons.person,size: 25.r,),
+              ),
+            );
+          }else{
+            return Container(
+              padding: EdgeInsets.all(4.w), // Border width
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppColors.primary, // Border color
+                  width: 4.w, // Border thickness
+                ),
+              ),
+              child:  CircleAvatar(
+                radius: 25.r,
+                backgroundColor: AppColors.white,
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(25.r),
+                    child: Image.network(success.photo ?? "",fit: BoxFit.cover)),
+              ),
+            );
+          }
+        });
+      },);
 }
 
 Widget _welcomeText(BuildContext context) {
@@ -333,14 +412,66 @@ Widget _healthStatus() {
 
 Widget _getBloodGlucoseAverage() {
 
-  return HealthCard(
-          value: '11/10',
+  final patientGlucoseRepository = sl<DiabetesRepository>();
+  List<PatientGlucose> glucoseList = [];
+  String? glucoseLevel;
+
+  return StreamBuilder(
+    stream: patientGlucoseRepository.getBloodGlucoseOfLast7Days(),
+    builder: (context,snapshot){
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return Center(child: SpinKitChasingDots(
+            color: AppColors.primary, size: 50.sp)); // Show a loading indicator while waiting for data
+      }
+      if (!snapshot.hasData) {
+        return HealthCard(
+          value: 'N/A',
           average: 'Last 7 days Avg',
           label: 'Blood Glucose',
           onPressed: () {
-            // Define the action when the button is pressed
+
           },
         );
+
+      }
+
+      return snapshot.data!.fold((error){
+        return HealthCard(
+          value: 'N/A',
+          average: 'Last 7 days Avg',
+          label: 'Blood Glucose',
+          onPressed: () {
+
+          },
+        );
+      }, (success){
+         glucoseList = success;
+
+         if(glucoseList.isEmpty){
+           return HealthCard(
+             value: 'N/A',
+             average: 'Last 7 days Avg',
+             label: 'Blood Glucose',
+             onPressed: () {
+
+             },
+           );
+         }else{
+           final average = BloodSugarUtils.calculateAverage(glucoseList);
+           glucoseLevel = average['sugar_level']?.toStringAsFixed(0);
+           return HealthCard(
+             value: '$glucoseLevel/10',
+             average: 'Last 7 days Avg',
+             label: 'Blood Glucose',
+             onPressed: () {
+
+             },
+           );
+         }
+
+      });
+
+  },);
 }
 
 Widget _getBloodPressureAverage() {
