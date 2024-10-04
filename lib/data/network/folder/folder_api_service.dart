@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:nirvar/core/resources/api_exception.dart';
 import 'package:nirvar/models/patient_folder/patient_folder.dart';
+import 'package:nirvar/models/selected_folder/selected_folder.dart';
 
 import '../../../core/constants/constants.dart';
 import '../../preference/token_storage.dart';
@@ -95,8 +96,7 @@ class FolderApiService {
     }
   }
 
-  Future<Either<ApiException, String>> updateFolder(
-      int folderId, String folderName) async {
+  Future<Either<ApiException, String>> updateFolder(int folderId, String folderName) async {
     try {
       final response = await _dio.post(
         patientFolderUpdate,
@@ -146,6 +146,55 @@ class FolderApiService {
         return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
       }
     } on DioException catch (e) {
+      return Left(ApiException.fromDioError(e));
+    } catch (e) {
+      return Left(ApiException(e.toString()));
+    }
+  }
+
+  Future<Either<ApiException,String>> shareFolder(int folderId) async{
+    try {
+      final response = await _dio.get(
+        '/patient/folders/$folderId/share',
+      );
+      print('REsponse : $response');
+      print('ResponseData : ${response.data}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = response.data;
+        if (responseData['status'] == 1) {
+          String url = responseData['url'];
+          return Right(url);
+        } else {
+          return Left(ApiException(responseData['message']));
+        }
+      } else {
+        return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
+      }
+    } on DioException catch (e) {
+      return Left(ApiException.fromDioError(e));
+    } catch (e) {
+      return Left(ApiException(e.toString()));
+    }
+  }
+
+  Future<Either<ApiException,List<SelectedFolder>>> selectFolder() async{
+    try{
+      final response = await _dio.get(patientFolderSelected);
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = response.data;
+        if (responseData['status'] == 1) {
+          final List<SelectedFolder> selectedFolders = (responseData['data'] as List)
+              .map((folderJson) => SelectedFolder.fromJson(folderJson))
+              .toList();
+          return Right(selectedFolders);
+        } else {
+          return Left(ApiException(responseData['message']));
+        }
+      } else {
+        return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
+      }
+    }on DioException catch (e) {
       return Left(ApiException.fromDioError(e));
     } catch (e) {
       return Left(ApiException(e.toString()));

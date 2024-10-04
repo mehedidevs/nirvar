@@ -34,9 +34,11 @@ const String patientFolders = '/patient/folders';
 const String patientFolderCreate = '/patient/folder/create';
 const String patientFolderUpdate = '/patient/folder/update';
 const String patientFolderDelete = '/patient/folder/delete/'; // //need to Id
+const String patientFolderSelected = '/patient/select/folders';
 
 //Files
-const String patientFiles = '/patient/files/'; // //need to Id
+const String patientFiles = '/patient/files/';
+const String patientLatestTwoFiles = '/patient/files/latest/two';
 const String patientFileUpload = '/patient/file/upload';
 const String patientFileDelete = '/patient/file/delete/';
 const String patientFileRename = '/patient/file/rename';

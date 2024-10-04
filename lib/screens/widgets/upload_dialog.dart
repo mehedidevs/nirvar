@@ -5,6 +5,7 @@ import 'package:nirvar/screens/main/my_files/upload/test_report_upload_screen.da
 
 import '../utils/app_colors.dart';
 import 'custom_button.dart';
+import 'disabled_button.dart';
 
 class UploadDialog extends StatefulWidget {
 
@@ -12,88 +13,64 @@ class UploadDialog extends StatefulWidget {
 
   const UploadDialog({super.key, required this.folder});
 
-
-
   @override
   _UploadDialogState createState() => _UploadDialogState();
 }
 
 class _UploadDialogState extends State<UploadDialog> {
-  bool isTestReportSelected = true; // Default to Test Reports
+  String? selectedOption;
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.0),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.cloud_upload, size: 40, color: AppColors.primary),
-            const SizedBox(height: 16),
-            const Text(
+            Icon(Icons.cloud_upload, size: 40, color: AppColors.primary),
+            SizedBox(height: 16),
+            Text(
               'Upload',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
-              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 32),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildSelectionButton(
-                    icon: Icons.insert_drive_file,
-                    label: 'Test Reports',
-                    isSelected: isTestReportSelected,
-                    onTap: () {
-                      setState(() {
-                        isTestReportSelected = true;
-                      });
-                    },
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _buildSelectionButton(
-                    icon: Icons.medical_services,
-                    label: 'Prescription',
-                    isSelected: !isTestReportSelected,
-                    onTap: () {
-                      setState(() {
-                        isTestReportSelected = false;
-                      });
-                    },
-                  ),
-                ),
-              ],
+            SizedBox(height: 16),
+            _buildOptionButton(
+              icon: Icons.description,
+              label: 'Test Reports',
+              selected: selectedOption == 'Test Reports',
+              onTap: () {
+                setState(() {
+                  selectedOption = 'Test Reports';
+                });
+              },
             ),
-            const SizedBox(height: 32),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
-              child: CustomButton(
-                text: 'Proceed',
-                onPressed: () {
-                  if (isTestReportSelected) {
-                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TestReportUploadScreen(folderId: widget.folder.folderId, folderName: widget.folder.name ?? "",)));
-                  } else {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => PrescriptionUploadScreen(folderId: widget.folder.folderId,)));
-                  }
-                },
-              ),
+            SizedBox(height: 12),
+            _buildOptionButton(
+              icon: Icons.medical_services,
+              label: 'Prescription',
+              selected: selectedOption == 'Prescription',
+              onTap: () {
+                setState(() {
+                  selectedOption = 'Prescription';
+                });
+              },
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 24),
+            _buildProceedButton(),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: const Text(
+              child: Text(
                 'Cancel',
-                style: TextStyle(fontSize: 14, color: Colors.blue),
+                style: TextStyle(color: Colors.teal),
               ),
             ),
           ],
@@ -102,42 +79,55 @@ class _UploadDialogState extends State<UploadDialog> {
     );
   }
 
-  // Helper method for building selection buttons
-  Widget _buildSelectionButton({
+  Widget _buildOptionButton({
     required IconData icon,
     required String label,
-    required bool isSelected,
+    required bool selected,
     required VoidCallback onTap,
   }) {
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(8),
+        padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         decoration: BoxDecoration(
-          border: Border.all(
-            color: isSelected ? Colors.blue : Colors.grey,
-          ),
           borderRadius: BorderRadius.circular(16),
-          color: isSelected ? Colors.blue.shade100 : Colors.white,
+          border: Border.all(
+            color: selected ? Colors.teal : Colors.grey[300]!,
+          ),
+          color: selected ? Colors.teal[50] : Colors.transparent,
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Row(
           children: [
-            Icon(icon, color: isSelected ? Colors.blue : Colors.grey),
-            const SizedBox(height: 8),
+            Icon(icon, color: selected ? Colors.teal : Colors.black),
+            SizedBox(width: 8),
             Text(
               label,
               style: TextStyle(
-                color: isSelected ? Colors.blue : Colors.grey,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                fontSize: 16,
+                color: selected ? Colors.teal : Colors.black,
               ),
             ),
-            if (isSelected)
-              const Icon(Icons.check_circle, color: Colors.blue, size: 16),
+            Spacer(),
+            if (selected)
+              Icon(Icons.check, color: Colors.teal),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildProceedButton() {
+    return selectedOption!=null
+        ? CustomButton(
+      text: 'Proceed',
+      onPressed: (){
+        if( selectedOption == 'Test Reports'){
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TestReportUploadScreen(folderId: widget.folder.folderId, folderName: widget.folder.name ?? "",)));
+        } else if( selectedOption == 'Prescription'){
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => PrescriptionUploadScreen(folderId: widget.folder.folderId,)));
+        }
+      },)
+        : const DisabledButton(buttonText: 'Proceed');
   }
 }
 

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:nirvar/models/blood_pressure_last_seven_days/blood_pressure_history_for_last_7_days.dart';
 import 'package:nirvar/models/patient_blood_pressure/patient_blood_pressure.dart';
 import 'package:nirvar/models/patient_glucose/patient_glucose.dart';
 import 'package:nirvar/repository/authentication/auth_repository.dart';
@@ -12,8 +13,8 @@ import 'package:nirvar/repository/diabetes/diabetes_repository.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/utils/blood_sugar_utils.dart';
+import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 import 'package:nirvar/screens/widgets/file_card.dart';
-import 'package:path/path.dart';
 import '../../../core/resources/api_exception.dart';
 import '../../../injection_container.dart';
 import '../../../models/patient_folder/patient_folder.dart';
@@ -67,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   _tabBarSection(context),
                   SizedBox(height: 16.h),
                   _tabBarViewSection(),
-                  SizedBox(height: ScreenUtil().screenHeight * .1.h),
+                  SizedBox(height: ScreenUtil().screenHeight * .15.h),
                 ],
               ),
             ),
@@ -187,6 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  //NEED TO WORK ON THAT
   Widget _myHealthTab() {
     return ListView(
       shrinkWrap: true,
@@ -477,16 +479,12 @@ Widget _getBloodGlucoseAverage() {
 Widget _getBloodPressureAverage() {
 
   final patientBloodPressureRepository = sl<BloodPressureRepository>();
-  List<PatientBloodPressure> bloodPressureList = [];
-  String? systole;
-  String? diastole;
 
-  return StreamBuilder<dartz.Either<ApiException,List<PatientBloodPressure>>>(
+  return StreamBuilder<dartz.Either<ApiException,BloodPressureHistoryForLast7Days>>(
       stream: patientBloodPressureRepository.getBloodPressureOfLast7Days(),
       builder: (context,snapshot){
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: SpinKitChasingDots(
-              color: AppColors.primary, size: 50.sp)); // Show a loading indicator while waiting for data
+          return CustomChasingDots(size: 50.sp);
         }
         if (!snapshot.hasData) {
           return HealthCard(
@@ -509,29 +507,14 @@ Widget _getBloodPressureAverage() {
           );
         },
               (success){
-          bloodPressureList = success;
-          if(bloodPressureList.isEmpty){
-            return HealthCard(
-              value: 'N/A',
-              average: 'Last 7 days Avg',
-              label: 'Blood Pressure',
-              onPressed: () {
-                // Define the action when the button is pressed
-              },
-            );
-          }else{
-            final average = BloodPressureUtils.calculateAverage(bloodPressureList);
-            systole = average['systolic']?.toStringAsFixed(0);
-            diastole  = average['diastolic']?.toStringAsFixed(0);
-            return HealthCard(
-              value: '$systole/$diastole',
-              average: 'Last 7 days Avg',
-              label: 'Blood Pressure',
-              onPressed: () {
-                // Define the action when the button is pressed
-              },
-            );
-          }
+                final systole = (success.avgSystolic ?? 0) > 0 ? success.avgSystolic.toString() : 'N/A';
+                final diastole = (success.avgDiastolic ?? 0) > 0 ? success.avgDiastolic.toString() : '';
+          return HealthCard(
+            value: '$systole/$diastole',
+            average: 'Last 7 days Avg',
+            label: 'Blood Pressure',
+            onPressed: () {},
+          );
         },);
 
         },

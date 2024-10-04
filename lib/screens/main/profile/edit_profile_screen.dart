@@ -11,8 +11,8 @@ import 'package:nirvar/bloc/user_profile_update/user_profile_update_bloc.dart';
 import 'package:nirvar/models/user_profile_update/user_profile_update.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/helper.dart';
+import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 import '../../../injection_container.dart';
-import '../../../models/user_profile/user_profile.dart';
 import '../../utils/assets_path.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/labeled_text_form_field.dart';
@@ -154,13 +154,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               _genderController.text = state.userProfile.gender ?? '';
               _ageController.text = state.userProfile.age.toString();
               _addressController.text = state.userProfile.address ?? '';
-              _weightController.text = state.userProfile.weight ?? '';
+              _weightController.text = state.userProfile.weight.toString();
+
+              print("Blood Group ${state.userProfile.bloodGroup}");
+              print("Blood Group ${state.userProfile.dateOfBirth}");
+
+              print("User Proifle${state.userProfile}");
 
               final regExp = RegExp(r'(\d+)\s*[Ff][Tt]\s*(\d+)\s*[Ii][Nn]');
 
               print('Height string from userProfile: ${state.userProfile.height}');
 
-              final match = regExp.firstMatch(state.userProfile.height ?? '');
+              final match = regExp.firstMatch(state.userProfile.height.toString() ?? '');
 
               if (match != null) {
                 // Extract feet and inches from the match
@@ -183,8 +188,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             }
           },
           builder: (context, state) {
-            return Stack(
-              children: [
+            return state.status == UserProfileDetailsStatus.loading
+                ? Center(child: CustomChasingDots(size: 50.sp,))
+                : Stack(children: [
                 // Background
                 Container(
                   height: ScreenUtil().screenHeight,
@@ -203,7 +209,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   child: IconButton(
                     icon: SvgPicture.asset(AssetsPath.backArrowSvg),
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      Navigator.of(context).pop(true);
                     },
                   ),
                 ),
@@ -485,6 +491,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               listener: (context, state) {
                                 if(state.status == UserProfileUpdateStatus.success){
                                   context.flushBarSuccessMessage(message: state.successMessage);
+                                 Future.delayed(const Duration(seconds: 2)).then((_){
+
+                                   if(context.mounted){
+                                     Navigator.of(context).pop(true);
+                                   }
+
+
+                                 });
                                 }else if(state.status == UserProfileUpdateStatus.failure){
                                   context.flushBarErrorMessage(message: state.errorMessage);
                                 }
@@ -497,41 +511,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     : CustomButton(
                                         text: 'Save Changes',
                                         onPressed: () {
-                                          // if (_formKey.currentState?.validate() ?? false) {
-                                          //
-                                          // }
-
-                                          context
-                                              .read<UserProfileUpdateBloc>()
-                                              .add(
-                                            GetUserUpdatedInformation(
-                                              userProfile:
-                                              UserProfileUpdate(
-                                                name:
-                                                _nameController.text,
-                                                heightIn:
-                                                _inchesController
-                                                    .text,
-                                                heightFt:
-                                                _feetController.text,
-                                                gender: _genderController
-                                                    .text,
-                                                dateOfBirth:
-                                                _dateOfBirthController
-                                                    .text,
-                                                bloodGroup:
-                                                _bloodGroupController
-                                                    .text,
-                                                email:
-                                                _emailController.text,
-                                                weight: _weightController
-                                                    .text,
-                                                address:
-                                                _addressController
-                                                    .text,
+                                          if (_formKey.currentState?.validate() ?? false) {
+                                            context
+                                                .read<UserProfileUpdateBloc>()
+                                                .add(GetUserUpdatedInformation(
+                                                userProfile:
+                                                UserProfileUpdate(
+                                                  name: _nameController.text,
+                                                  email: _emailController.text,
+                                                  gender: _genderController.text,
+                                                  dateOfBirth: _dateOfBirthController.text,
+                                                  bloodGroup: _bloodGroupController.text,
+                                                  weight: _weightController.text,
+                                                  heightFt: _feetController.text,
+                                                  heightIn: _inchesController.text,
+                                                  address: _addressController.text,
+                                                ),
                                               ),
-                                            ),
-                                          );
+                                            );
+                                          }
 
                                           if(selectedMedia!=null){
                                             context.read<UserProfileUpdateBloc>().add(OnPickedImage(imagePicked: selectedMedia!));

@@ -19,3 +19,4 @@ class PatientFile with _$PatientFile {
   factory PatientFile.fromJson(Map<String, dynamic> json) =>
       _$PatientFileFromJson(json);
 }
+

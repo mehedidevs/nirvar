@@ -12,6 +12,8 @@ import 'package:nirvar/screens/utils/helper.dart';
 import 'package:nirvar/screens/widgets/custom_button.dart';
 import '../../../injection_container.dart';
 import '../../../repository/authentication/auth_repository.dart';
+import '../../auth/sign_up_screen.dart';
+import '../../widgets/logout_dialog.dart';
 import 'account_settings_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -120,12 +122,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       title: Text('Edit Profile',
                           style: TextStyle(fontSize: 16.sp)),
                       trailing: Icon(Icons.arrow_forward_ios, size: 16.sp),
-                      onTap: () {
-                        Navigator.push(
+                      onTap: () async {
+                    final result = await    Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => EditProfileScreen()),
                         );
+                      if(result){
+                        setState(() {});
+                      }
                       },
                     ),
                     const Divider(),
@@ -153,26 +158,68 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         style: TextStyle(color: AppColors.red, fontSize: 16.sp),
                       ),
                       onTap: () {
-                         showLogoutDialog(context,
-                              onSuccess: ()async{
-                              print('Is Backed Success');
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return Dialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.r),
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.all(16.w),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    SvgPicture.asset(AssetsPath.logoutDialogueSvg),
+                                    SizedBox(height: 16.h),
+                                    Text(
+                                      'Are you sure you want to log out of your account?',
+                                      style: TextStyle(
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    SizedBox(height: 24.h),
+                                         Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 0.h, horizontal: 16.w),
+                                      child: CustomButton(
+                                        text: 'Log Out',
+                                        onPressed: () async {
+                                          final result = await sl<AuthRepository>().logoutUser();
+                                          result.fold(
+                                                  (failure){ Navigator.of(context).pop();},
+                                                  (success){
+                                                    Navigator.of(context, rootNavigator: true).pushReplacement(
+                                                      MaterialPageRoute(builder: (context) => SignUpScreen()),
+                                                    );
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                    SizedBox(height: 8.h),
+                                    // Cancel Button
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop(); // Close the dialog
+                                      },
+                                      child: Text(
+                                        'Cancel',
+                                        style: TextStyle(
+                                          fontSize: 14.sp,
+                                          color: AppColors.primary, // Adjust the color if needed
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
 
-                              if(context.mounted){
-                                Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => const SignInScreen()),
-                                        (route) => false);
-                              }
-
-                             // await Future.delayed(const Duration(seconds: 2), () {
-                             //
-                             //  });
-                            },
-                           onFailure:(message)async{
-                                print('Is Backed Error');
-                              context.flushBarErrorMessage(message: message);
-                            },);
                       },
                     ),
                   ],
@@ -320,79 +367,3 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-void showLogoutDialog(context, {required Future<void> Function() onSuccess, required Future<void> Function(String message) onFailure,}) {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16.r),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(16.w),
-          child: BlocConsumer<LogOutBloc, LogoutState>(
-            listener: (context, state) {
-              if (state.status == LogoutStatus.success) {
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SignInScreen()),
-                        (route) => false);
-              } else if (state.status == LogoutStatus.failure) {
-                onFailure(state.errorMessage);
-                Navigator.of(context).pop();
-              }
-            },
-            builder: (context, state) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SvgPicture.asset(AssetsPath.logoutDialogueSvg),
-                  SizedBox(height: 16.h),
-                  Text(
-                    'Are you sure to log out of your account?',
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 24.h),
-
-                  state.status == LogoutStatus.loading
-                      ? SpinKitChasingDots(
-                          color: AppColors.primary, size: 25.sp)
-                      : Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 0.h, horizontal: 16.w),
-                          child: CustomButton(
-                              text: 'Log Out',
-                              onPressed: () {
-                                context.read<LogOutBloc>().add(LogOutApiCall());
-                              }),
-                        ),
-
-                  SizedBox(height: 8.h),
-                  // Cancel Button
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop(); // Close the dialog
-                    },
-                    child: Text(
-                      'Cancel',
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        color: AppColors.primary, // Adjust the color as needed
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
-      );
-    },
-  );
-}

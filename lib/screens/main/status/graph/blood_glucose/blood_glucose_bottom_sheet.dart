@@ -1,8 +1,10 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:nirvar/repository/diabetes/diabetes_repository.dart';
 import 'package:nirvar/screens/main/status/graph/blood_glucose/blood_glucose_input.dart';
 
+import '../../../../../injection_container.dart';
 import '../../../../utils/app_colors.dart';
 import '../../../../widgets/circuler_add_button.dart';
 
@@ -46,7 +48,7 @@ class BloodGlucoseBottomSheet extends StatelessWidget {
                   Row(
                     children: [
                       InkWell(onTap: () {
-                        Navigator.push(
+                        Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => BloodGlucoseInput()));
@@ -70,9 +72,9 @@ class BloodGlucoseBottomSheet extends StatelessWidget {
                 unselectedLabelColor: AppColors.grey,
                 indicatorColor: AppColors.primary,
                 tabs: [
-                  Tab(text: 'Day'),
-                  Tab(text: 'Week'),
-                  Tab(text: 'Month'),
+                  Tab(text: 'Daily'),
+                  Tab(text: 'Weekly'),
+                  Tab(text: 'Monthly'),
                 ],
               ),
               SizedBox(height: 16.h),
@@ -109,19 +111,7 @@ class BloodGlucoseBottomSheet extends StatelessWidget {
 
           SizedBox(height: 16.h),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildBPBox(
-                'Minimum',
-                '6.0',
-              ),
-              _buildBPBox(
-                'Maximum',
-                '13.4',
-              ),
-            ],
-          ),
+          _getDailyGlucoseLevel(),
           SizedBox(height: 24.h),
           // Chart Section
           Text(
@@ -136,6 +126,46 @@ class BloodGlucoseBottomSheet extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _getDailyGlucoseLevel() {
+    final patientGlucoseRepository = sl<DiabetesRepository>();
+
+    return FutureBuilder(
+      future: patientGlucoseRepository.getBloodGlucoseOfToday(),
+      builder: (context,snapshot){
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildGlucoseLevelWidget('','');
+        }
+        if (!snapshot.hasData) {
+          return _buildGlucoseLevelWidget('','');
+        }
+        return snapshot.data!.fold((error){
+          return _buildGlucoseLevelWidget('','');
+        }, (success){
+          double maximumLevel = double.tryParse(success.maximum ?? '0') ?? 0.0;
+          double minimumLevel = double.tryParse(success.minimum ?? '0') ?? 0.0;
+          return _buildGlucoseLevelWidget('$minimumLevel','$maximumLevel');
+        });
+
+      },);
+
+  }
+
+  Row _buildGlucoseLevelWidget(String minimum,String maximum) {
+    return Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      _buildBPBox(
+        'Minimum',
+        minimum,
+      ),
+      _buildBPBox(
+        'Maximum',
+        maximum,
+      ),
+    ],
+  );
   }
 
   Widget _buildWeekView() {

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:path/path.dart' as path;
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:http_parser/http_parser.dart';
@@ -492,13 +492,11 @@ class AuthApiService {
       if (imageFile != null)
         'photo': await MultipartFile.fromFile(
           imageFile.path,
-          filename: imageFile.path.split('/').last, // Filename
-          contentType: MediaType('image', _getFileExtension(imageFile.path)), // You can dynamically determine this
-        ),
+          filename: path.basename(imageFile.path),),
     });
 
     try{
-      final response = await _dio.get(
+      final response = await _dio.post(
           patientProfileUpdate,
           data: formData,
       );

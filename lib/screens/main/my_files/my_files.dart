@@ -5,6 +5,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nirvar/screens/main/my_files/upload/test_report_upload_screen.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
+import 'package:nirvar/screens/widgets/action_menu_button.dart';
+import 'package:nirvar/screens/widgets/custom_alert_dialog.dart';
 import 'package:popover/popover.dart';
 import '../../../core/resources/api_exception.dart';
 import '../../../injection_container.dart';
@@ -33,6 +35,7 @@ class _MyFilesState extends State<MyFiles> {
 
     return Scaffold(
       backgroundColor: AppColors.white,
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -185,156 +188,93 @@ class _MyFilesState extends State<MyFiles> {
             ),
           ),
         ),
-        EditDeleteMenu(
-          onEdit: () {
-            showDialog(
-              context: context,
-              builder: (context) {
-                final _formKey = GlobalKey<FormState>();
-                TextEditingController _folderNameController =
-                TextEditingController();
-                final patientFolderRepository = sl<PatientFolderRepository>();
-                return Dialog(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16.r),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(16.w),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'Create Folder',
-                            style: TextStyle(
-                              fontSize: 24.sp,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                            textAlign: TextAlign.center,
+
+        ActionMenuButton(onCreateFolder: (){
+          showDialog(
+            context: context,
+            builder: (context) {
+              final _formKey = GlobalKey<FormState>();
+              TextEditingController _folderNameController =
+              TextEditingController();
+              final patientFolderRepository = sl<PatientFolderRepository>();
+              return Dialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.r),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(16.w),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Create Folder',
+                          style: TextStyle(
+                            fontSize: 24.sp,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
-                          SizedBox(height: 32.h),
-                          LabeledTextFormField(
-                            label: 'Enter Folder Name',
-                            hint: '',
-                            controller: _folderNameController,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter Folder Name';
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: 32.h),
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 0.h, horizontal: 16.w),
-                            child: CustomButton(
-                              text: 'Save',
-                              onPressed: () async {
-                                if (_formKey.currentState?.validate() ?? false) {
-                                  print(_folderNameController.text);
-                                  final response = await patientFolderRepository.createFolder(_folderNameController.text);
-                                  setState(() {});
-                                  if (context.mounted) {
-                                    Navigator.of(context).pop();
-                                  }
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: 32.h),
+                        LabeledTextFormField(
+                          label: 'Enter Folder Name',
+                          hint: '',
+                          controller: _folderNameController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter Folder Name';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 32.h),
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: 0.h, horizontal: 16.w),
+                          child: CustomButton(
+                            text: 'Save',
+                            onPressed: () async {
+                              if (_formKey.currentState?.validate() ?? false) {
+                                print(_folderNameController.text);
+                                final response = await patientFolderRepository.createFolder(_folderNameController.text);
+                                setState(() {});
+                                if (context.mounted) {
+                                  Navigator.of(context).pop();
                                 }
-                              },
-                            ),
-                          ),
-                          SizedBox(height: 8.h),
-                          // Cancel Button
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop(); // Close the dialog
+                              }
                             },
-                            child: Text(
-                              'Cancel',
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                color: AppColors
-                                    .primary, // Adjust the color as needed
-                              ),
+                          ),
+                        ),
+                        SizedBox(height: 8.h),
+                        // Cancel Button
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                          },
+                          child: Text(
+                            'Cancel',
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              color: AppColors
+                                  .primary, // Adjust the color as needed
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                );
-              },
-            );
-          },
-          onDelete: () {
-
-          },
-        ),
-
-        // ElevatedButton.icon(
-        //   onPressed: () {
-        //     print('Working...');
-        //
-        //   },
-        //   icon: Icon(Icons.add, size: 16.sp, color: Colors.white),
-        //   label: Text(
-        //     "New",
-        //     style: TextStyle(fontSize: 14.sp, color: Colors.white),
-        //   ),
-        //   style: ElevatedButton.styleFrom(
-        //     backgroundColor: AppColors.primary,
-        //     shape: RoundedRectangleBorder(
-        //       borderRadius: BorderRadius.circular(20.r),
-        //     ),
-        //     padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-        //   ),
-        // ),
+                ),
+              );
+            },
+          );
+        }, onFileUpload: (){
+          showDialog(context: context, builder: (context){
+            return CustomAlertDialog();
+          });
+        }),
       ],
     );
   }
-}
-
-
-
-Widget _buildPopoverContent(context,
-    {required Future<void> Function() onCreateSuccess}) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      _buildPopoverOption(
-        text: 'Create',
-        icon: Icons.create_new_folder,
-        onTap: () {
-
-        },
-      ),
-      Divider(color: Colors.grey),
-      _buildPopoverOption(
-        text: 'Upload',
-        icon: Icons.cloud_upload,
-        onTap: () {
-          print('Upload tapped');
-        },
-        color: Colors.redAccent,
-      ),
-    ],
-  );
-}
-
-Widget _buildPopoverOption({
-  required String text,
-  required IconData icon,
-  required VoidCallback onTap,
-  Color? color,
-}) {
-  return ListTile(
-    leading: Icon(icon, color: color ?? Colors.black),
-    title: Text(
-      text,
-      style: TextStyle(color: color ?? Colors.black),
-    ),
-    onTap: onTap,
-  );
 }

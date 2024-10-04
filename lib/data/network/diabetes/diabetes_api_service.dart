@@ -2,6 +2,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:nirvar/core/resources/api_exception.dart';
+import 'package:nirvar/models/glucose_level/glucose_level.dart';
 import 'package:nirvar/models/patient_glucose/patient_glucose.dart';
 
 import '../../../core/constants/constants.dart';
@@ -95,6 +96,28 @@ class DiabetesApiService {
       yield Left(ApiException(e.toString()));
     }
   }
+
+  Future<Either<ApiException, GlucoseLevel>> getBloodGlucoseOfToday() async {
+    try {
+      final response = await _dio.get(patientDiabetesToday);
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = response.data;
+        if (responseData['status'] == 1 && responseData['message'] == 'success') {
+          final glucoseLevel = GlucoseLevel.fromJson(responseData);
+          return Right(glucoseLevel);
+        } else {
+          return Left(ApiException(responseData['message']));
+        }
+      } else {
+        return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
+      }
+    } on DioException catch (e) {
+      return Left(ApiException.fromDioError(e));
+    } catch (e) {
+      return Left(ApiException(e.toString()));
+    }
+  }
+
 
 
 

@@ -277,7 +277,6 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   Widget _getUserProfilePicture() {
 
     final authRepository = sl<AuthRepository>();
-
     return FutureBuilder(
       future: authRepository.getUserProfile(),
       builder: (context,snapshot){
@@ -391,10 +390,6 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
           }
         });
       },);
-
-
-
-
 
   }
 

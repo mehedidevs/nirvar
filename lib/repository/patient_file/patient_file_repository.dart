@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 
 import '../../core/resources/api_exception.dart';
+import '../../models/latest_uploaded_files/latest_uploaded_file.dart';
 import '../../models/patient_files/patient_file.dart';
 
 abstract class PatientFileRepository {
@@ -22,4 +23,7 @@ abstract class PatientFileRepository {
     required String type,
     required String fileName,
   });
+
+  Future<Either<ApiException,List<LatestUploadedFile>>> getLatestUploadedFiles();
+
 }

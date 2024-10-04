@@ -15,7 +15,11 @@ class EditDeleteMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton<int>(
-
+      icon: Icon(
+        Icons.more_vert,
+        size: 25.sp,
+        color: Colors.grey,
+      ),
       color: AppColors.paleLight,
       onSelected: (value) {
         if (value == 1) {

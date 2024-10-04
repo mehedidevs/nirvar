@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:nirvar/core/resources/api_exception.dart';
+import 'package:nirvar/models/latest_uploaded_files/latest_uploaded_file.dart';
 import 'package:nirvar/models/patient_files/patient_file.dart';
 
 import '../../../core/constants/constants.dart';
@@ -10,10 +11,7 @@ import '../../preference/token_storage.dart';
 import '../../preference/user_id_storage.dart';
 
 
-// //Files
-// const String patientFiles = '/patient/files/1'; // //need to Id
-// const String patientFileUpload = '/patient/file/upload';
-// const String patientFileDelete = '/patient/file/delete/3';
+
 
 class FileApiService{
   final Dio _dio;
@@ -160,7 +158,7 @@ class FileApiService{
           return Left(ApiException(responseData['message']));
         }
       }else{
-        return Left(ApiException('Something Went Wrong'));
+        return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
       }
 
     }on DioException catch (e) {
@@ -202,7 +200,7 @@ class FileApiService{
       }else if(response.statusCode == 403){
         return Left(ApiException('File Size is too large'));
       } else{
-        return Left(ApiException('Something Went Wrong'));
+        return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
       }
     }on DioException catch (e) {
       return Left(ApiException.fromDioError(e));
@@ -210,6 +208,33 @@ class FileApiService{
       return Left(ApiException(e.toString()));
     }
 
+  }
+
+  Future<Either<ApiException,List<LatestUploadedFile>>> getLatestUploadedFiles() async{
+    try{
+      final response = await _dio.get(patientLatestTwoFiles);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = response.data;
+        if(responseData['status'] == 1){
+          final data = responseData['data'] as List;
+          if(data.isNotEmpty){
+            final List<LatestUploadedFile> latestFiles =  data.map((file) => LatestUploadedFile.fromJson(file)).toList();
+            return Right(latestFiles);
+          }else{
+            return Left(ApiException("No File is uploaded recently"));
+          }
+        }else{
+          return Left(ApiException(responseData['message']));
+        }
+      }else{
+        return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
+      }
+    }on DioException catch (e) {
+      return Left(ApiException.fromDioError(e));
+    } catch (e) {
+      return Left(ApiException(e.toString()));
+    }
   }
 
 

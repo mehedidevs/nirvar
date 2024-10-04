@@ -9,7 +9,7 @@ final class UserProfileDetailsState extends Equatable {
 
   const UserProfileDetailsState({
     this.status = UserProfileDetailsStatus.initial,
-    this.userProfile = const UserProfile(height: '',address: '',weight: '',email: '',age: 0,bloodGroup: '',dateOfBirth: '',gender: '',name: '',number: '',photo: ''),
+    this.userProfile = const UserProfile(name: "",email: "",number: "",photo: "",bloodGroup: "",dateOfBirth: "",age: 0,weight: "",height: "",gender: "",address: ""),
     this.errorMessage = '',
   });
 
@@ -23,7 +23,6 @@ final class UserProfileDetailsState extends Equatable {
         userProfile: userProfile ?? this.userProfile,
         errorMessage: errorMessage ?? this.errorMessage
     );
-
   }
 
   @override
