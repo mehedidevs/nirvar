@@ -7,6 +7,7 @@ import 'package:nirvar/models/patient_folder/patient_folder.dart';
 import 'package:nirvar/models/selected_folder/selected_folder.dart';
 
 import '../../../core/constants/constants.dart';
+import '../../../models/created_folder_for_prescription/created_folder_for_prescription.dart';
 import '../../preference/token_storage.dart';
 import '../../preference/user_id_storage.dart';
 
@@ -178,6 +179,8 @@ class FolderApiService {
     }
   }
 
+
+  //OCR Related End Points
   Future<Either<ApiException,List<SelectedFolder>>> selectFolder() async{
     try{
       final response = await _dio.get(patientFolderSelected);
@@ -195,6 +198,34 @@ class FolderApiService {
         return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
       }
     }on DioException catch (e) {
+      return Left(ApiException.fromDioError(e));
+    } catch (e) {
+      return Left(ApiException(e.toString()));
+    }
+  }
+
+  Future<Either<ApiException, CreatedFolderForPrescription>> createFolderForPrescription(String folderName) async {
+    try {
+      final response = await _dio.post(
+        patientFolderCreate,
+        data: {"name": folderName},
+      );
+      print('REsponse : $response');
+      print('ResponseData : ${response.data}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = jsonDecode(response.data);
+        if (responseData['status'] == 1) {
+          final folder = CreatedFolderForPrescription.fromJson(responseData['data']);
+          print('Created Folder: $folder');
+          return Right(folder);
+        } else {
+          return Left(ApiException(responseData['message']));
+        }
+      } else {
+        return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
+      }
+    } on DioException catch (e) {
       return Left(ApiException.fromDioError(e));
     } catch (e) {
       return Left(ApiException(e.toString()));

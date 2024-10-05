@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nirvar/screens/main/my_files/upload_randomly/randomly_prescription_upload_screen.dart';
 import 'package:nirvar/screens/main/my_files/upload_randomly/randomly_test_report_upload_screen.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/widgets/custom_button.dart';
@@ -116,7 +117,7 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
           if( selectedOption == 'Test Reports'){
              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>  const RandomlyTestReportUploadScreen()));
           } else if( selectedOption == 'Prescription'){
-
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>  const RandomlyPrescriptionUploadScreen()));
           }
         },)
         : const DisabledButton(buttonText: 'Proceed');

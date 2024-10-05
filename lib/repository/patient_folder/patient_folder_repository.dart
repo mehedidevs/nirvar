@@ -2,6 +2,7 @@
 import 'package:dartz/dartz.dart';
 
 import '../../core/resources/api_exception.dart';
+import '../../models/created_folder_for_prescription/created_folder_for_prescription.dart';
 import '../../models/patient_folder/patient_folder.dart';
 import '../../models/selected_folder/selected_folder.dart';
 
@@ -18,4 +19,6 @@ abstract class PatientFolderRepository{
   Future<Either<ApiException,String>> shareFolder(int folderId);
 
   Future<Either<ApiException,List<SelectedFolder>>> selectFolder();
+
+  Future<Either<ApiException, CreatedFolderForPrescription>> createFolderForPrescription(String folderName);
 }
