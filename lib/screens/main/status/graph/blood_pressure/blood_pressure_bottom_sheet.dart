@@ -1,10 +1,22 @@
+import 'package:dartz/dartz.dart' as dartz;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:nirvar/models/blood_pressure_weekly/blood_pressure_summary_weekly.dart';
 import 'package:nirvar/screens/main/status/graph/blood_pressure/blood_pressure_input.dart';
+import 'package:nirvar/screens/main/status/graph/blood_pressure/monthly/monthly_bp_chart.dart';
+import 'package:nirvar/screens/main/status/graph/blood_pressure/past_7_days/daily_bp_chart.dart';
+import 'package:nirvar/screens/main/status/graph/blood_pressure/weekly/weekly_bp_chart.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 
+import '../../../../../core/resources/api_exception.dart';
+import '../../../../../injection_container.dart';
+import '../../../../../models/blood_pressure_last_seven_days/blood_pressure_history_for_last_7_days.dart';
+import '../../../../../models/blood_pressure_monthly/blood_pressure_summary_monthly.dart';
+import '../../../../../models/patient_blood_pressure/patient_blood_pressure.dart';
+import '../../../../../repository/blood_pressure/blood_pressure_repository.dart';
+import '../../../../utils/blood_pressure_utils.dart';
 import '../../../../widgets/circuler_add_button.dart';
+import '../../../../widgets/custom_chasing_dots.dart';
 
 class BloodPressureBottomSheet extends StatelessWidget {
   const BloodPressureBottomSheet({Key? key}) : super(key: key);
@@ -14,7 +26,7 @@ class BloodPressureBottomSheet extends StatelessWidget {
     return DefaultTabController(
       length: 3, // Number of tabs
       child: Padding(
-        padding: EdgeInsets.fromLTRB(0,32.h,0,0),
+        padding: EdgeInsets.fromLTRB(0,16.h,0,0),
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -26,7 +38,6 @@ class BloodPressureBottomSheet extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header Section
               2.verticalSpace,
               Center(
                 child: Container(
@@ -38,7 +49,7 @@ class BloodPressureBottomSheet extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 32.h),
+              SizedBox(height: 8.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -47,10 +58,12 @@ class BloodPressureBottomSheet extends StatelessWidget {
                     children: [
                       InkWell(
                           onTap: () {
-                            Navigator.push(
+                            Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => BloodPressureInput()));
+
+
                           },
                           child: circuler_add_button()),
                       SizedBox(width: 16.w),
@@ -73,10 +86,10 @@ class BloodPressureBottomSheet extends StatelessWidget {
                 indicatorColor: AppColors.primary,
                 tabs: [
                   Tab(
-                    text: 'Day',
+                    text: 'Daily',
                   ),
-                  Tab(text: 'Week'),
-                  Tab(text: 'Month'),
+                  Tab(text: 'Weekly'),
+                  Tab(text: 'Monthly'),
                 ],
               ),
               SizedBox(height: 16.h),
@@ -84,8 +97,8 @@ class BloodPressureBottomSheet extends StatelessWidget {
               Expanded(
                 child: TabBarView(
                   children: [
-                    _buildDayView(),
-                    _buildWeekView(),
+                    _buildDailyView(),
+                    _buildWeeklyView(),
                     _buildMonthView(),
                   ],
                 ),
@@ -97,7 +110,7 @@ class BloodPressureBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildDayView() {
+  Widget _buildDailyView() {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 16.w),
       child: Column(
@@ -113,13 +126,7 @@ class BloodPressureBottomSheet extends StatelessWidget {
 
           SizedBox(height: 16.h),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildBPBox('SYS', '144', 'mmHg'),
-              _buildBPBox('DIA', '72', 'mmHg'),
-            ],
-          ),
+          _getAverageBpOfToday(),
           SizedBox(height: 24.h),
           // Chart Section
           Text(
@@ -130,90 +137,163 @@ class BloodPressureBottomSheet extends StatelessWidget {
                 color: AppColors.primary),
           ),
           SizedBox(height: 16.h),
-          _buildBPChart(),
+          _buildBPChartDaily(),
         ],
       ),
     );
   }
 
-  Widget _buildWeekView() {
-    // Return the view for the Week tab
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 16.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Week’s Average BP',
-            style: TextStyle(
-              fontSize: 24.sp,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+  Widget _getAverageBpOfToday() {
 
-          SizedBox(height: 16.h),
+    final patientBloodPressureRepository = sl<BloodPressureRepository>();
+    List<PatientBloodPressure> bloodPressureList = [];
+    String? systole;
+    String? diastole;
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildBPBox('SYS', '144', 'mmHg'),
-              _buildBPBox('DIA', '72', 'mmHg'),
-            ],
-          ),
-          SizedBox(height: 24.h),
-          // Chart Section
-          Text(
-            'Chart',
-            style: TextStyle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.bold,
-              color: AppColors.primary,
-            ),
-          ),
-          SizedBox(height: 16.h),
-          _buildBPChart(),
-        ],
-      ),
+    return FutureBuilder(future: patientBloodPressureRepository.getBloodPressureOfToday(), builder: (context,snapshot){
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return _buildBloodPressureWidget(systolicValue: '', diastolicValue: '');
+      }
+      if (!snapshot.hasData) {
+        return _buildBloodPressureWidget(systolicValue: 'N/A', diastolicValue: 'N/A');
+      }
+
+      return snapshot.data!.fold(
+            (error){
+              return _buildBloodPressureWidget(systolicValue: 'N/A', diastolicValue: 'N/A');
+        },
+            (success){
+          bloodPressureList = success;
+          if(bloodPressureList.isEmpty){
+            return _buildBloodPressureWidget(systolicValue: 'N/A', diastolicValue: 'N/A');
+          }else{
+            final average = BloodPressureUtils.calculateAverage(bloodPressureList);
+            systole = average['systolic']?.toStringAsFixed(0);
+            diastole  = average['diastolic']?.toStringAsFixed(0);
+            return _buildBloodPressureWidget(systolicValue: '$systole', diastolicValue: '$diastole',unit: 'mmHg');
+          }
+        },);
+    });
+
+  }
+
+
+  Widget _buildBPChartDaily() {
+    final repository = sl<BloodPressureRepository>();
+    return FutureBuilder<dartz.Either<ApiException,BloodPressureHistoryForLast7Days>>(
+      future: repository.getBloodPressureOfLast7Days(),
+      builder: (context,snapshot){
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CustomChasingDots(size: 50.sp);
+        }
+        if (!snapshot.hasData) {
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 16.h,horizontal: 8.w),
+            child: Center(child: Text(snapshot.error.toString(),style: const TextStyle(color: AppColors.primary),)),
+          );
+        }
+
+        return snapshot.data!.fold(
+              (error){
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.h,horizontal: 8.w),
+                  child: Center(child: Text(snapshot.error.toString(),style: const TextStyle(color: AppColors.primary),)),
+                );
+          },
+              (success){
+                final Map<String, BloodPressureSummary> bloodPressureMap = success.data ?? {};
+                final formattedMap = bloodPressureMap.map((key, value) => MapEntry("'$key'", value));
+                print(formattedMap);
+                return DailyBpChart(apiResponse: bloodPressureMap);
+              },);
+
+      },
+    );
+  }
+
+
+  Widget _buildBloodPressureWidget({
+    required String systolicValue,  // Required systolic value
+    required String diastolicValue, // Required diastolic value
+    String unit = '',               // Optional unit, defaulting to an empty string
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _buildBPBox('SYS', systolicValue, unit), // Use the systolic value and unit
+        _buildBPBox('DIA', diastolicValue, unit), // Use the diastolic value and unit
+      ],
+    );
+  }
+
+
+  Widget _buildWeeklyView() {
+    final repository = sl<BloodPressureRepository>();
+
+    return FutureBuilder<dartz.Either<ApiException,BloodPressureSummaryWeekly>>(
+      future: repository.getBloodPressureWeekly(),
+      builder: (context,snapshot){
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CustomChasingDots(size: 50.sp);
+        }
+        if (!snapshot.hasData) {
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 16.h,horizontal: 8.w),
+            child: Center(child: Text(snapshot.error.toString(),style: const TextStyle(color: AppColors.primary),)),
+          );
+        }
+
+        return snapshot.data!.fold(
+              (error){
+            return Padding(
+              padding: EdgeInsets.symmetric(vertical: 16.h,horizontal: 8.w),
+              child: Center(child: Text(snapshot.error.toString(),style: const TextStyle(color: AppColors.primary),)),
+            );
+          },
+              (success){
+            final Map<String, BloodPressureWeek> bloodPressureMap = success.data ?? {};
+            print(bloodPressureMap);
+            //  final formattedMap = bloodPressureMap.map((key, value) => MapEntry("'$key'", value));
+            // print(formattedMap);
+            return WeeklyBpChart(data: bloodPressureMap);
+          },);
+
+      },
     );
   }
 
   Widget _buildMonthView() {
-    // Return the view for the Month tab
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 16.w),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Month’s Average BP',
-            style: TextStyle(
-              fontSize: 24.sp,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+    final repository = sl<BloodPressureRepository>();
 
-          SizedBox(height: 16.h),
+    return FutureBuilder<dartz.Either<ApiException,BloodPressureSummaryMonthly>>(
+      future: repository.getBloodPressureMonthly(),
+      builder: (context,snapshot){
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CustomChasingDots(size: 50.sp);
+        }
+        if (!snapshot.hasData) {
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 16.h,horizontal: 8.w),
+            child: Center(child: Text(snapshot.error.toString(),style: const TextStyle(color: AppColors.primary),)),
+          );
+        }
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildBPBox('SYS', '144', 'mmHg'),
-              _buildBPBox('DIA', '72', 'mmHg'),
-            ],
-          ),
-          SizedBox(height: 24.h),
-          // Chart Section
-          Text(
-            'Chart',
-            style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary),
-          ),
-          SizedBox(height: 16.h),
-          _buildBPChart(),
-        ],
-      ),
+        return snapshot.data!.fold(
+              (error){
+            return Padding(
+              padding: EdgeInsets.symmetric(vertical: 16.h,horizontal: 8.w),
+              child: Center(child: Text(snapshot.error.toString(),style: const TextStyle(color: AppColors.primary),)),
+            );
+          },
+              (success){
+            final Map<String, BloodPressureMonth> bloodPressureMap = success.data ?? {};
+            // final formattedMap = bloodPressureMap.map((key, value) => MapEntry("'$key'", value));
+            // print(formattedMap);
+            print(bloodPressureMap);
+            return MonthlyBpChart(data: bloodPressureMap);
+          },);
+
+      },
     );
   }
 
@@ -264,63 +344,5 @@ class BloodPressureBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildBPChart() {
-    return AspectRatio(
-      aspectRatio: 1.5,
-      child: BarChart(
-        BarChartData(
-          alignment: BarChartAlignment.spaceAround,
-          maxY: 180,
-          barTouchData: BarTouchData(enabled: false),
-          titlesData: FlTitlesData(
-            show: true,
-            bottomTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                getTitlesWidget: (value, meta) {
-                  return Text(
-                    value.toInt().toString(),
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: Colors.grey,
-                    ),
-                  );
-                },
-              ),
-            ),
-            leftTitles: AxisTitles(
-              sideTitles: SideTitles(showTitles: false),
-            ),
-            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          ),
-          gridData: FlGridData(show: false),
-          borderData: FlBorderData(show: false),
-          barGroups: [
-            BarChartGroupData(
-                x: 8,
-                barRods: [BarChartRodData(toY: 120, color: AppColors.primary)]),
-            BarChartGroupData(
-                x: 10,
-                barRods: [BarChartRodData(toY: 80, color: AppColors.primary)]),
-            BarChartGroupData(
-                x: 12,
-                barRods: [BarChartRodData(toY: 100, color: AppColors.primary)]),
-            BarChartGroupData(
-                x: 14,
-                barRods: [BarChartRodData(toY: 110, color: AppColors.primary)]),
-            BarChartGroupData(
-                x: 16,
-                barRods: [BarChartRodData(toY: 60, color: AppColors.primary)]),
-            BarChartGroupData(
-                x: 18,
-                barRods: [BarChartRodData(toY: 90, color: AppColors.primary)]),
-            BarChartGroupData(
-                x: 20,
-                barRods: [BarChartRodData(toY: 130, color: AppColors.primary)]),
-          ],
-        ),
-      ),
-    );
-  }
+
 }

@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For Clipboard
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:nirvar/repository/patient_folder/patient_folder_repository.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
+import 'package:nirvar/screens/utils/helper.dart';
+import 'package:pretty_qr_code/pretty_qr_code.dart';
+import 'package:share_plus/share_plus.dart';
+import '../../../../injection_container.dart';
 
-import '../../../widgets/custom_button_with_icon.dart'; // If you're using ScreenUtil for responsiveness
 
 class QrCodeScreen extends StatefulWidget {
-  const QrCodeScreen({super.key});
+  final int folderId;
+
+  const QrCodeScreen({super.key, required this.folderId});
 
   @override
   State<QrCodeScreen> createState() => _QrCodeScreenState();
 }
 
 class _QrCodeScreenState extends State<QrCodeScreen> {
-  bool isButtonVisible = false;
-  bool hasCopied = false;
+  final _repository = sl<PatientFolderRepository>();
 
   @override
   Widget build(BuildContext context) {
@@ -39,83 +44,87 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.w),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: ScreenUtil().screenHeight * .1.h,
-                  ),
-                  FittedBox(
-                    fit: BoxFit.contain,
-                    child: Image.asset(
-                      AssetsPath.qrCodePng,
-                      height: 250.h,
-                      width: 250.w,
-                    ),
-                  ),
-                  SizedBox(height: 16.h),
+      body: FutureBuilder(
+        future: _repository.shareFolder(widget.folderId),
+        builder: (context, snapshot) {
+          if(snapshot.connectionState == ConnectionState.waiting){
+            return Center(child: SpinKitChasingDots(color: AppColors.primary, size: 50.sp));
+          }
 
-                  // URL Container
-                  Padding(
-                    padding: EdgeInsets.all(16.w),
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: AppColors.boxGradiantEnd),
-                        borderRadius: BorderRadius.circular(8.r),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              'https://www.google.com/la-i&urlmkq',
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                color: Colors.black,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          IconButton(
-                            icon: SvgPicture.asset(
-                              hasCopied ? AssetsPath.copyFilledSvg : AssetsPath.copySvg,
-                            ),
-                            onPressed: () {
-                              Clipboard.setData(
-                                const ClipboardData(
-                                    text: 'https://www.google.com/la-i&urlmkq'),
-                              );
-                              setState(() {
-                                isButtonVisible = true; // Show the button
-                                hasCopied = true; // Change the icon to check
-                              });
-                            },
-                          ),
-                        ],
+          if (!snapshot.hasData) {
+            return const SizedBox();
+          }
+
+          return snapshot.data!.fold((failure){
+            context.flushBarErrorMessage(message: failure.message);
+            return const SizedBox();
+          }, (success){
+            return _buildUI(success);
+          });
+
+        },
+      ),
+    );
+  }
+
+  Widget _buildUI(String url) {
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.w,),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: ScreenUtil().screenHeight * .02.h,
+                ),
+                SizedBox(
+                  height: .5.sh,
+                  child: PrettyQrView.data(
+                    data: url,
+                    decoration: PrettyQrDecoration(
+                      image: PrettyQrDecorationImage(
+                        fit: BoxFit.contain,
+                        image: AssetImage(AssetsPath.appIconPng),
                       ),
                     ),
                   ),
-                  SizedBox(height: ScreenUtil().screenHeight * .065.h),
+                ),
 
-                  // Button that appears after copying the link
-                  if (isButtonVisible)
-                    CustomButtonWithIcon(
-                      text: 'Link Copied To Clipboard',
-                      onPressed: () {
-                        // Your action here
-                      },
-                      icon: Icons.check_circle,
-                      widthFactor: 0.8,
-                      heightFactor: 0.08,
-                    )
-                ],
-              ),
+                SizedBox(height: 16.h),
+
+                // URL Container
+                Container(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.boxGradiantEnd),
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          url,
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            color: Colors.black,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.share,size: 25.sp,color: AppColors.primary,),
+                        onPressed: () {
+                          Share.share(url);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: ScreenUtil().screenHeight * .065.h),
+              ],
             ),
           ),
         ),

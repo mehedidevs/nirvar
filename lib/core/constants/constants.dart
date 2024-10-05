@@ -33,12 +33,15 @@ const String patientProfile = '/patient/profile/'; //need to Id to get profile
 const String patientFolders = '/patient/folders';
 const String patientFolderCreate = '/patient/folder/create';
 const String patientFolderUpdate = '/patient/folder/update';
-const String patientFolderDelete = '/patient/folder/delete/5'; // //need to Id
+const String patientFolderDelete = '/patient/folder/delete/'; // //need to Id
+const String patientFolderSelected = '/patient/select/folders';
 
 //Files
-const String patientFiles = '/patient/files/1'; // //need to Id
+const String patientFiles = '/patient/files/';
+const String patientLatestTwoFiles = '/patient/files/latest/two';
 const String patientFileUpload = '/patient/file/upload';
-const String patientFileDelete = '/patient/file/delete/3';
+const String patientFileDelete = '/patient/file/delete/';
+const String patientFileRename = '/patient/file/rename';
 
 //Blood Pressure
 const String patientBloodPressure = '/patient/blood-pressure/store';

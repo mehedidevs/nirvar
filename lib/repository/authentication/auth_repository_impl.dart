@@ -1,4 +1,6 @@
 
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
 import 'package:nirvar/core/resources/api_exception.dart';
 import 'package:nirvar/data/network/authentication/auth_api_service.dart';
@@ -6,6 +8,7 @@ import 'package:nirvar/models/register_otp/register_otp.dart';
 import 'package:nirvar/models/user/user.dart';
 import 'package:nirvar/models/user_credentials/user_credentials.dart';
 import 'package:nirvar/models/user_profile/user_profile.dart';
+import 'package:nirvar/models/user_profile_update/user_profile_update.dart';
 import 'package:nirvar/repository/authentication/auth_repository.dart';
 
 class AuthRepositoryImpl extends AuthRepository{
@@ -68,6 +71,11 @@ class AuthRepositoryImpl extends AuthRepository{
   @override
   Future<Either<ApiException, UserProfile>> getUserProfile() {
     return _authApiService.getUserProfile();
+  }
+
+  @override
+  Future<Either<ApiException, String>> updateUserProfile(UserProfileUpdate profile, File? imageFile) {
+    return _authApiService.updateUserProfile(profile, imageFile);
   }
 
 }

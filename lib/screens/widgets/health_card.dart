@@ -20,6 +20,7 @@ class HealthCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 0.18.sh,
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
           color: AppColors.primary,
@@ -27,6 +28,7 @@ class HealthCard extends StatelessWidget {
           shape: BoxShape.rectangle),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             children: [
@@ -43,6 +45,8 @@ class HealthCard extends StatelessWidget {
                               fontSize: 24.sp,
                               color: Colors.white,
                               fontWeight: FontWeight.bold),
+                          overflow: TextOverflow.fade,
+                          maxLines: 1,
                         ),
                         SizedBox(width: 8.w),
                         InkWell(

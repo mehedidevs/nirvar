@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:nirvar/models/patient_files/patient_file.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 
-
 class ReportDetailsScreen extends StatelessWidget {
-  final String imageUrl;
-  final String title;
+  final PatientFile file;
 
-  const ReportDetailsScreen({super.key, required this.imageUrl, required this.title});
+  const ReportDetailsScreen({super.key, required this.file});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +20,7 @@ class ReportDetailsScreen extends StatelessWidget {
           child: const Icon(Icons.arrow_back_ios, color: Colors.black),
         ),
         title: Text(
-          title,
+          file.name ?? '',
           style: TextStyle(
             fontSize: 20.sp,
             fontWeight: FontWeight.bold,
@@ -34,14 +33,22 @@ class ReportDetailsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: ScreenUtil().screenHeight * 0.01.h,),
+            SizedBox(
+              height: ScreenUtil().screenHeight * 0.01.h,
+            ),
             FittedBox(
               fit: BoxFit.cover,
-              child: Image.asset(
-                AssetsPath.prescriptionDetailsPng,
-                width: ScreenUtil().screenWidth * 0.8,
-                height: ScreenUtil().screenHeight * 0.7.h,
-              ),
+              child: file.path == null
+                  ? Image.asset(
+                      AssetsPath.prescriptionDetailsPng,
+                      width: ScreenUtil().screenWidth * 0.8,
+                      height: ScreenUtil().screenHeight * 0.7.h,
+                    )
+                  : Image.network(
+                      file.path ?? "",
+                      width: ScreenUtil().screenWidth * 0.8,
+                      height: ScreenUtil().screenHeight * 0.7.h,
+                    ),
             ),
             const Spacer(),
             Padding(
@@ -83,12 +90,12 @@ class ReportDetailsScreen extends StatelessWidget {
   }
 
   Widget _buildCustomButton(
-      BuildContext context,
-      String text,
-      IconData icon,
-      dynamic background,
-      Color textColor,
-      ) {
+    BuildContext context,
+    String text,
+    IconData icon,
+    dynamic background,
+    Color textColor,
+  ) {
     return Container(
       width: 0.4.sw, // Width is 40% of screen width
       height: 50.h,
@@ -106,7 +113,7 @@ class ReportDetailsScreen extends StatelessWidget {
         ],
       ),
       child: ElevatedButton(
-        onPressed: (){},
+        onPressed: () {},
         style: ElevatedButton.styleFrom(
           padding: EdgeInsets.symmetric(vertical: 14.h),
           backgroundColor: Colors.transparent,
@@ -137,49 +144,47 @@ class ReportDetailsScreen extends StatelessWidget {
     );
   }
 
-
 // Widget _buildCustomButton(
-  //     BuildContext context, String text, IconData icon, dynamic background, Color textColor) {
-  //   return Container(
-  //     width: 0.4.sw, // Width is 40% of screen width
-  //     height: 50.h,
-  //     decoration: BoxDecoration(
-  //       gradient: background is LinearGradient ? background : null,
-  //       color: background is Color ? background : null,
-  //       borderRadius: BorderRadius.circular(20.r),
-  //       boxShadow: [
-  //         BoxShadow(
-  //           color: Colors.grey.withOpacity(0.2),
-  //           spreadRadius: 2,
-  //           blurRadius: 5,
-  //           offset: const Offset(0, 3),
-  //         ),
-  //       ],
-  //     ),
-  //     child: ElevatedButton.icon(
-  //       onPressed: () {},
-  //       icon: Icon(
-  //         icon,
-  //         color: textColor,
-  //         size: 20.sp,
-  //       ),
-  //       label: Text(
-  //         text,
-  //         style: TextStyle(
-  //           fontSize: 16.sp,
-  //           color: textColor,
-  //         ),
-  //       ),
-  //       style: ElevatedButton.styleFrom(
-  //         padding: EdgeInsets.symmetric(vertical: 14.h),
-  //         backgroundColor: Colors.transparent,
-  //         shadowColor: Colors.transparent,
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(20.r),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
+//     BuildContext context, String text, IconData icon, dynamic background, Color textColor) {
+//   return Container(
+//     width: 0.4.sw, // Width is 40% of screen width
+//     height: 50.h,
+//     decoration: BoxDecoration(
+//       gradient: background is LinearGradient ? background : null,
+//       color: background is Color ? background : null,
+//       borderRadius: BorderRadius.circular(20.r),
+//       boxShadow: [
+//         BoxShadow(
+//           color: Colors.grey.withOpacity(0.2),
+//           spreadRadius: 2,
+//           blurRadius: 5,
+//           offset: const Offset(0, 3),
+//         ),
+//       ],
+//     ),
+//     child: ElevatedButton.icon(
+//       onPressed: () {},
+//       icon: Icon(
+//         icon,
+//         color: textColor,
+//         size: 20.sp,
+//       ),
+//       label: Text(
+//         text,
+//         style: TextStyle(
+//           fontSize: 16.sp,
+//           color: textColor,
+//         ),
+//       ),
+//       style: ElevatedButton.styleFrom(
+//         padding: EdgeInsets.symmetric(vertical: 14.h),
+//         backgroundColor: Colors.transparent,
+//         shadowColor: Colors.transparent,
+//         shape: RoundedRectangleBorder(
+//           borderRadius: BorderRadius.circular(20.r),
+//         ),
+//       ),
+//     ),
+//   );
+// }
 }
