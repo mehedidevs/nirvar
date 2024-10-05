@@ -179,11 +179,8 @@ class _StatsScreenState extends State<StatsScreen> {
       return snapshot.data!.fold((error){
         return _buildHealthCardWidgetOfDiabetes('N/A','Avg.');
       }, (success){
-        double maximumLevel = double.tryParse(success.maximum ?? '0') ?? 0.0;
-        double minimumLevel = double.tryParse(success.minimum ?? '0') ?? 0.0;
-        double averageLevel = (maximumLevel + minimumLevel) / 2;
-        double roundedAverageLevel = double.parse(averageLevel.toStringAsFixed(1));
-        return _buildHealthCardWidgetOfDiabetes('$roundedAverageLevel','Avg.');
+        String minimumLevel = success ;
+        return _buildHealthCardWidgetOfDiabetes(minimumLevel,'Avg.');
       });
 
     },);

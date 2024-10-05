@@ -62,6 +62,8 @@ class BloodPressureBottomSheet extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => BloodPressureInput()));
+
+
                           },
                           child: circuler_add_button()),
                       SizedBox(width: 16.w),
@@ -178,9 +180,8 @@ class BloodPressureBottomSheet extends StatelessWidget {
 
   Widget _buildBPChartDaily() {
     final repository = sl<BloodPressureRepository>();
-
-    return StreamBuilder<dartz.Either<ApiException,BloodPressureHistoryForLast7Days>>(
-      stream: repository.getBloodPressureOfLast7Days(),
+    return FutureBuilder<dartz.Either<ApiException,BloodPressureHistoryForLast7Days>>(
+      future: repository.getBloodPressureOfLast7Days(),
       builder: (context,snapshot){
         if (snapshot.connectionState == ConnectionState.waiting) {
           return CustomChasingDots(size: 50.sp);

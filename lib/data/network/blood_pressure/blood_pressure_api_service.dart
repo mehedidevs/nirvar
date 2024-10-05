@@ -58,7 +58,7 @@ class BloodPressureApiService {
           String data = responseData['message'];
           return Right(data);
         }else{
-          return Left(ApiException(responseData['message']));
+          return Left(ApiException(responseData['error']));
         }
       }else{
         return Left(ApiException('Something Went Wrong'));
@@ -102,7 +102,8 @@ class BloodPressureApiService {
     }
   }
 
-  Stream<Either<ApiException, BloodPressureHistoryForLast7Days>> getBloodPressureOfLast7Days() async* {
+  //NEED TO MAKE IT FUTURE
+  Future<Either<ApiException, BloodPressureHistoryForLast7Days>> getBloodPressureOfLast7Days() async {
     try {
       final response = await _dio.get(patientBloodPressureLastSevenDays);
 
@@ -119,25 +120,24 @@ class BloodPressureApiService {
           final bloodPressureData = BloodPressureHistoryForLast7Days.fromJson(responseData);
 
           // Yield the success case
-          yield Right(bloodPressureData);
+          return Right(bloodPressureData);
         } else {
           // Handle API-specific errors (non-successful status or invalid message)
           final errorMessage = responseData['message'] ?? 'Unknown error';
-          yield Left(ApiException(errorMessage));
+          return Left(ApiException(errorMessage));
         }
       } else {
         // Handle HTTP errors (non-200 status codes)
-        yield Left(ApiException.fromStatusCode(response.statusCode ?? 0));
+        return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
       }
     } on DioException catch (dioError) {
       // Handle Dio-specific exceptions (like timeouts, connection issues, etc.)
-      yield Left(ApiException.fromDioError(dioError));
+      return Left(ApiException.fromDioError(dioError));
     } catch (e) {
       // Catch any other unexpected errors and convert them to ApiException
-      yield Left(ApiException(e.toString()));
+      return Left(ApiException(e.toString()));
     }
   }
-
 
   Future<Either<ApiException,BloodPressureSummaryWeekly>> getBloodPressureWeekly() async{
     try{
@@ -176,7 +176,6 @@ class BloodPressureApiService {
       return Left(ApiException(e.toString()));
     }
   }
-
 
   Future<Either<ApiException,BloodPressureSummaryMonthly>> getBloodPressureMonthly() async{
     try{

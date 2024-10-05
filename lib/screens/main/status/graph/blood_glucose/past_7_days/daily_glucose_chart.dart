@@ -1,24 +1,25 @@
-import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:nirvar/screens/utils/app_colors.dart';
 
-import '../../../../../../models/blood_pressure_last_seven_days/blood_pressure_history_for_last_7_days.dart';
+import '../../../../../../models/glucose_level_last_seven_days/glucose_level_for_past_seven_days.dart';
+import '../../../../../utils/app_colors.dart';
 
-class DailyBpChart extends StatefulWidget {
-  final Map<String, BloodPressureSummary> apiResponse;
+class DailyGlucoseChart extends StatefulWidget {
+
+  final Map<String, GlucoseValues> apiResponse;
   final Color leftBarColor = AppColors.primary;
   final Color rightBarColor = AppColors.pale;
   final Color avgColor = Colors.green;
 
-  const DailyBpChart({super.key, required this.apiResponse});
+  const DailyGlucoseChart({super.key, required this.apiResponse});
 
   @override
-  State<DailyBpChart> createState() => _DailyBpChartState();
+  State<DailyGlucoseChart> createState() => _DailyGlucoseChartState();
 }
 
-class _DailyBpChartState extends State<DailyBpChart> {
+class _DailyGlucoseChartState extends State<DailyGlucoseChart> {
 
   final double width = 7;
 
@@ -49,12 +50,12 @@ class _DailyBpChartState extends State<DailyBpChart> {
     for (int i = 0; i < last7Days.length; i++) {
       String date = last7Days[i];
       if (widget.apiResponse.containsKey(date)) {
-        final BloodPressureSummary? summaryForDate = widget.apiResponse[date];
+        final GlucoseValues? summaryForDate = widget.apiResponse[date];
 
         // Ensure the summary exists and get systolic and diastolic values
-        double systolic = (summaryForDate?.systolicAvg ?? 0).toDouble();
-        double diastolic = (summaryForDate?.diastolicAvg ?? 0).toDouble();
-        barGroups.add(makeGroupData(i, systolic, diastolic));
+        double valueOne = (summaryForDate?.valueOne ?? 0).toDouble();
+        double valueTwo = (summaryForDate?.valueTwo ?? 0).toDouble();
+        barGroups.add(makeGroupData(i, valueOne, valueTwo));
       } else {
         barGroups.add(makeGroupData(i, 0, 0));
       }
@@ -62,33 +63,46 @@ class _DailyBpChartState extends State<DailyBpChart> {
     return barGroups.reversed.toList();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: 1.5,
       child: BarChart(
         BarChartData(
-          maxY: 200, // Adjust maxY for Systolic values
+          maxY: 20, // Adjust maxY for Systolic values
           barTouchData: BarTouchData(
             touchTooltipData: BarTouchTooltipData(
               getTooltipColor: (_) => Colors.blueGrey,
               getTooltipItem: (group, groupIndex, rod, rodIndex) {
                 String day = getLast7Days()[group.x.toInt()];
-                // Get both systolic and diastolic values for the touched group
-                double systolic = group.barRods[0].toY; // First rod represents Systolic
-                double diastolic = group.barRods[1].toY; // Second rod represents Diastolic
+                String valueToShow;
+                if (rodIndex == 0) {
+                  valueToShow = 'Input1: ${rod.toY.toString()}'; // For bar 1
+                } else {
+                  valueToShow = 'Input2: ${rod.toY.toString()}'; // For bar 2
+                }
 
                 return BarTooltipItem(
-                  'Date: $day\nSystolic: $systolic\nDiastolic: $diastolic',
+                  'Date: $day\n',
                   const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                     decoration: TextDecoration.none,
                   ),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: '$valueToShow\n',
+                      style: const TextStyle(
+                        color: Colors.yellow,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ],
                 );
+
               },
             ),
             touchCallback: (FlTouchEvent event, response) {
@@ -121,7 +135,7 @@ class _DailyBpChartState extends State<DailyBpChart> {
               sideTitles: SideTitles(
                 showTitles: true,
                 reservedSize: 40,
-                interval: 40,
+                interval: 2,
                 getTitlesWidget: leftTitles,
               ),
             ),
@@ -142,35 +156,35 @@ class _DailyBpChartState extends State<DailyBpChart> {
       case 0:
         text = '0';
         break;
+      case 2:
+        text = '2';
+        break;
+      case 4:
+        text = '4';
+        break;
+      case 6:
+        text = '6';
+        break;
+      case 8:
+        text = '8';
+        break;
+      case 10:
+        text = '10';
+        break;
+      case 12:
+        text = '12';
+        break;
+      case 14:
+        text = '14';
+        break;
+      case 16:
+        text = '16';
+        break;
+      case 18:
+        text = '18';
+        break;
       case 20:
         text = '20';
-        break;
-      case 40:
-        text = '40';
-        break;
-      case 60:
-        text = '60';
-        break;
-      case 80:
-        text = '80';
-        break;
-      case 100:
-        text = '100';
-        break;
-      case 120:
-        text = '120';
-        break;
-      case 140:
-        text = '140';
-        break;
-      case 160:
-        text = '160';
-        break;
-      case 180:
-        text = '180';
-        break;
-      case 200:
-        text = '200';
         break;
       default:
         return Container();
@@ -206,22 +220,23 @@ class _DailyBpChartState extends State<DailyBpChart> {
     );
   }
 
-  BarChartGroupData makeGroupData(int x, double systolic, double diastolic) {
+  BarChartGroupData makeGroupData(int x, double valueOne, double valueTwo) {
     return BarChartGroupData(
       barsSpace: 4,
       x: x,
       barRods: [
         BarChartRodData(
-          toY: systolic.toDouble(), // Systolic value
+          toY: valueOne.toDouble(), // Systolic value
           color: widget.leftBarColor,
           width: width,
         ),
         BarChartRodData(
-          toY: diastolic.toDouble(), // Diastolic value
+          toY: valueTwo.toDouble(), // Diastolic value
           color: widget.rightBarColor,
           width: width,
         ),
       ],
     );
   }
+
 }

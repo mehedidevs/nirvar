@@ -20,7 +20,7 @@ class BloodPressureRepositoryImpl extends BloodPressureRepository{
   }
 
   @override
-  Stream<Either<ApiException, BloodPressureHistoryForLast7Days>> getBloodPressureOfLast7Days() {
+  Future<Either<ApiException, BloodPressureHistoryForLast7Days>> getBloodPressureOfLast7Days() {
     return _apiService.getBloodPressureOfLast7Days();
   }
 

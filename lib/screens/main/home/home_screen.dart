@@ -415,15 +415,12 @@ Widget _healthStatus() {
 Widget _getBloodGlucoseAverage() {
 
   final patientGlucoseRepository = sl<DiabetesRepository>();
-  List<PatientGlucose> glucoseList = [];
-  String? glucoseLevel;
 
-  return StreamBuilder(
-    stream: patientGlucoseRepository.getBloodGlucoseOfLast7Days(),
+  return FutureBuilder(
+    future: patientGlucoseRepository.getBloodGlucoseOfLast7Days(),
     builder: (context,snapshot){
       if (snapshot.connectionState == ConnectionState.waiting) {
-        return Center(child: SpinKitChasingDots(
-            color: AppColors.primary, size: 50.sp)); // Show a loading indicator while waiting for data
+        return Center(child: CustomChasingDots(size: 50.sp));
       }
       if (!snapshot.hasData) {
         return HealthCard(
@@ -447,29 +444,15 @@ Widget _getBloodGlucoseAverage() {
           },
         );
       }, (success){
-         glucoseList = success;
+        String glucoseLevel = (success.avgLevel != null) ? success.avgLevel.toString() : 'N/A';
+        return HealthCard(
+           value: '$glucoseLevel/10',
+           average: 'Last 7 days Avg',
+           label: 'Blood Glucose',
+           onPressed: () {
 
-         if(glucoseList.isEmpty){
-           return HealthCard(
-             value: 'N/A',
-             average: 'Last 7 days Avg',
-             label: 'Blood Glucose',
-             onPressed: () {
-
-             },
-           );
-         }else{
-           final average = BloodSugarUtils.calculateAverage(glucoseList);
-           glucoseLevel = average['sugar_level']?.toStringAsFixed(0);
-           return HealthCard(
-             value: '$glucoseLevel/10',
-             average: 'Last 7 days Avg',
-             label: 'Blood Glucose',
-             onPressed: () {
-
-             },
-           );
-         }
+           },
+         );
 
       });
 
@@ -480,8 +463,8 @@ Widget _getBloodPressureAverage() {
 
   final patientBloodPressureRepository = sl<BloodPressureRepository>();
 
-  return StreamBuilder<dartz.Either<ApiException,BloodPressureHistoryForLast7Days>>(
-      stream: patientBloodPressureRepository.getBloodPressureOfLast7Days(),
+  return FutureBuilder<dartz.Either<ApiException,BloodPressureHistoryForLast7Days>>(
+      future: patientBloodPressureRepository.getBloodPressureOfLast7Days(),
       builder: (context,snapshot){
         if (snapshot.connectionState == ConnectionState.waiting) {
           return CustomChasingDots(size: 50.sp);

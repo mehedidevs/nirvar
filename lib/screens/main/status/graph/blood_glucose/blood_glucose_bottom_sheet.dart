@@ -1,12 +1,22 @@
+import 'package:dartz/dartz.dart' as dartz;
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nirvar/repository/diabetes/diabetes_repository.dart';
 import 'package:nirvar/screens/main/status/graph/blood_glucose/blood_glucose_input.dart';
+import 'package:nirvar/screens/main/status/graph/blood_glucose/monthly/monthly_glucose_chart.dart';
+import 'package:nirvar/screens/main/status/graph/blood_glucose/past_7_days/daily_glucose_chart.dart';
+import 'package:nirvar/screens/main/status/graph/blood_glucose/weekly/weekly_glucose_chart.dart';
+import 'package:path/path.dart';
 
+import '../../../../../core/resources/api_exception.dart';
 import '../../../../../injection_container.dart';
+import '../../../../../models/glucose_level_last_seven_days/glucose_level_for_past_seven_days.dart';
+import '../../../../../models/glucose_level_monthly/blood_glucose_monthly.dart';
+import '../../../../../models/glucose_level_weekly/blood_glucose_weekly.dart';
 import '../../../../utils/app_colors.dart';
 import '../../../../widgets/circuler_add_button.dart';
+import '../../../../widgets/custom_chasing_dots.dart';
 
 class BloodGlucoseBottomSheet extends StatelessWidget {
   const BloodGlucoseBottomSheet({super.key});
@@ -16,7 +26,7 @@ class BloodGlucoseBottomSheet extends StatelessWidget {
     return DefaultTabController(
       length: 3, // Number of tabs
       child: Padding(
-        padding: EdgeInsets.fromLTRB(0,32.h,0,0),
+        padding: EdgeInsets.fromLTRB(0,16.h,0,0),
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -82,8 +92,8 @@ class BloodGlucoseBottomSheet extends StatelessWidget {
               Expanded(
                 child: TabBarView(
                   children: [
-                    _buildDayView(),
-                    _buildWeekView(),
+                    _buildDailyView(),
+                    _buildWeeklyView(),
                     _buildMonthView(),
                   ],
                 ),
@@ -95,17 +105,20 @@ class BloodGlucoseBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildDayView() {
+  Widget _buildDailyView() {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 16.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Today’s Progress',
-            style: TextStyle(
-              fontSize: 24.sp,
-              fontWeight: FontWeight.bold,
+          Center(
+            child: Text(
+              'Daily Progress',
+              style: TextStyle(
+                fontSize: 24.sp,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
             ),
           ),
 
@@ -114,17 +127,55 @@ class BloodGlucoseBottomSheet extends StatelessWidget {
           _getDailyGlucoseLevel(),
           SizedBox(height: 24.h),
           // Chart Section
-          Text(
-            'Chart',
-            style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Chart',
+                style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary),
+              ),
+
+              Row(
+                children: [
+                  _buildLegendItem(AppColors.primary, 'Input1'),
+                  SizedBox(width: 16.w), // Responsive space between legends
+                  _buildLegendItem(AppColors.pale, 'Input2'),
+                ],
+              ),
+            ],
           ),
           SizedBox(height: 16.h),
-          _buildBPChart(),
+
+          _getDailyGlucoseChart(),
         ],
       ),
+    );
+  }
+
+  Widget _buildLegendItem(Color color, String label) {
+    return Row(
+      children: [
+        Container(
+          width: 12.w,
+          height: 12.h,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(3.r),
+          ),
+        ),
+        SizedBox(width: 8.w), // Space between icon and text
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w400,
+            color: AppColors.primary,
+          ),
+        ),
+      ],
     );
   }
 
@@ -135,67 +186,87 @@ class BloodGlucoseBottomSheet extends StatelessWidget {
       future: patientGlucoseRepository.getBloodGlucoseOfToday(),
       builder: (context,snapshot){
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildGlucoseLevelWidget('','');
+          return _buildGlucoseLevelWidget('');
         }
         if (!snapshot.hasData) {
-          return _buildGlucoseLevelWidget('','');
+          return _buildGlucoseLevelWidget('');
         }
         return snapshot.data!.fold((error){
-          return _buildGlucoseLevelWidget('','');
+          return _buildGlucoseLevelWidget('');
         }, (success){
-          double maximumLevel = double.tryParse(success.maximum ?? '0') ?? 0.0;
-          double minimumLevel = double.tryParse(success.minimum ?? '0') ?? 0.0;
-          return _buildGlucoseLevelWidget('$minimumLevel','$maximumLevel');
+          String minimumLevel = success ;
+          return _buildGlucoseLevelWidget(minimumLevel);
         });
 
       },);
 
   }
 
-  Row _buildGlucoseLevelWidget(String minimum,String maximum) {
+  Widget _getDailyGlucoseChart() {
+    final repository = sl<DiabetesRepository>();
+
+    return FutureBuilder<dartz.Either<ApiException,GlucoseLevelForPastSevenDays>>(
+      future: repository.getBloodGlucoseOfLast7Days(),
+      builder: (context,snapshot){
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CustomChasingDots(size: 50.sp);
+        }
+        if (!snapshot.hasData) {
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 16.h,horizontal: 8.w),
+            child: Center(child: Text(snapshot.error.toString(),style: const TextStyle(color: AppColors.primary),)),
+          );
+        }
+
+        return snapshot.data!.fold(
+              (error){
+            return Padding(
+              padding: EdgeInsets.symmetric(vertical: 16.h,horizontal: 8.w),
+              child: Center(child: Text(snapshot.error.toString(),style: const TextStyle(color: AppColors.primary),)),
+            );
+          },
+              (success){
+            final Map<String, GlucoseValues> bloodPressureMap = success.data ?? {};
+            final formattedMap = bloodPressureMap.map((key, value) => MapEntry("'$key'", value));
+            print(formattedMap);
+            return DailyGlucoseChart(apiResponse: bloodPressureMap);
+          },);
+
+      },
+    );
+  }
+
+  Widget _buildGlucoseLevelWidget(String minimum) {
     return Row(
-    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    mainAxisAlignment: MainAxisAlignment.center,
     children: [
       _buildBPBox(
-        'Minimum',
+        'Average Glucose Level',
         minimum,
-      ),
-      _buildBPBox(
-        'Maximum',
-        maximum,
       ),
     ],
   );
   }
 
-  Widget _buildWeekView() {
+  Widget _buildWeeklyView() {
     // Return the view for the Week tab
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 16.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Week’s Progress',
-            style: TextStyle(
-              fontSize: 24.sp,
-              fontWeight: FontWeight.bold,
+          Center(
+            child: Text(
+              'Weekly Progress',
+              style: TextStyle(
+                fontSize: 24.sp,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
 
           SizedBox(height: 16.h),
 
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildBPBox(
-                'Minimum',
-                '6.1'
-              ),
-              _buildBPBox('Maximum', '13.2'),
-            ],
-          ),
-          SizedBox(height: 24.h),
           // Chart Section
           Text(
             'Chart',
@@ -206,7 +277,7 @@ class BloodGlucoseBottomSheet extends StatelessWidget {
             ),
           ),
           SizedBox(height: 16.h),
-          _buildBPChart(),
+          _getWeeklyGlucoseChart()
         ],
       ),
     );
@@ -219,25 +290,16 @@ class BloodGlucoseBottomSheet extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Month’s Progress',
-            style: TextStyle(
-              fontSize: 24.sp,
-              fontWeight: FontWeight.bold,
+          Center(
+            child: Text(
+              'Monthly Progress',
+              style: TextStyle(
+                fontSize: 24.sp,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-
           SizedBox(height: 16.h),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildBPBox('Minimum', '6.2'),
-              _buildBPBox('Maximum', '12.5'),
-            ],
-          ),
-          SizedBox(height: 24.h),
-          // Chart Section
           Text(
             'Chart',
             style: TextStyle(
@@ -246,7 +308,7 @@ class BloodGlucoseBottomSheet extends StatelessWidget {
                 color: AppColors.primary),
           ),
           SizedBox(height: 16.h),
-          _buildBPChart(),
+          _getMonthlyGlucoseChart()
         ],
       ),
     );
@@ -273,7 +335,7 @@ class BloodGlucoseBottomSheet extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(label,
-              style: TextStyle(fontSize: 14.sp, color: AppColors.black)),
+              style: TextStyle(fontSize: 14.sp, color: AppColors.black),textAlign: TextAlign.center,),
           SizedBox(height: 8.h),
           Text(
             value,
@@ -288,63 +350,75 @@ class BloodGlucoseBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildBPChart() {
-    return AspectRatio(
-      aspectRatio: 1.5,
-      child: BarChart(
-        BarChartData(
-          alignment: BarChartAlignment.spaceAround,
-          maxY: 180,
-          barTouchData: BarTouchData(enabled: false),
-          titlesData: FlTitlesData(
-            show: true,
-            bottomTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                getTitlesWidget: (value, meta) {
-                  return Text(
-                    value.toInt().toString(),
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: Colors.grey,
-                    ),
-                  );
-                },
-              ),
-            ),
-            leftTitles: AxisTitles(
-              sideTitles: SideTitles(showTitles: false),
-            ),
-            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          ),
-          gridData: FlGridData(show: false),
-          borderData: FlBorderData(show: false),
-          barGroups: [
-            BarChartGroupData(
-                x: 8,
-                barRods: [BarChartRodData(toY: 120, color: AppColors.primary)]),
-            BarChartGroupData(
-                x: 10,
-                barRods: [BarChartRodData(toY: 80, color: AppColors.primary)]),
-            BarChartGroupData(
-                x: 12,
-                barRods: [BarChartRodData(toY: 100, color: AppColors.primary)]),
-            BarChartGroupData(
-                x: 14,
-                barRods: [BarChartRodData(toY: 110, color: AppColors.primary)]),
-            BarChartGroupData(
-                x: 16,
-                barRods: [BarChartRodData(toY: 60, color: AppColors.primary)]),
-            BarChartGroupData(
-                x: 18,
-                barRods: [BarChartRodData(toY: 90, color: AppColors.primary)]),
-            BarChartGroupData(
-                x: 20,
-                barRods: [BarChartRodData(toY: 130, color: AppColors.primary)]),
-          ],
-        ),
-      ),
-    );
-  }
+ Widget _getWeeklyGlucoseChart() {
+    final response = sl<DiabetesRepository>();
+    return FutureBuilder(
+        future: response.getBloodGlucoseWeekly(),
+        builder: (context,snapshot){
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CustomChasingDots(size: 50.sp);
+          }
+
+          if (!snapshot.hasData) {
+            return Padding(
+              padding: EdgeInsets.symmetric(vertical: 16.h,horizontal: 8.w),
+              child: Center(child: Text(snapshot.error.toString(),style: const TextStyle(color: AppColors.primary),)),
+            );
+          }
+
+          return snapshot.data!.fold(
+                (error){
+              return Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.h,horizontal: 8.w),
+                child: Center(child: Text(snapshot.error.toString(),style: const TextStyle(color: AppColors.primary),)),
+              );
+            },
+                (success){
+              final Map<String, WeekData> bloodPressureMap = success.data ?? {};
+              print(bloodPressureMap);
+              // final formattedMap = bloodPressureMap.map((key, value) => MapEntry("'$key'", value));
+              // print(formattedMap);
+              return WeeklyGlucoseChart(responseData: bloodPressureMap);
+            },);
+
+    },);
+ }
+
+ Widget _getMonthlyGlucoseChart() {
+   final response = sl<DiabetesRepository>();
+   return FutureBuilder(
+     future: response.getBloodGlucoseMonthly(),
+     builder: (context,snapshot){
+       if (snapshot.connectionState == ConnectionState.waiting) {
+         return CustomChasingDots(size: 50.sp);
+       }
+
+       if (!snapshot.hasData) {
+         return Padding(
+           padding: EdgeInsets.symmetric(vertical: 16.h,horizontal: 8.w),
+           child: Center(child: Text(snapshot.error.toString(),style: const TextStyle(color: AppColors.primary),)),
+         );
+       }
+
+       return snapshot.data!.fold(
+             (error){
+           return Padding(
+             padding: EdgeInsets.symmetric(vertical: 16.h,horizontal: 8.w),
+             child: Center(child: Text(snapshot.error.toString(),style: const TextStyle(color: AppColors.primary),)),
+           );
+         },
+             (success){
+           final Map<String, MonthData> bloodPressureMap = success.data ?? {};
+           print(bloodPressureMap);
+           // final formattedMap = bloodPressureMap.map((key, value) => MapEntry("'$key'", value));
+           // print(formattedMap);
+           return MonthlyGlucoseChart(responseData: bloodPressureMap);
+         },);
+
+     },);
+ }
+
+
+
+
 }

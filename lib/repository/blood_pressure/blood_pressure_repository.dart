@@ -10,7 +10,7 @@ abstract class BloodPressureRepository{
 
   Future<Either<ApiException,String>> storeBloodPressure(int systolic,int diastolic);
   Future<Either<ApiException, List<PatientBloodPressure>>> getBloodPressureOfToday();
-  Stream<Either<ApiException, BloodPressureHistoryForLast7Days>> getBloodPressureOfLast7Days();
+  Future<Either<ApiException, BloodPressureHistoryForLast7Days>> getBloodPressureOfLast7Days();
   Future<Either<ApiException,BloodPressureSummaryWeekly>> getBloodPressureWeekly();
   Future<Either<ApiException,BloodPressureSummaryMonthly>> getBloodPressureMonthly();
 }

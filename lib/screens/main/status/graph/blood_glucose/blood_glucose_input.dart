@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nirvar/repository/diabetes/diabetes_repository.dart';
-import 'package:nirvar/screens/auth/change_password.dart';
 import 'package:nirvar/screens/utils/helper.dart';
 
 import '../../../../../injection_container.dart';
@@ -90,7 +89,7 @@ class _BloodGlucoseInputState extends State<BloodGlucoseInput> {
                       onPressed: () async {
                         if (_formKey.currentState?.validate() ?? false) {
                           final response = await _repository.storeDiabetes(
-                              int.parse(_bloodGlucoseController.text));
+                              double.parse(_bloodGlucoseController.text));
                           response.fold(
                             (failure) {
                               context.flushBarErrorMessage(

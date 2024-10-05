@@ -3,9 +3,12 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:nirvar/core/resources/api_exception.dart';
 import 'package:nirvar/models/glucose_level/glucose_level.dart';
+import 'package:nirvar/models/glucose_level_weekly/blood_glucose_weekly.dart';
 import 'package:nirvar/models/patient_glucose/patient_glucose.dart';
 
 import '../../../core/constants/constants.dart';
+import '../../../models/glucose_level_last_seven_days/glucose_level_for_past_seven_days.dart';
+import '../../../models/glucose_level_monthly/blood_glucose_monthly.dart';
 import '../../preference/token_storage.dart';
 import '../../preference/user_id_storage.dart';
 
@@ -41,7 +44,7 @@ class DiabetesApiService {
     );
   }
 
-  Future<Either<ApiException,String>> storeDiabetes(int sugarLevel) async{
+  Future<Either<ApiException,String>> storeDiabetes(double sugarLevel) async{
     try{
       final response = await _dio.post(
           patientDiabetes,
@@ -65,45 +68,13 @@ class DiabetesApiService {
     }
   }
 
-  Stream<Either<ApiException,List<PatientGlucose>>> getBloodGlucoseOfLast7Days() async*{
-    try {
-      final response = await _dio.get(patientDiabetesLastSevenDays);
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = response.data;
-
-        if (responseData['status'] == 1 && responseData['message'] == 'success') {
-          final List<dynamic> bloodGlucoseJson = responseData['data'] ?? [];
-
-          if (bloodGlucoseJson.isNotEmpty) {
-            final List<PatientGlucose> bloodGlucoseList = bloodGlucoseJson
-                .map((json) => PatientGlucose.fromJson(json as Map<String, dynamic>))
-                .toList();
-
-            yield Right(bloodGlucoseList);
-          } else {
-            yield Left(ApiException('No blood pressure data found.'));
-          }
-        } else {
-          yield Left(ApiException(responseData['message']));
-        }
-      } else {
-        yield Left(ApiException.fromStatusCode(response.statusCode ?? 0));
-      }
-    } on DioException catch (e) {
-      yield Left(ApiException.fromDioError(e));
-    } catch (e) {
-      yield Left(ApiException(e.toString()));
-    }
-  }
-
-  Future<Either<ApiException, GlucoseLevel>> getBloodGlucoseOfToday() async {
+  Future<Either<ApiException, String>> getBloodGlucoseOfToday() async {
     try {
       final response = await _dio.get(patientDiabetesToday);
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = response.data;
         if (responseData['status'] == 1 && responseData['message'] == 'success') {
-          final glucoseLevel = GlucoseLevel.fromJson(responseData);
+          final glucoseLevel = responseData['avg_level'];
           return Right(glucoseLevel);
         } else {
           return Left(ApiException(responseData['message']));
@@ -118,30 +89,79 @@ class DiabetesApiService {
     }
   }
 
+  Future<Either<ApiException, GlucoseLevelForPastSevenDays>> getBloodGlucoseOfLast7Days() async {
+    try {
+      final response = await _dio.get(patientDiabetesLastSevenDays);
+
+      print('GLUCOSE LEVEL 7 DaYS: $response');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = response.data;
+        // Validate the structure of the response
+        if (responseData['status'] == 1 && responseData['message'] == 'success' && responseData['data'] != null) {
+          final glucoseData = GlucoseLevelForPastSevenDays.fromJson(responseData);
+          return Right(glucoseData);
+        } else {
+          return Left(ApiException(responseData['message'] ?? 'Unknown error'));
+        }
+      } else {
+        return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
+      }
+    } on DioException catch (e) {
+      return Left(ApiException.fromDioError(e));
+    } catch (e, stackTrace) {
+      // Optionally log the error and stack trace
+      return Left(ApiException(e.toString()));
+    }
+  }
 
 
+  Future<Either<ApiException,BloodGlucoseWeekly>> getBloodGlucoseWeekly() async{
+    try{
+      final response = await _dio.get(patientDiabetesWeekly);
 
+      if(response.statusCode == 200){
+        final Map<String,dynamic> responseData = response.data;
+        print("WEEKLY GLUCOSE : $responseData");
+        if(responseData["status"]==1 && responseData["message"] == "success" && responseData["data"]!=null){
+          final weeklyGlucoseLevel = BloodGlucoseWeekly.fromJson(responseData);
+          return Right(weeklyGlucoseLevel);
+        }else {
+          return Left(ApiException(responseData['message'] ?? 'Unknown error'));
+        }
+      }else {
+        return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
+      }
+    } on DioException catch (e) {
+      return Left(ApiException.fromDioError(e));
+    } catch (e, stackTrace) {
+      // Optionally log the error and stack trace
+      return Left(ApiException(e.toString()));
+    }
+  }
 
+  Future<Either<ApiException,BloodGlucoseMonthly>> getBloodGlucoseMonthly() async{
+    try{
+      final response = await _dio.get(patientDiabetesMonthly);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      if(response.statusCode == 200){
+        final Map<String,dynamic> responseData = response.data;
+        print("Monthly GLUCOSE : $responseData");
+        if(responseData["status"]==1 && responseData["message"] == "success" && responseData["data"]!=null){
+          final monthlyGlucoseLevel = BloodGlucoseMonthly.fromJson(responseData);
+          return Right(monthlyGlucoseLevel);
+        }else {
+          return Left(ApiException(responseData['message'] ?? 'Unknown error'));
+        }
+      }else {
+        return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
+      }
+    } on DioException catch (e) {
+      return Left(ApiException.fromDioError(e));
+    } catch (e, stackTrace) {
+      // Optionally log the error and stack trace
+      return Left(ApiException(e.toString()));
+    }
+  }
 
 }
