@@ -41,6 +41,7 @@ class AssetsPath {
   static String cameraSvg = '$_imageBasePath/camera.svg';
   static String deleteLogoSvg = '$_imageBasePath/delete_logo.svg';
   static String scanNewSvg = '$_imageBasePath/scan_new.svg';
+  static String penSvg = '$_imageBasePath/pen.svg';
 
 
   static String fileCardPng = '$_imageBasePath/file_card.png';

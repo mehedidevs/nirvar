@@ -194,81 +194,94 @@ class _MyFilesState extends State<MyFiles> {
             context: context,
             builder: (context) {
               final _formKey = GlobalKey<FormState>();
-              TextEditingController _folderNameController =
-              TextEditingController();
+              TextEditingController _folderNameController = TextEditingController();
               final patientFolderRepository = sl<PatientFolderRepository>();
+
               return Dialog(
+                backgroundColor: AppColors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16.r),
                 ),
-                child: Padding(
-                  padding: EdgeInsets.all(16.w),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Create Folder',
-                          style: TextStyle(
-                            fontSize: 24.sp,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
+                    return SizedBox(
+                      height: isKeyboardVisible
+                          ? ScreenUtil().screenHeight * 0.45.h // Adjust height when keyboard is visible
+                          : ScreenUtil().screenHeight * 0.45.h, // Default height
+
+                      child: Padding(
+                        padding: EdgeInsets.all(16.w),
+                        child: Form(
+                          key: _formKey,
+                          child: ListView(
+                           shrinkWrap: true,
+                            children: [
+                              Text(
+                                'Create Folder',
+                                style: TextStyle(
+                                  fontSize: 24.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: 32.h),
+                              LabeledTextFormField(
+                                label: 'Enter Folder Name',
+                                hint: '',
+                                controller: _folderNameController,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter Folder Name';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              SizedBox(height: 16.h),
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 0.h,
+                                    horizontal: 16.w
+                                ),
+                                child: CustomButton(
+                                  text: 'Save',
+                                  onPressed: () async {
+                                    if (_formKey.currentState?.validate() ?? false) {
+                                      final response = await patientFolderRepository.createFolder(_folderNameController.text);
+                                      setState(() {}); // Refresh the state
+                                      if (context.mounted) {
+                                        Navigator.of(context).pop();
+                                      }
+                                    }
+                                  },
+                                ),
+                              ),
+                              SizedBox(height: 8.h),
+                              // Cancel Button
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop(); // Close the dialog
+                                },
+                                child: Text(
+                                  'Cancel',
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          textAlign: TextAlign.center,
                         ),
-                        SizedBox(height: 32.h),
-                        LabeledTextFormField(
-                          label: 'Enter Folder Name',
-                          hint: '',
-                          controller: _folderNameController,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter Folder Name';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 32.h),
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 0.h, horizontal: 16.w),
-                          child: CustomButton(
-                            text: 'Save',
-                            onPressed: () async {
-                              if (_formKey.currentState?.validate() ?? false) {
-                                print(_folderNameController.text);
-                                final response = await patientFolderRepository.createFolder(_folderNameController.text);
-                                setState(() {});
-                                if (context.mounted) {
-                                  Navigator.of(context).pop();
-                                }
-                              }
-                            },
-                          ),
-                        ),
-                        SizedBox(height: 8.h),
-                        // Cancel Button
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(); // Close the dialog
-                          },
-                          child: Text(
-                            'Cancel',
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              color: AppColors
-                                  .primary, // Adjust the color as needed
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
                 ),
               );
             },
           );
+
         }, onFileUpload: (){
           showDialog(context: context, builder: (context){
             return CustomAlertDialog();

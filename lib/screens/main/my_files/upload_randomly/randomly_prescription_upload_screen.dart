@@ -17,6 +17,7 @@ import '../../../utils/assets_path.dart';
 import '../../../utils/file_type.dart';
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/disabled_button.dart';
+import '../../../widgets/or_separator.dart';
 import 'ocr/ocr_helper.dart';
 
 class RandomlyPrescriptionUploadScreen extends StatefulWidget {
@@ -272,49 +273,51 @@ class _RandomlyPrescriptionUploadScreenState extends State<RandomlyPrescriptionU
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                DottedBorder(
-                  color: AppColors.primary.withOpacity(0.5),
-                  borderType: BorderType.RRect,
-                  radius: Radius.circular(12.r),
-                  dashPattern: [6, 3],
-                  strokeWidth: 1,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(12.r)),
-                    child: Container(
-                      color: AppColors.primary.withOpacity(.2),
-                      width: double.infinity,
-                      padding: EdgeInsets.all(20.w),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+                GestureDetector(
+                  onTap: (){
+                    _pickFile(ImageSource.camera);
+                  },
+                  child: DottedBorder(
+                    color: AppColors.primary.withOpacity(0.5),
+                    borderType: BorderType.RRect,
+                    radius: Radius.circular(12.r),
+                    dashPattern: [6, 3],
+                    strokeWidth: 1,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(12.r)),
+                      child: Container(
+                        color: AppColors.primary.withOpacity(.2),
+                        width: double.infinity,
+                        padding: EdgeInsets.all(20.w),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
 
-                          SizedBox(height: 20.h),
+                            SizedBox(height: 20.h),
 
-                          SvgPicture.asset(
-                            AssetsPath.scanNewSvg, // Replace with your actual asset path
-                            height: 60.h,
-                            width: 60.w,
-                          ),
-                          SizedBox(height: 20.h),
-                          GestureDetector(
-                            onTap: (){
-                              _pickFile(ImageSource.camera);
-                            },
-                            child: Text(
+                            SvgPicture.asset(
+                              AssetsPath.scanNewSvg, // Replace with your actual asset path
+                              height: 60.h,
+                              width: 60.w,
+                            ),
+                            SizedBox(height: 20.h),
+                            Text(
                               'Scan',
                               style: TextStyle(
                                 fontSize: 16.sp,
                                 color: Colors.black.withOpacity(0.4),
                               ),
                             ),
-                          ),
-                          SizedBox(height: 20.h),
-                        ],
+                            SizedBox(height: 20.h),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: 30.h),
+                SizedBox(height: 10.h),
+                OrSeparator(),
+                SizedBox(height: 10.h),
                 DottedBorder(
                   color: AppColors.primary.withOpacity(0.5),
                   borderType: BorderType.RRect,

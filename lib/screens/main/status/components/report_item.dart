@@ -85,6 +85,7 @@ class _ReportListViewState extends State<ReportListView> {
                         TextEditingController _fileReNameController = TextEditingController();
                         _fileReNameController.text = report.rename ?? '';
                         return Dialog(
+                          backgroundColor: AppColors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16.r),
                           ),
@@ -92,8 +93,8 @@ class _ReportListViewState extends State<ReportListView> {
                             padding: EdgeInsets.all(16.w),
                             child: Form(
                               key: _formKey,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
+                              child: ListView(
+                                shrinkWrap: true,
                                 children: [
                                   Text(
                                     report.name ?? '',
@@ -103,6 +104,8 @@ class _ReportListViewState extends State<ReportListView> {
                                       color: Colors.black,
                                     ),
                                     textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.fade,
                                   ),
                                   SizedBox(height: 32.h),
                                   LabeledTextFormField(

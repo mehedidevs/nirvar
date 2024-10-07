@@ -63,8 +63,8 @@ class _SignInScreenState extends State<SignInScreen> {
               context.flushBarSuccessMessage(message: "Login successful");
               Future.delayed(const Duration(seconds: 2), () {
                 if(context.mounted){
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => MainScreen()));
+                  Navigator.pushAndRemoveUntil(context,
+                      MaterialPageRoute(builder: (context) => const MainScreen()),(route) => false);
                 }
               });
             } else if (state.status == LoginStatus.failure) {

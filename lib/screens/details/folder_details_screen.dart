@@ -434,6 +434,7 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
                   TextEditingController _fileReNameController = TextEditingController();
                   _fileReNameController.text = file.rename ?? '';
                   return Dialog(
+                    backgroundColor: AppColors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16.r),
                     ),
@@ -441,8 +442,8 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
                       padding: EdgeInsets.all(16.w),
                       child: Form(
                         key: _formKey,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
+                        child: ListView(
+                          shrinkWrap: true,
                           children: [
                             Text(
                               file.name ?? '',
@@ -452,6 +453,8 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
                                 color: Colors.black,
                               ),
                               textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.fade,
                             ),
                             SizedBox(height: 32.h),
                             LabeledTextFormField(

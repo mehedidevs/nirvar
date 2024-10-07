@@ -31,27 +31,46 @@ class _MainScreenState extends State<MainScreen> {
     ProfileScreen()
   ];
 
+  @mustCallSuper
+  void _onPopInvokedWithResult(bool didPop, dynamic result) {
+    // Handle back press behavior here
+    if (_selectedIndex <= _screens.length) {
+      // Allow app to exit if
+      return;
+    } else {
+      setState(() {
+        _selectedIndex = 0; // Navigate back to HomeScreen if not on it
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          IndexedStack(
-            index: _selectedIndex,
-            children: _screens,
-          ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 4.h, // Adjust as needed
-            child: Center(
-              child: FloatingBottomNavigationBar(
-                selectedIndex: _selectedIndex,
-                onItemTapped: _onItemTapped,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        _onPopInvokedWithResult(didPop, result); // Custom back press logic
+      },
+      child: Scaffold(
+        body: Stack(
+          children: [
+            IndexedStack(
+              index: _selectedIndex,
+              children: _screens,
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 4.h, // Adjust as needed
+              child: Center(
+                child: FloatingBottomNavigationBar(
+                  selectedIndex: _selectedIndex,
+                  onItemTapped: _onItemTapped,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

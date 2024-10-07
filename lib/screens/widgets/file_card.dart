@@ -132,94 +132,87 @@ class _FileCardState extends State<FileCard> {
                               padding: EdgeInsets.all(16.w),
                               child: Form(
                                 key: _formKey,
-                                child: SingleChildScrollView(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      ListView(
-                                        shrinkWrap: true,
-                                        physics: const NeverScrollableScrollPhysics(),
-                                        children: [
-                                          Text(
-                                            widget.patientFolder.name ?? '',
-                                            style: TextStyle(
-                                              fontSize: 24.sp,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                          SizedBox(height: 32.h),
-                                          LabeledTextFormField(
-                                            label: 'Edit Folder Name',
-                                            hint: '',
-                                            controller: _folderNameController,
-                                            validator: (value) {
-                                              if (value == null ||
-                                                  value.isEmpty) {
-                                                return 'Please enter Folder Name';
-                                              }
-                                              return null;
-                                            },
-                                          ),
-                                          SizedBox(height: 32.h),
-                                          Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 0.h,
-                                                horizontal: 16.w),
-                                            child: CustomButton(
-                                              text: 'Save',
-                                              onPressed: () async {
-                                                if (_formKey.currentState
-                                                        ?.validate() ??
-                                                    false) {
-                                                  final response =
-                                                      await patientFolderRepository
-                                                          .updateFolder(
-                                                              widget
-                                                                  .patientFolder
-                                                                  .folderId,
-                                                              _folderNameController
-                                                                  .text);
-                                                  response.fold(
-                                                    (failure) {
-                                                      if (context.mounted) {
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                      }
-                                                    },
-                                                    (success) {
-                                                      widget.onUpdateSuccess();
-                                                      if (context.mounted) {
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                      }
-                                                    },
-                                                  );
+                                child: ListView(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  children: [
+                                    Text(
+                                      widget.patientFolder.name ?? '',
+                                      style: TextStyle(
+                                        fontSize: 24.sp,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    SizedBox(height: 32.h),
+                                    LabeledTextFormField(
+                                      label: 'Edit Folder Name',
+                                      hint: '',
+                                      controller: _folderNameController,
+                                      validator: (value) {
+                                        if (value == null ||
+                                            value.isEmpty) {
+                                          return 'Please enter Folder Name';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                    SizedBox(height: 32.h),
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 0.h,
+                                          horizontal: 16.w),
+                                      child: CustomButton(
+                                        text: 'Save',
+                                        onPressed: () async {
+                                          if (_formKey.currentState
+                                                  ?.validate() ??
+                                              false) {
+                                            final response =
+                                                await patientFolderRepository
+                                                    .updateFolder(
+                                                        widget
+                                                            .patientFolder
+                                                            .folderId,
+                                                        _folderNameController
+                                                            .text);
+                                            response.fold(
+                                              (failure) {
+                                                if (context.mounted) {
+                                                  Navigator.of(context)
+                                                      .pop();
                                                 }
                                               },
-                                            ),
-                                          ),
-                                          SizedBox(height: 8.h),
-                                          // Cancel Button
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context)
-                                                  .pop(); // Close the dialog
-                                            },
-                                            child: Text(
-                                              'Cancel',
-                                              style: TextStyle(
-                                                fontSize: 14.sp,
-                                                color: AppColors
-                                                    .primary, // Adjust the color as needed
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                                              (success) {
+                                                widget.onUpdateSuccess();
+                                                if (context.mounted) {
+                                                  Navigator.of(context)
+                                                      .pop();
+                                                }
+                                              },
+                                            );
+                                          }
+                                        },
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                    SizedBox(height: 8.h),
+                                    // Cancel Button
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context)
+                                            .pop(); // Close the dialog
+                                      },
+                                      child: Text(
+                                        'Cancel',
+                                        style: TextStyle(
+                                          fontSize: 14.sp,
+                                          color: AppColors
+                                              .primary, // Adjust the color as needed
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),

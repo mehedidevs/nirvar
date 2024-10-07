@@ -7,8 +7,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nirvar/models/selected_folder/selected_folder.dart';
 import 'package:nirvar/repository/patient_folder/patient_folder_repository.dart';
-import 'package:nirvar/screens/auth/change_password.dart';
 import 'package:nirvar/screens/utils/helper.dart';
+import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 import 'package:path/path.dart' as path;
 
 import '../../../../injection_container.dart';
@@ -37,6 +37,7 @@ class _RandomlyTestReportUploadScreenState
   File? _selectedFile;
   String? _fileName;
   int? _fileSize;
+  bool _loading = false;
 
   final _fileRepository = sl<PatientFileRepository>();
   final _folderRepository = sl<PatientFolderRepository>();
@@ -136,7 +137,12 @@ class _RandomlyTestReportUploadScreenState
                         SizedBox(height: 20.h),
                         ElevatedButton(
                           onPressed: () {
-                            _pickFile();
+                            if (_selectedFile == null) {
+                              _pickFile();
+                            } else {
+                              context.flushBarErrorMessage(
+                                  message: 'You Have already Uploaded');
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.black,
@@ -219,188 +225,262 @@ class _RandomlyTestReportUploadScreenState
                       });
                     }),
 
+                SizedBox(height: ScreenUtil().screenHeight * .02.h),
+
+                _selectedFile != null
+                    ? Stack(
+                  clipBehavior: Clip.none,
+                      children: [
+                        Container(
+                            decoration: BoxDecoration(
+                              color: AppColors.pale,
+                              borderRadius: BorderRadius.circular(20.r),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 5.r,
+                                  offset: Offset(0, 4.h),
+                                ),
+                              ],
+                            ),
+                            child: ListTile(
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 10.w, vertical: 10.h),
+                              leading: ClipRRect(
+                                borderRadius: BorderRadius.circular(12.r),
+                                child: Image.file(
+                                  _selectedFile!,
+                                  height: 50.h,
+                                  width: 50.w,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              title: Text(
+                                _fileName ?? '',
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: const Color(0xFF2C3E50),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.fade,
+                              ),
+                              subtitle: Text(
+                                getFileSizeString(
+                                  bytes: _fileSize ?? 0,
+                                ),
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              trailing: IconButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      final _formKey = GlobalKey<FormState>();
+                                      TextEditingController _fileReNameController =
+                                          TextEditingController();
+                                      _fileReNameController.text = _fileName ?? '';
+                                      return Dialog(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(16.r),
+                                        ),
+                                        child: Padding(
+                                          padding: EdgeInsets.all(16.w),
+                                          child: Form(
+                                            key: _formKey,
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  _fileName ?? '',
+                                                  style: TextStyle(
+                                                    fontSize: 24.sp,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                                SizedBox(height: 32.h),
+                                                LabeledTextFormField(
+                                                  label: 'Edit File Name',
+                                                  hint: '',
+                                                  controller: _fileReNameController,
+                                                  validator: (value) {
+                                                    if (value == null ||
+                                                        value.isEmpty) {
+                                                      return 'Please enter Folder Name';
+                                                    }
+                                                    return null;
+                                                  },
+                                                ),
+                                                SizedBox(height: 32.h),
+                                                Padding(
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: 0.h,
+                                                      horizontal: 16.w),
+                                                  child: CustomButton(
+                                                    text: 'Save',
+                                                    onPressed: () async {
+                                                      if (_formKey.currentState
+                                                              ?.validate() ??
+                                                          false) {
+                                                        setState(() {
+                                                          _fileName =
+                                                              _fileReNameController
+                                                                  .text;
+                                                        });
+                                                        Navigator.of(context).pop();
+                                                      }
+                                                    },
+                                                  ),
+                                                ),
+                                                SizedBox(height: 8.h),
+                                                // Cancel Button
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context)
+                                                        .pop(); // Close the dialog
+                                                  },
+                                                  child: Text(
+                                                    'Cancel',
+                                                    style: TextStyle(
+                                                      fontSize: 14.sp,
+                                                      color: AppColors
+                                                          .primary, // Adjust the color as needed
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                                icon: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.edit,
+                                      // Use the icon you want for the rename action
+                                      color: AppColors.red,
+                                    ),
+                                    SizedBox(width: 4),
+                                    // Add some space between icon and text
+                                    Text(
+                                      'Rename',
+                                      style: TextStyle(color: AppColors.red),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              // trailing: Icon(
+                              //   Icons.more_vert,
+                              //   color: Colors.black38,
+                              // ),
+                            ),
+                          ),
+                        Positioned(
+                          top: -10.h,
+                          right: -10.w,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _selectedFile = null;
+                                _fileName = null;
+                                _fileSize = null;
+                              });
+                            },
+                            child: Container(
+                              width: 24.w,
+                              height: 24.h,
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    blurRadius: 4.r,
+                                    offset: Offset(0, 2.h),
+                                  ),
+                                ],
+                              ),
+                              child: Icon(
+                                Icons.close,
+                                size: 16.sp,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                    : const SizedBox(),
+
+                SizedBox(height: ScreenUtil().screenHeight * .02.h),
+                // Upload button
                 _selectedFile != null
                     ? Padding(
                         padding: EdgeInsets.symmetric(
                             horizontal: 32.w, vertical: 16.h),
                         child: Center(
-                          child: CustomButton(
-                            text: 'Upload',
-                            onPressed: () async {
-                              if (_selectedCategory == null ||
-                                  _selectedFile == null ||
-                                  folderId == null) {
-                                context.flushBarErrorMessage(
-                                    message: 'Select A Folder');
-                              } else {
-                                final response =
-                                    await _fileRepository.uploadFile(
-                                  folderId: folderId.toString(),
-                                  file: _selectedFile!,
-                                  type: FileType.testReport.value,
-                                  fileName: _fileName!,
-                                );
-                                response.fold(
-                                  (failure) {
-                                    context.flushBarErrorMessage(
-                                        message: failure.message);
+                          child: _loading
+                              ? const CustomChasingDots()
+                              : CustomButton(
+                                  text: 'Upload',
+                                  onPressed: () async {
+                                    if (_selectedCategory == null ||
+                                        _selectedFile == null ||
+                                        folderId == null) {
+                                      context.flushBarErrorMessage(
+                                          message: 'Select A Folder');
+                                    } else {
+                                      setState(() {
+                                        _loading = true;
+                                      });
+
+                                      final response =
+                                          await _fileRepository.uploadFile(
+                                        folderId: folderId.toString(),
+                                        file: _selectedFile!,
+                                        type: FileType.testReport.value,
+                                        fileName: _fileName!,
+                                      );
+                                      response.fold(
+                                        (failure) {
+                                          context.flushBarErrorMessage(
+                                              message: failure.message);
+
+                                          setState(() {
+                                            _loading = false;
+                                          });
+                                        },
+                                        (success) {
+                                          context.flushBarSuccessMessage(
+                                              message: success);
+                                          setState(() {
+                                            _fileName = null;
+                                            _selectedFile = null;
+                                            folderId = null;
+                                            _loading = false;
+                                          });
+                                        },
+                                      );
+                                    }
                                   },
-                                  (success) {
-                                    context.flushBarSuccessMessage(
-                                        message: success);
-                                    setState(() {
-                                      _fileName = null;
-                                      _selectedFile = null;
-                                      folderId = null;
-                                    });
-                                  },
-                                );
-                              }
-                            },
-                          ),
+                                ),
                         ),
                       )
                     : Padding(
                         padding: EdgeInsets.symmetric(
                             horizontal: 16.w, vertical: 4.h),
-                        child:
-                            Center(child: DisabledButton(buttonText: 'Upload')),
+                        child: const Center(
+                            child: DisabledButton(buttonText: 'Upload')),
                       ),
-
-                SizedBox(height: ScreenUtil().screenHeight * .02.h),
-                // Upload button
-                _selectedFile != null
-                    ? ListTile(
-                        contentPadding: EdgeInsets.symmetric(
-                            horizontal: 10.w, vertical: 4.h),
-                        leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(12.r),
-                          child: Image.file(
-                            _selectedFile!,
-                            height: 50.h,
-                            width: 50.w,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        title: Text(
-                          _fileName ?? '',
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF2C3E50),
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.fade,
-                        ),
-                        subtitle: Text(
-                          getFileSizeString(
-                            bytes: _fileSize ?? 0,
-                          ),
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        trailing: IconButton(
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (context){
-                                final _formKey = GlobalKey<FormState>();
-                                TextEditingController _fileReNameController = TextEditingController();
-                                _fileReNameController.text = _fileName ?? '';
-                                return Dialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16.r),
-                                  ),
-                                  child: Padding(
-                                    padding: EdgeInsets.all(16.w),
-                                    child: Form(
-                                      key: _formKey,
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                           _fileName ?? '',
-                                            style: TextStyle(
-                                              fontSize: 24.sp,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                          SizedBox(height: 32.h),
-                                          LabeledTextFormField(
-                                            label: 'Edit File Name',
-                                            hint: '',
-                                            controller: _fileReNameController,
-                                            validator: (value){
-                                              if (value == null || value.isEmpty) {
-                                                return 'Please enter Folder Name';
-                                              }
-                                              return null;
-                                            },
-                                          ),
-                                          SizedBox(height: 32.h),
-                                          Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 0.h, horizontal: 16.w),
-                                            child: CustomButton(
-                                              text: 'Save',
-                                              onPressed: () async {
-                                                if(_formKey.currentState?.validate() ?? false){
-                                                  setState(() {
-                                                    _fileName = _fileReNameController.text;
-                                                  });
-                                                  Navigator.of(context).pop();
-                                                }
-                                              },
-                                            ),
-                                          ),
-                                          SizedBox(height: 8.h),
-                                          // Cancel Button
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.of(context).pop(); // Close the dialog
-                                            },
-                                            child: Text(
-                                              'Cancel',
-                                              style: TextStyle(
-                                                fontSize: 14.sp,
-                                                color: AppColors.primary, // Adjust the color as needed
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },);
-                          },
-                          icon: const Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.edit, // Use the icon you want for the rename action
-                                color: AppColors.red,
-                              ),
-                              SizedBox(width: 4), // Add some space between icon and text
-                              Text(
-                                'Rename',
-                                style: TextStyle(color: AppColors.red),
-                              ),
-                            ],
-                          ),
-                        )
-                  ,
-                        // trailing: Icon(
-                        //   Icons.more_vert,
-                        //   color: Colors.black38,
-                        // ),
-                      )
-                    : const SizedBox(),
               ],
             ),
           ),

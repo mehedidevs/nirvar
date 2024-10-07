@@ -31,5 +31,7 @@ class AppColors {
   static const Color greyLight = Color(0xFF193B68);
   static const Color paleLight = Color(0xFFEDF4F5);
 
+  static const Color softCoral = Color(0xFFE39087);
+
 
 }
