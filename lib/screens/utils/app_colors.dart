@@ -32,6 +32,7 @@ class AppColors {
   static const Color paleLight = Color(0xFFEDF4F5);
 
   static const Color softCoral = Color(0xFFE39087);
+  static const Color menuItemColor = Color(0xFFEDEDED);
 
 
 }
