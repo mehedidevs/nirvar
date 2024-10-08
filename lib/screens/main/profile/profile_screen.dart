@@ -215,10 +215,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                       result.fold(
                             (failure) {
-                          Navigator.of(context).pop(false); // Return false on failure
+                          Navigator.of(context).pop(false);
                         },
                             (success) {
-                          // Close the dialog and navigate to SignUpScreen
+
                               Navigator.of(context).pop(true);
                         },
                       );

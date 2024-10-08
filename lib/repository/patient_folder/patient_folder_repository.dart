@@ -21,4 +21,6 @@ abstract class PatientFolderRepository{
   Future<Either<ApiException,List<SelectedFolder>>> selectFolder();
 
   Future<Either<ApiException, CreatedFolderForPrescription>> createFolderForPrescription(String folderName);
+
+  Future<Either<ApiException,List<String>>> doctorSpeciality();
 }

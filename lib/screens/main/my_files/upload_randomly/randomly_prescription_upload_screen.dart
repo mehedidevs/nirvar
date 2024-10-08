@@ -51,95 +51,7 @@ class _RandomlyPrescriptionUploadScreenState
   bool _initialLoading = true;
   bool _isDialogShown = false;
 
-  List<String> medicalDepartments = [
-    "Anesthesiology",
-    "Cardiology",
-    "Dermatology",
-    "Emergency Medicine",
-    "Endocrinology",
-    "Gastroenterology",
-    "General Surgery",
-    "Hematology",
-    "Infectious Disease",
-    "Internal Medicine",
-    "Neonatology",
-    "Nephrology",
-    "Neurology",
-    "Neurosurgery",
-    "Gynecology",
-    "Obstetrics",
-    "Oncology",
-    "Ophthalmology",
-    "Orthopedics",
-    "Otolaryngology (ENT)",
-    "Pediatrics",
-    "Plastic Surgery",
-    "Psychiatry",
-    "Pulmonology",
-    "Radiology",
-    "Rheumatology",
-    "Urology",
-    "Vascular Surgery",
-    "Pathology",
-    "Immunology",
-    "Geriatrics",
-    "Pain Management",
-    "Rehabilitation Medicine",
-    "Palliative Care",
-    "Dentistry",
-    "Sports Medicine",
-    "Allergy and Immunology",
-    "Family Medicine",
-    "Nuclear Medicine",
-    "Occupational Medicine",
-    "Orthodontics",
-    "Prosthodontics",
-    "Oral and Maxillofacial Surgery",
-    "Public Health",
-    "Traumatology",
-    "Thoracic Surgery",
-    "Hepatology",
-    "Audiology",
-    "Sleep Medicine",
-    "Medical Genetics",
-    "Transplant Surgery",
-    "Gynecology", // Explicitly mentioned separately
-    "Andrology",
-    "Bariatric Surgery",
-    "Colorectal Surgery",
-    "Critical Care Medicine",
-    "Endodontics",
-    "Gastrointestinal Surgery",
-    "Hand Surgery",
-    "Maxillofacial Surgery",
-    "Nephrology",
-    "Orthopedic Oncology",
-    "Phlebology",
-    "Proctology",
-    "Psychosomatic Medicine",
-    "Sexology",
-    "Spine Surgery",
-    "Trauma Surgery",
-    "Vascular Medicine",
-    "Clinical Immunology",
-    "Addiction Medicine",
-    "Hyperbaric Medicine",
-    "Medical Toxicology",
-    "Perinatology",
-    "Forensic Medicine",
-    "Genomic Medicine",
-    "Laboratory Medicine",
-    "Preventive Medicine",
-    "Telemedicine",
-    "Neurocritical Care",
-    "Sleep Disorders Medicine",
-    "Dermatopathology",
-    "Pediatric Surgery",
-    "Neonatal Surgery",
-    "Hematologic Oncology",
-    "Infectious Disease and Immunology",
-    "Interventional Radiology"
-  ];
+  List<String> doctorSpeciality = [];
 
   List<SelectedFolder> existingFolder = [];
 
@@ -155,6 +67,29 @@ class _RandomlyPrescriptionUploadScreenState
       }, (success) {
         setState(() {
           existingFolder = success;
+          _initialLoading = false;
+        });
+      });
+    } catch (e) {
+      print('ERROR : ${e.toString()}');
+      setState(() {
+        _initialLoading = false;
+      });
+    }
+  }
+
+  Future<void> _fetchDoctorSpeciality() async {
+    try {
+      final response = await _folderRepository.doctorSpeciality();
+
+      response.fold((error) {
+        context.flushBarErrorMessage(message: error.message);
+        setState(() {
+          _initialLoading = false;
+        });
+      }, (success) {
+        setState(() {
+          doctorSpeciality = success;
           _initialLoading = false;
         });
       });
@@ -185,13 +120,15 @@ class _RandomlyPrescriptionUploadScreenState
     return ((bytes / pow(1024, i)).toStringAsFixed(decimals)) + suffixes[i];
   }
 
+  //NEED TO WORK on the later
   Stream<String?> processText(List<String> words) async* {
+    //NEED TO USE doctor speciality instead of medicalDepartments
+
     for (String word in words) {
       // Perform binary search for exact match
-      int exactMatchIndex =
-          binarySearch(medicalDepartments, word.toLowerCase());
+      int exactMatchIndex = binarySearch(doctorSpeciality, word.toLowerCase());
       if (exactMatchIndex != -1) {
-        yield medicalDepartments[exactMatchIndex]; // Exact match found
+        yield doctorSpeciality[exactMatchIndex]; // Exact match found
         continue;
       }
 
@@ -200,9 +137,8 @@ class _RandomlyPrescriptionUploadScreenState
       String? closestDepartment;
       double maxSimilarity = 0.0;
 
-      for (String department in medicalDepartments) {
-        double similarity =
-            calculateSimilarity(word.toLowerCase(), department.toLowerCase());
+      for (String department in doctorSpeciality) {
+        double similarity = calculateSimilarity(word.toLowerCase(), department);
 
         if (similarity >= threshold && similarity > maxSimilarity) {
           maxSimilarity = similarity;
@@ -219,7 +155,6 @@ class _RandomlyPrescriptionUploadScreenState
     yield "No matching department found"; // Yield if no matches were found
   }
 
-  //Work on the OCR
   Future<List<String>?> _extractText(String file) async {
     final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
     final InputImage inputImage = InputImage.fromFilePath(file);
@@ -227,13 +162,52 @@ class _RandomlyPrescriptionUploadScreenState
         await textRecognizer.processImage(inputImage);
 
     List<String> words = [];
+    List<String> doctorNames = []; // Store all doctor names found
+
     for (TextBlock block in recognizedText.blocks) {
       for (TextLine line in block.lines) {
-        words.addAll(line.text.split(RegExp(r'\s+')));
-        //need to find out the doctor name
+        List<String> lineWords = line.text.split(RegExp(r'\s+'));
+        words.addAll(lineWords);
+
+        // Check for potential doctor names in the line
+        for (int i = 0; i < lineWords.length; i++) {
+          String word = lineWords[i];
+
+          // Check for "Dr." or "Doctor" in the line
+          if (word.contains(RegExp(r'(Dr\.|Doctor)', caseSensitive: false))) {
+            List<String> potentialName = [];
+
+            // Collect words that could form a doctor's name following "Dr." or "Doctor"
+            for (int j = i + 1; j < lineWords.length; j++) {
+              String nextWord = lineWords[j];
+
+              // Stop if the next word matches a department or is not a name-like word
+              if (doctorSpeciality.contains(nextWord) ||
+                  nextWord.length < 2 ||
+                  nextWord.contains(RegExp(r'[^a-zA-Z]'))) {
+                break;
+              }
+              potentialName.add(nextWord);
+            }
+
+            // If a potential name is found, add to the list of doctor names
+            if (potentialName.isNotEmpty) {
+              doctorNames.add('Dr. ' + potentialName.join(' '));
+            }
+          }
+        }
       }
     }
-    print(words);
+
+    // Print or return the doctor names for debugging
+    if (doctorNames.isNotEmpty) {
+      print('Doctor Names Found: $doctorNames');
+    } else {
+      print('No Doctor Names Found');
+    }
+
+    print(
+        words); // This will still print the entire word list without any interference
     return words;
   }
 
@@ -253,7 +227,9 @@ class _RandomlyPrescriptionUploadScreenState
     );
 
     if (folder.name != 'N/A') {
-      //folderId = folder.id;
+      // folderId = folder.id;
+
+      print('GETTING FOLDER ID FROM EXISTING FOLDERS $folderId');
       setState(() {
         folderId = folder.id;
       });
@@ -264,8 +240,9 @@ class _RandomlyPrescriptionUploadScreenState
   }
 
   //The Main Widget To Get The Folder ID
-  void _showDepartmentDialog(BuildContext context, String department) {
-    showDialog(
+  Future<bool> _showDepartmentDialog(
+      BuildContext context, String department) async {
+    final result = await showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) {
@@ -329,20 +306,25 @@ class _RandomlyPrescriptionUploadScreenState
                                 if (getExistingFolder(
                                     _folderNameController.text)) {
                                   if (context.mounted) {
-                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop(true);
                                   }
                                 } else {
+                                  //ACTUAL PROBLEM LIES HERE
+
                                   final response = await _folderRepository
-                                      .createFolderForPrescription(
-                                          _folderNameController.text);
+                                      .createFolderForPrescription(_folderNameController.text);
 
-                                  response.fold((failure) {}, (success) {
-                                    folderId = success.id;
-
-                                    if (context.mounted) {
-                                      Navigator.of(context).pop();
-                                    }
-                                  });
+                                  response.fold(
+                                    (failure) {
+                                      print('$failure');
+                                      Navigator.of(context).pop(false);
+                                    },
+                                    (success) {
+                                      folderId = success.id;
+                                      print('GETTING FOLDER ID FROM NEW FOLDERS $folderId');
+                                      Navigator.of(context).pop(true);
+                                    },
+                                  );
                                 }
                               }
                             },
@@ -358,13 +340,16 @@ class _RandomlyPrescriptionUploadScreenState
         );
       },
     );
+
+    return result;
   }
 
   @override
   void initState() {
     super.initState();
     _fetchSelectedFolder();
-    medicalDepartments.sort((a, b) => a.compareTo(b));
+    _fetchDoctorSpeciality();
+    // medicalDepartments.sort((a, b) => a.compareTo(b));
   }
 
   @override
@@ -420,22 +405,17 @@ class _RandomlyPrescriptionUploadScreenState
 
                       _extractTextView(),
 
-                      // (_selectedFile != null && folderId != null) ? _getUploadFile(context) : const SizedBox(),
-                      _selectedFile != null
+                      (_selectedFile != null && folderId != null)
                           ? _getUploadFile(context)
                           : const SizedBox(),
+                      // _selectedFile != null
+                      //     ? _getUploadFile(context)
+                      //     : const SizedBox(),
 
                       _buildCustomSpacer(),
                       // Upload button
 
-                      // (_selectedFile != null && folderId != null) ? Padding(
-                      //                   padding: EdgeInsets.symmetric(
-                      //                       horizontal: 32.w, vertical: 16.h),
-                      //                   child: Center(
-                      //                     child: _loading ? const CustomChasingDots() : _buildUploadButton(context),
-                      //                   ),
-                      //                 ) : _getDisabledButton(),
-                      _selectedFile != null
+                      (_selectedFile != null && folderId != null)
                           ? Padding(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 32.w, vertical: 16.h),
@@ -446,6 +426,17 @@ class _RandomlyPrescriptionUploadScreenState
                               ),
                             )
                           : _getDisabledButton(),
+                      // _selectedFile != null
+                      //     ? Padding(
+                      //         padding: EdgeInsets.symmetric(
+                      //             horizontal: 32.w, vertical: 16.h),
+                      //         child: Center(
+                      //           child: _loading
+                      //               ? const CustomChasingDots()
+                      //               : _buildUploadButton(context),
+                      //         ),
+                      //       )
+                      //     : _getDisabledButton(),
                     ],
                   ),
                 ),
@@ -469,9 +460,24 @@ class _RandomlyPrescriptionUploadScreenState
           return Text('Error: ${snapshot.error}');
         } else if (snapshot.hasData && snapshot.data != null) {
           if (!_isDialogShown) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              _showDepartmentDialog(context, snapshot.data!);
-              _isDialogShown = true; // Mark as shown
+            bool? result;
+
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              result = await _showDepartmentDialog(context, snapshot.data!);
+              _isDialogShown = true;
+              if (result == true) {
+                setState(() {});
+                if (context.mounted) {
+                  context.flushBarSuccessMessage(
+                      message: 'Folder Name Is Confirmed');
+                }
+              }
+              if (result == false) {
+                if (context.mounted) {
+                  context.flushBarErrorMessage(
+                      message: 'Folder Name Is Not Found');
+                }
+              }
             });
           }
           return const SizedBox();
@@ -487,6 +493,9 @@ class _RandomlyPrescriptionUploadScreenState
       text: 'Upload',
       onPressed: () async {
         if (folderId != null || folderId != 0) {
+          setState(() {
+            _loading = true;
+          });
           final response = await _fileRepository.uploadFile(
             folderId: folderId.toString(),
             file: _selectedFile!,
@@ -496,12 +505,17 @@ class _RandomlyPrescriptionUploadScreenState
           response.fold(
             (failure) {
               context.flushBarErrorMessage(message: failure.message);
+              setState(() {
+                _loading = false;
+              });
             },
             (success) {
               context.flushBarSuccessMessage(message: success);
               setState(() {
                 _fileName = null;
                 _selectedFile = null;
+                folderId = null;
+                _loading = false;
               });
             },
           );

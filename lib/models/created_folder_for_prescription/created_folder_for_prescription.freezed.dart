@@ -22,15 +22,15 @@ CreatedFolderForPrescription _$CreatedFolderForPrescriptionFromJson(
 /// @nodoc
 mixin _$CreatedFolderForPrescription {
   @JsonKey(name: 'name')
-  String get name => throw _privateConstructorUsedError;
+  String? get name => throw _privateConstructorUsedError;
   @JsonKey(name: 'user_id')
-  int get userId => throw _privateConstructorUsedError;
+  int? get userId => throw _privateConstructorUsedError;
   @JsonKey(name: 'updated_at')
-  DateTime get updatedAt => throw _privateConstructorUsedError;
+  DateTime? get updatedAt => throw _privateConstructorUsedError;
   @JsonKey(name: 'created_at')
-  DateTime get createdAt => throw _privateConstructorUsedError;
+  DateTime? get createdAt => throw _privateConstructorUsedError;
   @JsonKey(name: 'id')
-  int get id => throw _privateConstructorUsedError;
+  int? get id => throw _privateConstructorUsedError;
 
   /// Serializes this CreatedFolderForPrescription to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -51,11 +51,11 @@ abstract class $CreatedFolderForPrescriptionCopyWith<$Res> {
           CreatedFolderForPrescription>;
   @useResult
   $Res call(
-      {@JsonKey(name: 'name') String name,
-      @JsonKey(name: 'user_id') int userId,
-      @JsonKey(name: 'updated_at') DateTime updatedAt,
-      @JsonKey(name: 'created_at') DateTime createdAt,
-      @JsonKey(name: 'id') int id});
+      {@JsonKey(name: 'name') String? name,
+      @JsonKey(name: 'user_id') int? userId,
+      @JsonKey(name: 'updated_at') DateTime? updatedAt,
+      @JsonKey(name: 'created_at') DateTime? createdAt,
+      @JsonKey(name: 'id') int? id});
 }
 
 /// @nodoc
@@ -74,33 +74,33 @@ class _$CreatedFolderForPrescriptionCopyWithImpl<$Res,
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? name = null,
-    Object? userId = null,
-    Object? updatedAt = null,
-    Object? createdAt = null,
-    Object? id = null,
+    Object? name = freezed,
+    Object? userId = freezed,
+    Object? updatedAt = freezed,
+    Object? createdAt = freezed,
+    Object? id = freezed,
   }) {
     return _then(_value.copyWith(
-      name: null == name
+      name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      userId: null == userId
+              as String?,
+      userId: freezed == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
-              as int,
-      updatedAt: null == updatedAt
+              as int?,
+      updatedAt: freezed == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      createdAt: null == createdAt
+              as DateTime?,
+      createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      id: null == id
+              as DateTime?,
+      id: freezed == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
-              as int,
+              as int?,
     ) as $Val);
   }
 }
@@ -115,11 +115,11 @@ abstract class _$$CreatedFolderForPrescriptionImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {@JsonKey(name: 'name') String name,
-      @JsonKey(name: 'user_id') int userId,
-      @JsonKey(name: 'updated_at') DateTime updatedAt,
-      @JsonKey(name: 'created_at') DateTime createdAt,
-      @JsonKey(name: 'id') int id});
+      {@JsonKey(name: 'name') String? name,
+      @JsonKey(name: 'user_id') int? userId,
+      @JsonKey(name: 'updated_at') DateTime? updatedAt,
+      @JsonKey(name: 'created_at') DateTime? createdAt,
+      @JsonKey(name: 'id') int? id});
 }
 
 /// @nodoc
@@ -137,33 +137,33 @@ class __$$CreatedFolderForPrescriptionImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? name = null,
-    Object? userId = null,
-    Object? updatedAt = null,
-    Object? createdAt = null,
-    Object? id = null,
+    Object? name = freezed,
+    Object? userId = freezed,
+    Object? updatedAt = freezed,
+    Object? createdAt = freezed,
+    Object? id = freezed,
   }) {
     return _then(_$CreatedFolderForPrescriptionImpl(
-      name: null == name
+      name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      userId: null == userId
+              as String?,
+      userId: freezed == userId
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
-              as int,
-      updatedAt: null == updatedAt
+              as int?,
+      updatedAt: freezed == updatedAt
           ? _value.updatedAt
           : updatedAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      createdAt: null == createdAt
+              as DateTime?,
+      createdAt: freezed == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      id: null == id
+              as DateTime?,
+      id: freezed == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
-              as int,
+              as int?,
     ));
   }
 }
@@ -173,11 +173,11 @@ class __$$CreatedFolderForPrescriptionImplCopyWithImpl<$Res>
 class _$CreatedFolderForPrescriptionImpl
     implements _CreatedFolderForPrescription {
   const _$CreatedFolderForPrescriptionImpl(
-      {@JsonKey(name: 'name') required this.name,
-      @JsonKey(name: 'user_id') required this.userId,
-      @JsonKey(name: 'updated_at') required this.updatedAt,
-      @JsonKey(name: 'created_at') required this.createdAt,
-      @JsonKey(name: 'id') required this.id});
+      {@JsonKey(name: 'name') this.name,
+      @JsonKey(name: 'user_id') this.userId,
+      @JsonKey(name: 'updated_at') this.updatedAt,
+      @JsonKey(name: 'created_at') this.createdAt,
+      @JsonKey(name: 'id') this.id});
 
   factory _$CreatedFolderForPrescriptionImpl.fromJson(
           Map<String, dynamic> json) =>
@@ -185,19 +185,19 @@ class _$CreatedFolderForPrescriptionImpl
 
   @override
   @JsonKey(name: 'name')
-  final String name;
+  final String? name;
   @override
   @JsonKey(name: 'user_id')
-  final int userId;
+  final int? userId;
   @override
   @JsonKey(name: 'updated_at')
-  final DateTime updatedAt;
+  final DateTime? updatedAt;
   @override
   @JsonKey(name: 'created_at')
-  final DateTime createdAt;
+  final DateTime? createdAt;
   @override
   @JsonKey(name: 'id')
-  final int id;
+  final int? id;
 
   @override
   String toString() {
@@ -244,31 +244,30 @@ class _$CreatedFolderForPrescriptionImpl
 abstract class _CreatedFolderForPrescription
     implements CreatedFolderForPrescription {
   const factory _CreatedFolderForPrescription(
-          {@JsonKey(name: 'name') required final String name,
-          @JsonKey(name: 'user_id') required final int userId,
-          @JsonKey(name: 'updated_at') required final DateTime updatedAt,
-          @JsonKey(name: 'created_at') required final DateTime createdAt,
-          @JsonKey(name: 'id') required final int id}) =
-      _$CreatedFolderForPrescriptionImpl;
+      {@JsonKey(name: 'name') final String? name,
+      @JsonKey(name: 'user_id') final int? userId,
+      @JsonKey(name: 'updated_at') final DateTime? updatedAt,
+      @JsonKey(name: 'created_at') final DateTime? createdAt,
+      @JsonKey(name: 'id') final int? id}) = _$CreatedFolderForPrescriptionImpl;
 
   factory _CreatedFolderForPrescription.fromJson(Map<String, dynamic> json) =
       _$CreatedFolderForPrescriptionImpl.fromJson;
 
   @override
   @JsonKey(name: 'name')
-  String get name;
+  String? get name;
   @override
   @JsonKey(name: 'user_id')
-  int get userId;
+  int? get userId;
   @override
   @JsonKey(name: 'updated_at')
-  DateTime get updatedAt;
+  DateTime? get updatedAt;
   @override
   @JsonKey(name: 'created_at')
-  DateTime get createdAt;
+  DateTime? get createdAt;
   @override
   @JsonKey(name: 'id')
-  int get id;
+  int? get id;
 
   /// Create a copy of CreatedFolderForPrescription
   /// with the given fields replaced by the non-null parameter values.

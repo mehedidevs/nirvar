@@ -214,18 +214,41 @@ class FolderApiService {
       print('ResponseData : ${response.data}');
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = jsonDecode(response.data);
+        final Map<String, dynamic> responseData = response.data;
         if (responseData['status'] == 1) {
           final folder = CreatedFolderForPrescription.fromJson(responseData['data']);
           print('Created Folder: $folder');
           return Right(folder);
         } else {
-          return Left(ApiException(responseData['message']));
+          return Left(ApiException(responseData['message'] ?? 'Unknown Problem'));
         }
       } else {
         return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
       }
     } on DioException catch (e) {
+      return Left(ApiException.fromDioError(e));
+    } catch (e) {
+      return Left(ApiException(e.toString()));
+    }
+  }
+
+  Future<Either<ApiException,List<String>>> doctorSpeciality() async{
+    try{
+      final response = await _dio.get(doctorSpecialities);
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = response.data;
+        if (responseData['status'] == 1 && responseData["message"] == "success") {
+          final List<dynamic> data = responseData['data'] ?? [];
+          final List<String> speciality = data.whereType<String>().map((e) => e.toLowerCase()).toList();
+          print(speciality.toString());
+          return Right(speciality);
+        } else {
+          return Left(ApiException(responseData['message'] ?? 'Unknown Problem '));
+        }
+      } else {
+        return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
+      }
+    }on DioException catch (e) {
       return Left(ApiException.fromDioError(e));
     } catch (e) {
       return Left(ApiException(e.toString()));

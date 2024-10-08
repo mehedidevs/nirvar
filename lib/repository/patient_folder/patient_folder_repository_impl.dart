@@ -46,4 +46,9 @@ class PatientFolderRepositoryImpl extends PatientFolderRepository{
     return _folderApiService.createFolderForPrescription(folderName);
   }
 
+  @override
+  Future<Either<ApiException, List<String>>> doctorSpeciality() {
+    return _folderApiService.doctorSpeciality();
+  }
+
 }

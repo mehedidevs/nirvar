@@ -58,6 +58,11 @@ const String patientDiabetesWeekly = '/patient/diabetes/weekly';
 const String patientDiabetesMonthly = '/patient/diabetes/monthly';
 
 
+//Doctor Speciality
+const String doctorSpecialities = '/patient/doctor/specialities';
+
+
+
 
 
 
