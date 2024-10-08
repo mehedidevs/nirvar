@@ -21,9 +21,7 @@ import '../../../widgets/or_separator.dart';
 
 class PrescriptionUploadScreen extends StatefulWidget {
   final int folderId;
-
   const PrescriptionUploadScreen({super.key, required this.folderId});
-
   @override
   State<PrescriptionUploadScreen> createState() =>
       _PrescriptionUploadScreenState();

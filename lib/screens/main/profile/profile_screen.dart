@@ -158,68 +158,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         style: TextStyle(color: AppColors.red, fontSize: 16.sp),
                       ),
                       onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            return Dialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16.r),
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.all(16.w),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    SvgPicture.asset(AssetsPath.logoutDialogueSvg),
-                                    SizedBox(height: 16.h),
-                                    Text(
-                                      'Are you sure you want to log out of your account?',
-                                      style: TextStyle(
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    SizedBox(height: 24.h),
-                                         Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: 0.h, horizontal: 16.w),
-                                      child: CustomButton(
-                                        text: 'Log Out',
-                                        onPressed: () async {
-                                          final result = await sl<AuthRepository>().logoutUser();
-                                          result.fold(
-                                                  (failure){ Navigator.of(context).pop();},
-                                                  (success){
-                                                    Navigator.of(context, rootNavigator: true).pushReplacement(
-                                                      MaterialPageRoute(builder: (context) => SignUpScreen()),
-                                                    );
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                    SizedBox(height: 8.h),
-                                    // Cancel Button
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop(); // Close the dialog
-                                      },
-                                      child: Text(
-                                        'Cancel',
-                                        style: TextStyle(
-                                          fontSize: 14.sp,
-                                          color: AppColors.primary, // Adjust the color if needed
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        );
-
+                        bool? result;
+                        WidgetsBinding.instance.addPostFrameCallback((_) async {
+                          result =  await  _showLogoutDialogAlternative(context);
+                          print("CAll Back Result : $result");
+                          if(result == true){
+                            print("CAll Back Result For success : $result");
+                            if(context.mounted){
+                              Navigator.of(context, rootNavigator: true).pushReplacement(MaterialPageRoute(builder: (context) => const SignInScreen()));
+                            }
+                          }
+                        });
                       },
                     ),
                   ],
@@ -231,6 +180,77 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+
+  Future<bool> _showLogoutDialogAlternative(BuildContext context) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.r),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(16.w),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SvgPicture.asset(AssetsPath.logoutDialogueSvg),
+                SizedBox(height: 16.h),
+                Text(
+                  'Are you sure you want to log out of your account?',
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 24.h),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 16.w),
+                  child: CustomButton(
+                    text: 'Log Out',
+                    onPressed: () async {
+                      final result = await sl<AuthRepository>().logoutUser();
+
+                      result.fold(
+                            (failure) {
+                          Navigator.of(context).pop(false); // Return false on failure
+                        },
+                            (success) {
+                          // Close the dialog and navigate to SignUpScreen
+                              Navigator.of(context).pop(true);
+                        },
+                      );
+                    },
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                // Cancel Button
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(false); // Return false when canceled
+                  },
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: AppColors.primary, // Adjust the color if needed
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    return result ?? false; // If the dialog is dismissed without a return value, return false
+  }
+
+
+
 
   Widget _getUserInformation() {
     final authRepository = sl<AuthRepository>();

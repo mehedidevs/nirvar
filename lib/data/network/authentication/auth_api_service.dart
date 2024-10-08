@@ -96,7 +96,7 @@ class AuthApiService {
       print('ResponseData : ${response.data}');
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = jsonDecode(response.data);
+        final Map<String, dynamic> responseData = response.data;
         if (responseData['status'] == 1) {
           _tokenStorage.clearToken();
           _userIdStorage.clearUserID();

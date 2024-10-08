@@ -50,7 +50,7 @@ class _MyFilesState extends State<MyFiles> {
                     onCreateSuccess:()async{}),
                 SizedBox(height: 16.h),
                 _myFilesSection(),
-                SizedBox(height: ScreenUtil().screenHeight * .1.h),
+                SizedBox(height: ScreenUtil().screenHeight * .15.h),
               ],
             ),
           ),

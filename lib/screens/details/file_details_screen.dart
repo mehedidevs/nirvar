@@ -30,40 +30,27 @@ class ReportDetailsScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: ScreenUtil().screenHeight * 0.01.h,
-            ),
-            FittedBox(
-              fit: BoxFit.cover,
-              child: file.path == null
-                  ? Image.asset(
-                      AssetsPath.prescriptionDetailsPng,
-                      width: ScreenUtil().screenWidth * 0.8,
-                      height: ScreenUtil().screenHeight * 0.7.h,
-                    )
-                  : Image.network(
-                      file.path ?? "",
-                      width: ScreenUtil().screenWidth * 0.8,
-                      height: ScreenUtil().screenHeight * 0.7.h,
-                    ),
-            ),
-            const Spacer(),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildCustomButton(
-                    context,
-                    'Share',
-                    Icons.share,
-                    Color(0xFFEAF5F7),
-                    Colors.black,
-                  ),
-                  _buildCustomButton(
+        child: Center(
+          child: Padding(
+            padding:  EdgeInsets.symmetric(horizontal: 8.w),
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                FittedBox(
+                  fit: BoxFit.cover,
+                  child: file.path == null
+                      ? Image.asset(
+                          AssetsPath.prescriptionDetailsPng,
+                          width: ScreenUtil().screenWidth * 0.8,
+                          height: ScreenUtil().screenHeight * 0.7.h,
+                        )
+                      : Image.network(file.path ?? ""),
+                ),
+                SizedBox(height: ScreenUtil().screenHeight * 0.1.h),
+
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  child: _buildCustomButton(
                     context,
                     'Download',
                     Icons.download,
@@ -77,13 +64,29 @@ class ReportDetailsScreen extends StatelessWidget {
                     ),
                     Colors.white,
                   ),
-                ],
-              ),
+                ),
+
+                SizedBox(height: ScreenUtil().screenHeight * 0.05.h),
+
+                // Padding(
+                //   padding: EdgeInsets.symmetric(horizontal: 20.w),
+                //   child: Row(
+                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //     children: [
+                //       _buildCustomButton(
+                //         context,
+                //         'Share',
+                //         Icons.share,
+                //         Color(0xFFEAF5F7),
+                //         Colors.black,
+                //       ),
+                //
+                //     ],
+                //   ),
+                // ),
+              ],
             ),
-            SizedBox(
-              height: ScreenUtil().screenHeight * 0.05,
-            ),
-          ],
+          ),
         ),
       ),
     );

@@ -21,11 +21,11 @@ class ActionMenuButton extends StatelessWidget {
             title: Text(
               "Create",
               style: TextStyle(
-                fontSize: 16.sp,
+                fontSize: 12.sp,
                 color: Colors.black, // Black text
               ),
             ),
-            trailing: const Icon(Icons.create_new_folder, color: Colors.black),
+            trailing:  Icon(Icons.create_new_folder, color: Colors.black,size: 20.sp),
           ),
         ),
          PopupMenuDivider(height: 8.h),
@@ -36,11 +36,11 @@ class ActionMenuButton extends StatelessWidget {
             title: Text(
               "Upload",
               style: TextStyle(
-                fontSize: 16.sp,
+                fontSize: 12.sp,
                 color: const Color(0xFFE39087),
               ),
             ),
-            trailing: const Icon(Icons.cloud_upload, color: Color(0xFFE39087)),
+            trailing:  Icon(Icons.cloud_upload, color: const Color(0xFFE39087),size: 20.sp,),
           ),
         ),
       ],
@@ -52,9 +52,9 @@ class ActionMenuButton extends StatelessWidget {
         }
       },
       color: AppColors.menuItemColor,
-      constraints: BoxConstraints(minWidth: 20.w),
+      constraints: BoxConstraints(minWidth: 25.w),
       position: PopupMenuPosition.over,
-      offset: const Offset(0, 6),
+      offset: const Offset(-2, 16),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16.r),
       ),

@@ -274,106 +274,94 @@ class _RandomlyTestReportUploadScreenState
                                   color: Colors.grey,
                                 ),
                               ),
-                              trailing: IconButton(
-                                onPressed: () {
+                              trailing: InkWell(
+                                onTap: (){
                                   showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      final _formKey = GlobalKey<FormState>();
-                                      TextEditingController _fileReNameController =
-                                          TextEditingController();
-                                      _fileReNameController.text = _fileName ?? '';
-                                      return Dialog(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(16.r),
-                                        ),
-                                        child: Padding(
-                                          padding: EdgeInsets.all(16.w),
-                                          child: Form(
-                                            key: _formKey,
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text(
-                                                  _fileName ?? '',
-                                                  style: TextStyle(
-                                                    fontSize: 24.sp,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.black,
+                                      context: context,
+                                      builder: (context){
+                                        final _formKey = GlobalKey<FormState>();
+                                        TextEditingController _fileReNameController = TextEditingController();
+                                        _fileReNameController.text = _fileName ?? ' ';
+                                        return Dialog(
+                                          backgroundColor: AppColors.white,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(16.r),
+                                          ),
+                                          child: Padding(
+                                            padding: EdgeInsets.all(16.w),
+                                            child: Form(
+                                              key: _formKey,
+                                              child: ListView(
+                                                shrinkWrap: true,
+                                                children: [
+                                                  Text(
+                                                    _fileName ?? '',
+                                                    style: TextStyle(
+                                                      fontSize: 24.sp,
+                                                      fontWeight: FontWeight.bold,
+                                                      color: Colors.black,
+                                                    ),
+                                                    textAlign: TextAlign.center,
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.fade,
                                                   ),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                                SizedBox(height: 32.h),
-                                                LabeledTextFormField(
-                                                  label: 'Edit File Name',
-                                                  hint: '',
-                                                  controller: _fileReNameController,
-                                                  validator: (value) {
-                                                    if (value == null ||
-                                                        value.isEmpty) {
-                                                      return 'Please enter Folder Name';
-                                                    }
-                                                    return null;
-                                                  },
-                                                ),
-                                                SizedBox(height: 32.h),
-                                                Padding(
-                                                  padding: EdgeInsets.symmetric(
-                                                      vertical: 0.h,
-                                                      horizontal: 16.w),
-                                                  child: CustomButton(
-                                                    text: 'Save',
-                                                    onPressed: () async {
-                                                      if (_formKey.currentState
-                                                              ?.validate() ??
-                                                          false) {
-                                                        setState(() {
-                                                          _fileName =
-                                                              _fileReNameController
-                                                                  .text;
-                                                        });
-                                                        Navigator.of(context).pop();
+                                                  SizedBox(height: 32.h),
+                                                  LabeledTextFormField(
+                                                    label: 'Edit File Name',
+                                                    hint: '',
+                                                    controller: _fileReNameController,
+                                                    validator: (value){
+                                                      if (value == null || value.isEmpty) {
+                                                        return 'Please enter Folder Name';
                                                       }
+                                                      return null;
                                                     },
                                                   ),
-                                                ),
-                                                SizedBox(height: 8.h),
-                                                // Cancel Button
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context)
-                                                        .pop(); // Close the dialog
-                                                  },
-                                                  child: Text(
-                                                    'Cancel',
-                                                    style: TextStyle(
-                                                      fontSize: 14.sp,
-                                                      color: AppColors
-                                                          .primary, // Adjust the color as needed
+                                                  SizedBox(height: 32.h),
+                                                  Padding(
+                                                    padding: EdgeInsets.symmetric(
+                                                        vertical: 0.h, horizontal: 16.w),
+                                                    child: CustomButton(
+                                                      text: 'Save',
+                                                      onPressed: ()  {
+                                                        setState(() {
+                                                          _fileName = _fileReNameController.text;
+                                                        });
+                                                        Navigator.of(context).pop();
+                                                      },
                                                     ),
                                                   ),
-                                                ),
-                                              ],
+                                                  SizedBox(height: 8.h),
+                                                  // Cancel Button
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context).pop(); // Close the dialog
+                                                    },
+                                                    child: Text(
+                                                      'Cancel',
+                                                      style: TextStyle(
+                                                        fontSize: 14.sp,
+                                                        color: AppColors.primary, // Adjust the color as needed
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                      );
-                                    },
-                                  );
+                                        );
+                                      });
                                 },
-                                icon: const Row(
+                                child: Row(
                                   mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
-                                    Icon(
-                                      Icons.edit,
-                                      // Use the icon you want for the rename action
-                                      color: AppColors.red,
-                                    ),
-                                    SizedBox(width: 4),
-                                    // Add some space between icon and text
-                                    Text(
+                                    SvgPicture.asset(AssetsPath.penSvg),
+                                    2.horizontalSpace,
+                                    const Text(
                                       'Rename',
-                                      style: TextStyle(color: AppColors.red),
+                                      style: TextStyle(color: AppColors.softCoral),
                                     ),
                                   ],
                                 ),

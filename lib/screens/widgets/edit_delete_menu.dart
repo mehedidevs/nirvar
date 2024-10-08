@@ -38,16 +38,16 @@ class EditDeleteMenu extends StatelessWidget {
         PopupMenuItem(
           value: 1,
           child: ListTile(
-            title: Text('Edit', style: TextStyle(fontSize: 16.sp)),
-            trailing:  const Icon(Icons.edit, color: Colors.black),
+            title: Text('Edit', style: TextStyle(fontSize: 12.sp)),
+            trailing:   Icon(Icons.edit, color: Colors.black,size: 20.sp,),
           ),
         ),
         PopupMenuDivider(height: 8.h),
         PopupMenuItem(
           value: 2,
           child: ListTile(
-            title: Text('Delete', style: TextStyle(fontSize: 16.sp, color: const Color(0xFFE39087))),
-            trailing:  const Icon(Icons.delete_forever, color: Color(0xFFE39087)),
+            title: Text('Delete', style: TextStyle(fontSize: 12.sp, color: const Color(0xFFE39087))),
+            trailing:   Icon(Icons.delete_forever, color: Color(0xFFE39087),size: 20.sp,),
           )
         ),
       ],
