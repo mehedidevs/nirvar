@@ -17,7 +17,7 @@ extension FlushBarMessage on BuildContext {
         color: AppColors.red,
       ),
       leftBarIndicatorColor: AppColors.red,
-      duration: const Duration(seconds: 3),
+      duration: const Duration(seconds: 2),
     ).show(this);
   }
 
@@ -33,7 +33,7 @@ extension FlushBarMessage on BuildContext {
         color: AppColors.primary,
       ),
       leftBarIndicatorColor: AppColors.primary,
-      duration: const Duration(seconds: 3),
+      duration: const Duration(seconds: 2),
     ).show(this);
   }
 }

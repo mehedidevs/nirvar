@@ -43,4 +43,9 @@ class PatientFileRepositoryImpl extends PatientFileRepository{
     return _fileApiService.getLatestUploadedFiles();
   }
 
+  @override
+  Future<Either<ApiException, String>> downloadFiles(String fileId) {
+   return _fileApiService.downloadFiles(fileId);
+  }
+
 }

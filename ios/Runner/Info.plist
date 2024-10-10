@@ -29,6 +29,12 @@
 		<key>UIMainStoryboardFile</key>
 		<string>Main</string>
 		<key>UISupportedInterfaceOrientations</key>
+		<key>LSSupportsOpeningDocumentsInPlace</key>
+            <true/>
+            <key>UIFileSharingEnabled</key>
+            <true/>
+            <key>NSPhotoLibraryUsageDescription</key>
+            <string>App needs access to download files.</string>
 		<array>
 			<string>UIInterfaceOrientationPortrait</string>
 			<string>UIInterfaceOrientationLandscapeLeft</string>

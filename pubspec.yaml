@@ -44,6 +44,9 @@ dependencies:
   share_plus: ^10.0.2
   google_mlkit_text_recognition: ^0.13.1
   dotted_line: ^3.2.2
+  percent_indicator: ^4.2.3
+  fl_downloader: ^2.0.2
+
 
 
 

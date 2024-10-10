@@ -5,14 +5,11 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:nirvar/models/blood_pressure_last_seven_days/blood_pressure_history_for_last_7_days.dart';
-import 'package:nirvar/models/patient_blood_pressure/patient_blood_pressure.dart';
-import 'package:nirvar/models/patient_glucose/patient_glucose.dart';
 import 'package:nirvar/repository/authentication/auth_repository.dart';
 import 'package:nirvar/repository/blood_pressure/blood_pressure_repository.dart';
 import 'package:nirvar/repository/diabetes/diabetes_repository.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
-import 'package:nirvar/screens/utils/blood_sugar_utils.dart';
 import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 import 'package:nirvar/screens/widgets/file_card.dart';
 import '../../../core/resources/api_exception.dart';
@@ -20,7 +17,6 @@ import '../../../injection_container.dart';
 import '../../../models/patient_folder/patient_folder.dart';
 import '../../../repository/patient_folder/patient_folder_repository.dart';
 import '../../notification/notification_screen.dart';
-import '../../utils/blood_pressure_utils.dart';
 import '../../widgets/health_card.dart';
 
 class HomeScreen extends StatefulWidget {

@@ -225,7 +225,7 @@ class FileApiService{
             return Left(ApiException("No File is uploaded recently"));
           }
         }else{
-          return Left(ApiException(responseData['message']));
+          return Left(ApiException(responseData['message'] ?? 'Unknown Problem'));
         }
       }else{
         return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
@@ -237,6 +237,28 @@ class FileApiService{
     }
   }
 
+
+  Future<Either<ApiException,String>> downloadFiles(String fileId) async{
+    try{
+      final response = await _dio.get('$patientFileDownload$fileId');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = response.data;
+        if(responseData['status'] == 1 && responseData['message'] == "success"){
+          final data = responseData['data'];
+          return Right(data);
+        }else{
+          return Left(ApiException(responseData['message'] ?? 'Unknown Problem'));
+        }
+      }else{
+        return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
+      }
+    }on DioException catch (e) {
+      return Left(ApiException.fromDioError(e));
+    } catch (e) {
+      return Left(ApiException(e.toString()));
+    }
+  }
 
 
 

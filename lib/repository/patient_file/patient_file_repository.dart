@@ -26,4 +26,6 @@ abstract class PatientFileRepository {
 
   Future<Either<ApiException,List<LatestUploadedFile>>> getLatestUploadedFiles();
 
+  Future<Either<ApiException,String>> downloadFiles(String fileId);
+
 }

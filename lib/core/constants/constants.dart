@@ -42,6 +42,7 @@ const String patientLatestTwoFiles = '/patient/files/latest/two';
 const String patientFileUpload = '/patient/file/upload';
 const String patientFileDelete = '/patient/file/delete/';
 const String patientFileRename = '/patient/file/rename';
+const String patientFileDownload = '/patient/file/download/';
 
 //Blood Pressure
 const String patientBloodPressure = '/patient/blood-pressure/store';
