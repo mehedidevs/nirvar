@@ -53,4 +53,5 @@ class AssetsPath {
   static String bloodTransfusionPng = '$_imageBasePath/blood_transfusion.png';
   static String nativeSplashPng = '$_imageBasePath/native_splash.png';
   static String appIconPng = '$_imageBasePath/app_icon.png';
+  static String noResultPng = '$_imageBasePath/no_result.png';
 }

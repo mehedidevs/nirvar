@@ -3,6 +3,7 @@ import 'package:nirvar/core/resources/api_exception.dart';
 import 'package:nirvar/data/network/folder/folder_api_service.dart';
 import 'package:nirvar/models/created_folder_for_prescription/created_folder_for_prescription.dart';
 import 'package:nirvar/models/patient_folder/patient_folder.dart';
+import 'package:nirvar/models/search_response/search_response_data.dart';
 import 'package:nirvar/models/selected_folder/selected_folder.dart';
 import 'package:nirvar/repository/patient_folder/patient_folder_repository.dart';
 
@@ -49,6 +50,11 @@ class PatientFolderRepositoryImpl extends PatientFolderRepository{
   @override
   Future<Either<ApiException, List<String>>> doctorSpeciality() {
     return _folderApiService.doctorSpeciality();
+  }
+
+  @override
+  Future<Either<ApiException, SearchResponseData>> getSearchData(String searchData) {
+   return _folderApiService.getSearchData(searchData);
   }
 
 }

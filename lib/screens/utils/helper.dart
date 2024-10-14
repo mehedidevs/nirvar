@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 
+import '../../models/created_folder_for_prescription/created_folder_for_prescription.dart';
+import '../../models/patient_folder/patient_folder.dart';
+
 // Helper method to show error message
 extension FlushBarMessage on BuildContext {
   void flushBarErrorMessage({required String message}) {
@@ -37,6 +40,19 @@ extension FlushBarMessage on BuildContext {
     ).show(this);
   }
 }
+
+extension CreatedFolderForPrescriptionMapper on CreatedFolderForPrescription {
+  PatientFolder toPatientFolder() {
+    return PatientFolder(
+      folderId: id ?? 0, // Handle null id safely
+      userId: userId,
+      name: name,
+      fileCount: 0, // Since `CreatedFolderForPrescription` doesn't have `file_count`, you can set it to a default value (e.g., 0)
+      createdAt: createdAt?.toIso8601String() ?? '', // Convert DateTime to String and handle null cases
+    );
+  }
+}
+
 
 
 

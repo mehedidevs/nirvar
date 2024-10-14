@@ -16,6 +16,7 @@ class CustomTextField extends StatelessWidget {
   final String? Function(String?)? validator;
   final void Function(String?)? onSaved;
   final void Function(String?)? onChanged;
+  final void Function(String?)? onFieldSubmitted;
   final void Function()? onTap;
   final void Function()? onEditingComplete;
   final TextInputAction? textInputAction;
@@ -44,6 +45,7 @@ class CustomTextField extends StatelessWidget {
     this.validator,
     this.onSaved,
     this.onChanged,
+    this.onFieldSubmitted,
     this.onTap,
     this.onEditingComplete,
     this.textInputAction,
@@ -69,6 +71,7 @@ class CustomTextField extends StatelessWidget {
       onSaved: onSaved,
       onChanged: onChanged,
       onTap: onTap,
+      onFieldSubmitted: onFieldSubmitted,
       textAlign: textAlign ?? TextAlign.start,
       onEditingComplete: onEditingComplete,
       textInputAction: textInputAction,

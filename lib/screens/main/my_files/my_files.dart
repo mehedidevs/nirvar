@@ -1,13 +1,15 @@
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:nirvar/screens/main/my_files/upload/test_report_upload_screen.dart';
+import 'package:nirvar/bloc/patient_folder/patient_folder_bloc.dart';
+import 'package:nirvar/screens/search/search_screen.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
+import 'package:nirvar/screens/utils/helper.dart';
 import 'package:nirvar/screens/widgets/action_menu_button.dart';
 import 'package:nirvar/screens/widgets/custom_alert_dialog.dart';
-import 'package:popover/popover.dart';
 import '../../../core/resources/api_exception.dart';
 import '../../../injection_container.dart';
 import '../../../models/patient_folder/patient_folder.dart';
@@ -15,47 +17,155 @@ import '../../../repository/patient_folder/patient_folder_repository.dart';
 import '../../notification/notification_screen.dart';
 import '../../utils/app_colors.dart';
 import '../../widgets/custom_button.dart';
-import '../../widgets/edit_delete_menu.dart';
 import '../../widgets/file_card.dart';
 import '../../widgets/labeled_text_form_field.dart';
 
 class MyFiles extends StatefulWidget {
   const MyFiles({super.key});
-
   @override
   State<MyFiles> createState() => _MyFilesState();
 }
 
 class _MyFilesState extends State<MyFiles> {
 
+  @override
+  void initState() {
+    super.initState();
+    context.read<PatientFolderBloc>().add(GetPatientFolderFromApi());
+  }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    context.read<PatientFolderBloc>().add(GetPatientFolderFromApi());
+  }
+
+  @override
+  void didUpdateWidget(covariant MyFiles oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if(sl<PatientFolderBloc>().state.status == PatientFolderStatus.initial){
+      context.read<PatientFolderBloc>().add(GetPatientFolderFromApi());
+    }
+
+  }
 
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                _searchAndNotification(context),
-                SizedBox(height: 16.h),
-                _headerSection(context,
-                    onCreateSuccess:()async{}),
-                SizedBox(height: 16.h),
-                _myFilesSection(),
-                SizedBox(height: ScreenUtil().screenHeight * .15.h),
-              ],
+    // return Scaffold(
+    //   backgroundColor: AppColors.white,
+    //   resizeToAvoidBottomInset: false,
+    //   body: SafeArea(
+    //     child: SingleChildScrollView(
+    //       child: Padding(
+    //         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+    //         child: Column(
+    //           crossAxisAlignment: CrossAxisAlignment.start,
+    //           mainAxisAlignment: MainAxisAlignment.start,
+    //           children: [
+    //             _searchAndNotification(context),
+    //             SizedBox(height: 16.h),
+    //             _headerSection(context,
+    //                 onCreateSuccess:()async{}),
+    //             SizedBox(height: 16.h),
+    //
+    //             _myFilesSectionAlternative(),
+    //
+    //             SizedBox(height: ScreenUtil().screenHeight * .15.h),
+    //           ],
+    //         ),
+    //       ),
+    //     ),
+    //   ),
+    // );
+
+    return  BlocListener<PatientFolderBloc, PatientFolderState>(
+        listenWhen: (previous, current) => previous.status != current.status,
+        listener: (context, state) {
+          if (state.status == PatientFolderStatus.success) {
+            // Success state: Trigger any additional UI updates or side effects here
+            print("Folders updated successfully");
+          }
+          if(state.status == PatientFolderStatus.initial){
+            context.read<PatientFolderBloc>().add(GetPatientFolderFromApi());
+          }
+        },
+        child:Scaffold(
+          backgroundColor: AppColors.white,
+          resizeToAvoidBottomInset: false,
+          body: SafeArea(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    _searchAndNotification(context),
+                    SizedBox(height: 16.h),
+                    _headerSection(context,
+                        onCreateSuccess:()async{}),
+                    SizedBox(height: 16.h),
+
+                    _myFilesSectionAlternative(),
+
+                    SizedBox(height: ScreenUtil().screenHeight * .15.h),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
-      ),
+    );
+  }
+
+  //Going to implement BLOC in this section
+  Widget _myFilesSectionAlternative(){
+    return BlocBuilder<PatientFolderBloc,PatientFolderState>(
+      builder: (context,state){
+        if (state.status == PatientFolderStatus.loading) {
+          return Center(
+              child: SpinKitChasingDots(
+                  color: AppColors.primary,
+                  size: 50
+                      .sp));
+        }else if (state.status == PatientFolderStatus.failure) {
+          // Show an error message if data fetching fails
+          return Center(child: Text('Error: ${state.errorMessage}', style: const TextStyle(color: AppColors.primary)));
+        }else if(state.status == PatientFolderStatus.success){
+          return state.folderList.isEmpty ? const Center(
+              child: Text(
+                'No folders available',
+                style: TextStyle(color: AppColors.primary),
+              ))
+              : GridView.count(
+            shrinkWrap: true,
+            crossAxisCount: 2,
+            crossAxisSpacing: 16.w,
+            mainAxisSpacing: 16.h,
+            childAspectRatio: 1,
+            physics: const NeverScrollableScrollPhysics(),
+            children: state.folderList.map((folder) {
+              return FileCard(
+                patientFolder: folder,
+                onUpdateSuccess: () async {
+                  context.read<PatientFolderBloc>().add(GetPatientFolderFromApi());
+                },
+                onDeleteSuccess: () async {
+                  context.read<PatientFolderBloc>().add(GetPatientFolderFromApi());
+                },
+                onComingBack: () async {
+                  context.read<PatientFolderBloc>().add(GetPatientFolderFromApi());
+                },
+              );
+            }).toList(),
+          );
+        }else {
+          // Default UI when no action is happening
+          return const SizedBox();
+        }
+      },
     );
   }
 
@@ -66,7 +176,7 @@ class _MyFilesState extends State<MyFiles> {
       children: [
         GestureDetector(
           onTap: () {
-            print('Search icon tapped');
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const SearchScreen()));
           },
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 8.w),
@@ -248,11 +358,19 @@ class _MyFilesState extends State<MyFiles> {
                                   text: 'Save',
                                   onPressed: () async {
                                     if (_formKey.currentState?.validate() ?? false) {
-                                      final response = await patientFolderRepository.createFolder(_folderNameController.text);
-                                      setState(() {}); // Refresh the state
-                                      if (context.mounted) {
-                                        Navigator.of(context).pop();
-                                      }
+                                      final response = await patientFolderRepository.createFolderForPrescription(_folderNameController.text);
+                                      response.fold((failure){
+                                        if (context.mounted) {
+                                          Navigator.of(context).pop();
+                                        }
+                                      }, (success){
+                                        final newFolder = success.toPatientFolder();
+                                        context.read<PatientFolderBloc>().add(UpdatePatientFolderList(newFolder));
+                                        if (context.mounted) {
+                                          Navigator.of(context).pop();
+                                        }
+                                      });
+
                                     }
                                   },
                                 ),
@@ -282,10 +400,16 @@ class _MyFilesState extends State<MyFiles> {
             },
           );
 
-        }, onFileUpload: (){
-          showDialog(context: context, builder: (context){
+        }, onFileUpload: () async {
+        final result = await  showDialog(context: context, builder: (context){
             return CustomAlertDialog();
           });
+
+        if(result == true){
+          if(context.mounted){
+            context.read<PatientFolderBloc>().add(GetPatientFolderFromApi());
+          }
+        }
         }),
       ],
     );

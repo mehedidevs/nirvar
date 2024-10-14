@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -12,6 +13,7 @@ import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 import 'package:nirvar/screens/widgets/file_card.dart';
+import '../../../bloc/patient_folder/patient_folder_bloc.dart';
 import '../../../core/resources/api_exception.dart';
 import '../../../injection_container.dart';
 import '../../../models/patient_folder/patient_folder.dart';
@@ -38,7 +40,24 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    context.read<PatientFolderBloc>().add(GetPatientFolderFromApi());
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    context.read<PatientFolderBloc>().add(GetPatientFolderFromApi());
+    super.didChangeDependencies();
+  }
+
+  @override
+  void didUpdateWidget(covariant HomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if(sl<PatientFolderBloc>().state.status == PatientFolderStatus.initial){
+      context.read<PatientFolderBloc>().add(GetPatientFolderFromApi());
+    }
+
   }
 
   @override
@@ -100,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildTabItem(String title, int index) {
-    bool isSelected = _selectedIndex  == index;
+    bool isSelected = _selectedIndex == index;
     return GestureDetector(
       onTap: () => _onTabSelected(index),
       child: Container(
@@ -121,34 +140,101 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _tabBarViewSection(){
+  Widget _tabBarViewSection() {
     return IndexedStack(
       index: _selectedIndex,
       children: [
-        _myFilesTab(),
+        _myFilesSectionAlternative(),
         _myHealthTab(),
       ],
     );
   }
 
+  //Going to implement BLOC in this section
+  Widget _myFilesSectionAlternative() {
+    return BlocBuilder<PatientFolderBloc, PatientFolderState>(
+      builder: (context, state) {
+        if (state.status == PatientFolderStatus.loading) {
+          return Center(
+              child: SpinKitChasingDots(color: AppColors.primary, size: 50.sp));
+        } else if (state.status == PatientFolderStatus.failure) {
+          // Show an error message if data fetching fails
+          return Center(
+              child: Text('Error: ${state.errorMessage}',
+                  style: const TextStyle(color: AppColors.primary)));
+        } else if (state.status == PatientFolderStatus.success) {
+          return state.folderList.isEmpty
+              ? const Center(
+                  child: Text(
+                  'No folders available',
+                  style: TextStyle(color: AppColors.primary),
+                ))
+              : GridView.count(
+                  shrinkWrap: true,
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16.w,
+                  mainAxisSpacing: 16.h,
+                  childAspectRatio: 1,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: state.folderList.map((folder) {
+                    return FileCard(
+                      patientFolder: folder,
+                      onUpdateSuccess: () async {
+                        context
+                            .read<PatientFolderBloc>()
+                            .add(GetPatientFolderFromApi());
+                      },
+                      onDeleteSuccess: () async {
+                        context
+                            .read<PatientFolderBloc>()
+                            .add(GetPatientFolderFromApi());
+                      },
+                      onComingBack: () async {
+                        context
+                            .read<PatientFolderBloc>()
+                            .add(GetPatientFolderFromApi());
+                      },
+                    );
+                  }).toList(),
+                );
+        } else {
+          // Default UI when no action is happening
+          return const SizedBox();
+        }
+      },
+    );
+  }
+
+  //Going To Be replaced by BLOC
   Widget _myFilesTab() {
     return StreamBuilder<dartz.Either<ApiException, List<PatientFolder>>>(
       stream: patientFolderRepository.getAllFolders(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: SpinKitChasingDots(
-              color: AppColors.primary, size: 50.sp)); // Show a loading indicator while waiting for data
+          return Center(
+              child: SpinKitChasingDots(
+                  color: AppColors.primary,
+                  size: 50
+                      .sp)); // Show a loading indicator while waiting for data
         }
 
         if (snapshot.hasData) {
           return snapshot.data!.fold(
-                (error) => Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.h,horizontal: 8.w),
-                  child: Center(child: Text(error.message,style: const TextStyle(color: AppColors.primary),)),
-                ), // Display error if there's an issue
-                (folders) {
+            (error) => Padding(
+              padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 8.w),
+              child: Center(
+                  child: Text(
+                error.message,
+                style: const TextStyle(color: AppColors.primary),
+              )),
+            ), // Display error if there's an issue
+            (folders) {
               if (folders.isEmpty) {
-                return const Center(child: Text('No folders available',style: TextStyle(color: AppColors.primary),)); // Handle empty list
+                return const Center(
+                    child: Text(
+                  'No folders available',
+                  style: TextStyle(color: AppColors.primary),
+                )); // Handle empty list
               }
               return GridView.count(
                 shrinkWrap: true,
@@ -160,18 +246,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: folders.map((folder) {
                   return FileCard(
                     patientFolder: folder,
-                    onUpdateSuccess: ()async {
+                    onUpdateSuccess: () async {
                       setState(() {});
                       print("API CALLED AGAIN");
-                  },
-                    onDeleteSuccess: ()async {
+                    },
+                    onDeleteSuccess: () async {
                       setState(() {});
                       print("API CALLED AGAIN");
-                  },
-                    onComingBack: ()async{
-                      setState(() {
-
-                    });},
+                    },
+                    onComingBack: () async {
+                      setState(() {});
+                    },
                   );
                 }).toList(),
               );
@@ -179,7 +264,9 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         }
 
-        return Center(child: Text('Something went wrong')); // Fallback if no data is available
+        return Center(
+            child: Text(
+                'Something went wrong')); // Fallback if no data is available
       },
     );
   }
@@ -265,35 +352,78 @@ Widget _headerSection(BuildContext context) {
       _getUserProfilePicture(),
       const Spacer(),
       IconButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const NotificationScreen(hasNotification: true),
-            ),
-          );
-        },
-        icon: SvgPicture.asset(AssetsPath.notificationWithBadgeSvg)
-      )
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    const NotificationScreen(hasNotification: true),
+              ),
+            );
+          },
+          icon: SvgPicture.asset(AssetsPath.notificationWithBadgeSvg))
     ],
   );
 }
 
 Widget _getUserProfilePicture() {
-
   //Future<Either<ApiException, UserProfile>> getUserProfile();
 
   final authRepository = sl<AuthRepository>();
 
+  return FutureBuilder(
+    future: authRepository.getUserProfile(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return Center(
+            child: SpinKitChasingDots(
+                color: AppColors.primary,
+                size:
+                    50.sp)); // Show a loading indicator while waiting for data
+      }
 
-  return FutureBuilder(future: authRepository.getUserProfile(),
-      builder: (context,snapshot){
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: SpinKitChasingDots(
-              color: AppColors.primary, size: 50.sp)); // Show a loading indicator while waiting for data
-        }
+      if (!snapshot.hasData) {
+        return Container(
+          padding: EdgeInsets.all(4.w), // Border width
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: AppColors.primary, // Border color
+              width: 4.w, // Border thickness
+            ),
+          ),
+          child: CircleAvatar(
+            radius: 25.r, // Adjust the radius as needed
+            backgroundColor: Colors.transparent,
+            child: Icon(
+              Icons.person,
+              size: 25.r,
+            ),
+          ),
+        );
+      }
 
-        if (!snapshot.hasData) {
+      return snapshot.data!.fold((error) {
+        return Container(
+          padding: EdgeInsets.all(4.w), // Border width
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: AppColors.primary, // Border color
+              width: 4.w, // Border thickness
+            ),
+          ),
+          child: CircleAvatar(
+            radius: 25.r, // Adjust the radius as needed
+            backgroundColor: Colors.transparent,
+            child: Icon(
+              Icons.person,
+              size: 25.r,
+            ),
+          ),
+        );
+      }, (success) {
+        if (success.photo == null || success.photo!.isEmpty) {
           return Container(
             padding: EdgeInsets.all(4.w), // Border width
             decoration: BoxDecoration(
@@ -306,13 +436,13 @@ Widget _getUserProfilePicture() {
             child: CircleAvatar(
               radius: 25.r, // Adjust the radius as needed
               backgroundColor: Colors.transparent,
-              child: Icon(Icons.person,size: 25.r,),
+              child: Icon(
+                Icons.person,
+                size: 25.r,
+              ),
             ),
           );
-        }
-
-
-        return snapshot.data!.fold((error){
+        } else {
           return Container(
             padding: EdgeInsets.all(4.w), // Border width
             decoration: BoxDecoration(
@@ -323,49 +453,17 @@ Widget _getUserProfilePicture() {
               ),
             ),
             child: CircleAvatar(
-              radius: 25.r, // Adjust the radius as needed
-              backgroundColor: Colors.transparent,
-              child: Icon(Icons.person,size: 25.r,),
+              radius: 25.r,
+              backgroundColor: AppColors.white,
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(25.r),
+                  child: Image.network(success.photo ?? "", fit: BoxFit.cover)),
             ),
           );
-        }, (success){
-          if(success.photo == null || success.photo!.isEmpty){
-            return Container(
-              padding: EdgeInsets.all(4.w), // Border width
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.primary, // Border color
-                  width: 4.w, // Border thickness
-                ),
-              ),
-              child: CircleAvatar(
-                radius: 25.r, // Adjust the radius as needed
-                backgroundColor: Colors.transparent,
-                child: Icon(Icons.person,size: 25.r,),
-              ),
-            );
-          }else{
-            return Container(
-              padding: EdgeInsets.all(4.w), // Border width
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.primary, // Border color
-                  width: 4.w, // Border thickness
-                ),
-              ),
-              child:  CircleAvatar(
-                radius: 25.r,
-                backgroundColor: AppColors.white,
-                child: ClipRRect(
-                    borderRadius: BorderRadius.circular(25.r),
-                    child: Image.network(success.photo ?? "",fit: BoxFit.cover)),
-              ),
-            );
-          }
-        });
-      },);
+        }
+      });
+    },
+  );
 }
 
 Widget _welcomeText(BuildContext context) {
@@ -409,12 +507,11 @@ Widget _healthStatus() {
 }
 
 Widget _getBloodGlucoseAverage() {
-
   final patientGlucoseRepository = sl<DiabetesRepository>();
 
   return FutureBuilder(
     future: patientGlucoseRepository.getBloodGlucoseOfLast7Days(),
-    builder: (context,snapshot){
+    builder: (context, snapshot) {
       if (snapshot.connectionState == ConnectionState.waiting) {
         return Center(child: CustomChasingDots(size: 50.sp));
       }
@@ -423,59 +520,52 @@ Widget _getBloodGlucoseAverage() {
           value: 'N/A',
           average: 'Last 7 days Avg',
           label: 'Blood Glucose',
-          onPressed: () {
-
-          },
+          onPressed: () {},
         );
-
       }
 
-      return snapshot.data!.fold((error){
+      return snapshot.data!.fold((error) {
         return HealthCard(
           value: 'N/A',
           average: 'Last 7 days Avg',
           label: 'Blood Glucose',
-          onPressed: () {
-
-          },
+          onPressed: () {},
         );
-      }, (success){
-        String glucoseLevel = (success.avgLevel != null) ? success.avgLevel.toString() : 'N/A';
+      }, (success) {
+        String glucoseLevel =
+            (success.avgLevel != null) ? success.avgLevel.toString() : 'N/A';
         return HealthCard(
-           value: '$glucoseLevel/10',
-           average: 'Last 7 days Avg',
-           label: 'Blood Glucose',
-           onPressed: () {
-
-           },
-         );
-
+          value: '$glucoseLevel/10',
+          average: 'Last 7 days Avg',
+          label: 'Blood Glucose',
+          onPressed: () {},
+        );
       });
-
-  },);
+    },
+  );
 }
 
 Widget _getBloodPressureAverage() {
-
   final patientBloodPressureRepository = sl<BloodPressureRepository>();
 
-  return FutureBuilder<dartz.Either<ApiException,BloodPressureHistoryForLast7Days>>(
-      future: patientBloodPressureRepository.getBloodPressureOfLast7Days(),
-      builder: (context,snapshot){
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CustomChasingDots(size: 50.sp);
-        }
-        if (!snapshot.hasData) {
-          return HealthCard(
-            value: 'N/A',
-            average: 'Last 7 days Avg',
-            label: 'Blood Pressure',
-            onPressed: () {},
-          );
-        }
+  return FutureBuilder<
+      dartz.Either<ApiException, BloodPressureHistoryForLast7Days>>(
+    future: patientBloodPressureRepository.getBloodPressureOfLast7Days(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return CustomChasingDots(size: 50.sp);
+      }
+      if (!snapshot.hasData) {
+        return HealthCard(
+          value: 'N/A',
+          average: 'Last 7 days Avg',
+          label: 'Blood Pressure',
+          onPressed: () {},
+        );
+      }
 
-        return snapshot.data!.fold(
-              (error){
+      return snapshot.data!.fold(
+        (error) {
           return HealthCard(
             value: 'N/A',
             average: 'Last 7 days Avg',
@@ -485,45 +575,21 @@ Widget _getBloodPressureAverage() {
             },
           );
         },
-              (success){
-                final systole = (success.avgSystolic ?? 0) > 0 ? success.avgSystolic.toString() : 'N/A';
-                final diastole = (success.avgDiastolic ?? 0) > 0 ? success.avgDiastolic.toString() : '';
+        (success) {
+          final systole = (success.avgSystolic ?? 0) > 0
+              ? success.avgSystolic.toString()
+              : 'N/A';
+          final diastole = (success.avgDiastolic ?? 0) > 0
+              ? success.avgDiastolic.toString()
+              : '';
           return HealthCard(
             value: '$systole/$diastole',
             average: 'Last 7 days Avg',
             label: 'Blood Pressure',
             onPressed: () {},
           );
-        },);
-
         },
+      );
+    },
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

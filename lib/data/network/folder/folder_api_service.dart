@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:nirvar/core/resources/api_exception.dart';
+import 'package:nirvar/models/patient_files/patient_file.dart';
 import 'package:nirvar/models/patient_folder/patient_folder.dart';
+import 'package:nirvar/models/search_response/search_response_data.dart';
 import 'package:nirvar/models/selected_folder/selected_folder.dart';
 
 import '../../../core/constants/constants.dart';
@@ -254,4 +256,53 @@ class FolderApiService {
       return Left(ApiException(e.toString()));
     }
   }
+
+
+  //Search Related End Points
+  Future<Either<ApiException,SearchResponseData>> getSearchData(String searchData) async{
+    List<PatientFolder> folders = [];
+    List<PatientFile> files = [];
+
+    try{
+      var formData = FormData.fromMap({
+        'search_data': searchData,
+      });
+
+      final response = await _dio.post(patientSearch,data: formData);
+      print('Response: $response');
+      print('ResponseData: ${response.data}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = response.data;
+        if (responseData['status'] == 1 && responseData['message'] == 'success') {
+          final List<dynamic> folderJson = responseData['data']['folders'] ?? [];
+          final List<dynamic> fileJson = responseData['data']['files'] ?? [];
+
+          if(folderJson.isNotEmpty){
+            folders = folderJson
+                .map((fileJson) => PatientFolder.fromJson(fileJson as Map<String, dynamic>))
+                .toList();
+          }
+
+          if(fileJson.isNotEmpty){
+            files = fileJson
+                .map((fileJson) => PatientFile.fromJson(fileJson as Map<String, dynamic>))
+                .toList();
+          }
+
+          return Right(SearchResponseData(folders: folders,files: files));
+        } else {
+          return Left(ApiException(responseData['message']["search_data"]));
+        }
+      } else {
+        return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
+      }
+    }on DioException catch (e) {
+      return Left(ApiException.fromDioError(e));
+    } catch (e) {
+      return Left(ApiException(e.toString()));
+    }
+  }
+
+
 }

@@ -1,4 +1,4 @@
-import 'dart:ffi';
+
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -29,6 +29,14 @@ class StatsScreen extends StatefulWidget {
 }
 
 class _StatsScreenState extends State<StatsScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    sl<DiabetesRepository>().getBloodGlucoseOfToday();
+    sl<BloodPressureRepository>().getBloodPressureOfToday();
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;

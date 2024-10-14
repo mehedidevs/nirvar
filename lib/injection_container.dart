@@ -6,6 +6,8 @@ import 'package:nirvar/bloc/forgot_password_reset/forgot_password_reset_bloc.dar
 import 'package:nirvar/bloc/login/login_bloc.dart';
 import 'package:nirvar/bloc/logout/logout_bloc.dart';
 import 'package:nirvar/bloc/password_change/password_change_bloc.dart';
+import 'package:nirvar/bloc/patient_files/patient_files_bloc.dart';
+import 'package:nirvar/bloc/patient_folder/patient_folder_bloc.dart';
 import 'package:nirvar/bloc/register_otp_send/register_otp_send_bloc.dart';
 import 'package:nirvar/bloc/register_user_credentials/register_user_credentials_bloc.dart';
 import 'package:nirvar/bloc/resend_otp/resend_otp_bloc.dart';
@@ -84,7 +86,6 @@ Future<void> initializeDependencies() async {
   sl.registerFactory<UserProfileUpdateBloc>(() => UserProfileUpdateBloc(sl<AuthRepository>()));
 
 
-
   //Forgot Password
   sl.registerFactory<ForgotPasswordBloc>(() => ForgotPasswordBloc(sl<AuthRepository>()));
   sl.registerFactory<ForgotPasswordOtpSendBloc>(() => ForgotPasswordOtpSendBloc(sl<AuthRepository>()));
@@ -96,7 +97,11 @@ Future<void> initializeDependencies() async {
   //Resend OTP
   sl.registerFactory<ResendOtpBloc>(() => ResendOtpBloc(sl<AuthRepository>()));
 
+  //Folder
+  sl.registerFactory<PatientFolderBloc>(() => PatientFolderBloc(sl<PatientFolderRepository>()));
 
+  //Files
+  sl.registerFactory<PatientFileBloc>(() => PatientFileBloc(sl<PatientFileRepository>()));
 
   await sl.allReady();
 }

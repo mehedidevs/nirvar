@@ -120,11 +120,17 @@ class _UploadDialogState extends State<UploadDialog> {
     return selectedOption!=null
         ? CustomButton(
       text: 'Proceed',
-      onPressed: (){
+      onPressed: () async{
+        bool? result;
         if( selectedOption == 'Test Reports'){
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => TestReportUploadScreen(folderId: widget.folder.folderId, folderName: widget.folder.name ?? "",)));
+         result = await Navigator.push(context, MaterialPageRoute(builder: (context) => TestReportUploadScreen(folderId: widget.folder.folderId, folderName: widget.folder.name ?? "",)));
         } else if( selectedOption == 'Prescription'){
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => PrescriptionUploadScreen(folderId: widget.folder.folderId,)));
+         result = await Navigator.push(context, MaterialPageRoute(builder: (context) => PrescriptionUploadScreen(folderId: widget.folder.folderId,)));
+        }
+        if(result == true){
+          if(context.mounted){
+            Navigator.of(context).pop(true);
+          }
         }
       },)
         : const DisabledButton(buttonText: 'Proceed');

@@ -1,8 +1,10 @@
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:nirvar/bloc/patient_files/patient_files_bloc.dart';
 import 'package:nirvar/models/patient_files/patient_file.dart';
 import 'package:nirvar/models/patient_folder/patient_folder.dart';
 import 'package:nirvar/repository/patient_file/patient_file_repository.dart';
@@ -40,7 +42,75 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
 
 
   @override
+  void initState() {
+    super.initState();
+
+    context.read<PatientFileBloc>().add(GetPatientFilesFromApi(widget.folder.folderId));
+    // _repository.getAllTestReports(widget.folder.folderId);
+    // _repository.getAllPrescriptions(widget.folder.folderId);
+
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   sl<PatientFileBloc>().add(GetPatientFilesFromApi(widget.folder.folderId));
+    // });
+  }
+
+
+  @override
+  void didUpdateWidget(covariant FolderDetailsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if(sl<PatientFileBloc>().state.prescriptionData.prescriptions != null){
+      context.read<PatientFileBloc>().add(GetPatientFilesFromApi(widget.folder.folderId));
+    }
+
+    if(sl<PatientFileBloc>().state.prescriptionData.testReports != null){
+      context.read<PatientFileBloc>().add(GetPatientFilesFromApi(widget.folder.folderId));
+    }
+
+  }
+
+  @override
   Widget build(BuildContext context) {
+
+    return BlocListener<PatientFileBloc,PatientFilesState>(
+        listenWhen: (previous, current) => previous.status != current.status,
+        listener: (context, state) {
+          if (state.status == PatientFilesStatus.success) {
+            print("Folders updated successfully");
+          }
+          if (state.status == PatientFilesStatus.initial) {
+            context.read<PatientFileBloc>().add(GetPatientFilesFromApi(widget.folder.folderId));
+            print("Folders updated successfully");
+          }
+        },
+        child : DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        backgroundColor: AppColors.white,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  _appBarSection(context),
+                  SizedBox(height: 16.h),
+                  _headerSection(context,widget.folder.name ?? ''),
+                  SizedBox(height: 16.h),
+                  _tabBarSection(),
+                  SizedBox(height: 16.h),
+                  _tabBarViewSectionAlternative(),
+                  SizedBox(height: ScreenUtil().screenHeight * .1.h),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    ));
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -173,6 +243,54 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
       ),
     );
   }
+
+
+ Widget _tabBarViewSectionAlternative(){
+    return BlocBuilder<PatientFileBloc,PatientFilesState>(
+      buildWhen: (previous,current) => previous.status != current.status,
+        builder: (context,state){
+          if (state.status == PatientFilesStatus.loading) {
+            return Center(child: SpinKitChasingDots(color: AppColors.primary, size: 50.sp));
+          }else if (state.status == PatientFilesStatus.failure) {
+            return Center(child: Text('Error: ${state.errorMessage}',style: const TextStyle(color: AppColors.primary),));
+          }else if(state.status == PatientFilesStatus.success){
+            return IndexedStack(
+              index: _selectedIndex,
+              children: [
+                _buildFileList(state.prescriptionData.testReports),
+                _buildFileList(state.prescriptionData.prescriptions),
+              ],
+            );
+          } else {
+            return const Center(child: Text('No files available.'));
+          }
+    });
+ }
+
+  Widget _buildFileList(List<PatientFile>? fileList) {
+
+    return  (fileList == null || fileList.isEmpty)
+        ? const Center(child: Text('No Test Report is available',style: TextStyle(color: AppColors.primary),))
+         : ListView(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      children: fileList.map((file) {
+        return _healthItem(context,file,
+            onDeleteSuccess:(String message)async{
+              context.read<PatientFileBloc>().add(GetPatientFilesFromApi(widget.folder.folderId));
+            },
+            onRenameSuccess:(String message)async{
+              context.read<PatientFileBloc>().add(GetPatientFilesFromApi(widget.folder.folderId));
+            },
+            fileType: file.type ?? '',
+        );
+      }).toList(),
+    );
+
+  }
+
+
+
 
   Widget _tabBarViewSection() {
     return IndexedStack(
@@ -324,8 +442,8 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
             maxLines: 1,
             overflow: TextOverflow.fade,
           ),
-          subtitle:Row(
-            mainAxisSize: MainAxisSize.min,
+          subtitle:Wrap(
+            crossAxisAlignment: WrapCrossAlignment.start,
             children: [
               Text(
                 file.folderName ?? "",
@@ -337,7 +455,7 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
                 overflow: TextOverflow.fade,
               ),
               Padding(
-                padding:  EdgeInsets.symmetric(horizontal: 8.w),
+                padding:  EdgeInsets.symmetric(horizontal: 8.w,vertical: 8.h),
                 child: Container(
                   height: 5.sp,
                   width: 5.sp,
@@ -540,10 +658,16 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
           ),
         ),
         ElevatedButton.icon(
-          onPressed: () {
-            showDialog(context: context, builder: (context){
+          onPressed: () async {
+         final result = await   showDialog(context: context, builder: (context){
               return UploadDialog(folder: widget.folder);
             });
+
+         if(result == true){
+           if(context.mounted){
+             context.read<PatientFileBloc>().add(GetPatientFilesFromApi(widget.folder.folderId));
+           }
+         }
           },
           icon: Icon(Icons.add, size: 16.sp, color: Colors.white),
           label: Text(
@@ -561,6 +685,8 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
       ],
     );
   }
+
+
 
 
 

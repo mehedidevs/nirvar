@@ -63,6 +63,10 @@ const String patientDiabetesMonthly = '/patient/diabetes/monthly';
 const String doctorSpecialities = '/patient/doctor/specialities';
 
 
+//Search
+const String patientSearch = '/patient/search';
+
+
 
 
 

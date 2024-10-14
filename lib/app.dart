@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nirvar/bloc/logout/logout_bloc.dart';
+import 'package:nirvar/bloc/patient_files/patient_files_bloc.dart';
+import 'package:nirvar/bloc/patient_folder/patient_folder_bloc.dart';
 import 'package:nirvar/screens/auth/register_user_credentials_screen.dart';
 import 'package:nirvar/screens/auth/splash_screen.dart';
 import 'package:nirvar/config/theme/app_themes.dart';
@@ -29,6 +31,8 @@ class _NirvarAppState extends State<NirvarApp> {
           providers: [
             BlocProvider(create: (context) => sl<UserProfileDetailsBloc>()),
             BlocProvider(create: (context) => sl<LogOutBloc>()),
+            BlocProvider(create: (context) => sl<PatientFolderBloc>()..add(GetPatientFolderFromApi())),
+            BlocProvider(create: (context) => sl<PatientFileBloc>()),
           ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,

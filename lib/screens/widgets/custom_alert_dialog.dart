@@ -113,12 +113,19 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
     return selectedOption!=null
         ? CustomButton(
         text: 'Proceed',
-        onPressed: (){
+        onPressed: () async{
+          bool? result;
           if( selectedOption == 'Test Reports'){
-             Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>  const RandomlyTestReportUploadScreen()));
+            result = await Navigator.push(context, MaterialPageRoute(builder: (context) =>  const RandomlyTestReportUploadScreen()));
           } else if( selectedOption == 'Prescription'){
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>  const RandomlyPrescriptionUploadScreen()));
+            result = await Navigator.push(context, MaterialPageRoute(builder: (context) =>  const RandomlyPrescriptionUploadScreen()));
           }
+          if(result == true){
+            if(context.mounted){
+              Navigator.of(context).pop(true);
+            }
+          }
+
         },)
         : const DisabledButton(buttonText: 'Proceed');
   }

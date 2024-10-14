@@ -251,6 +251,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
               fileName = extractFilePath(success);
               startDownload();
               _loading = false;
+              _isDownloading = true;
             });
           });
 

@@ -369,7 +369,7 @@ class _RandomlyPrescriptionUploadScreenState
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.of(context).pop(true),
         ),
         actions: [
           IconButton(
