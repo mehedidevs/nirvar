@@ -5,10 +5,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nirvar/bloc/patient_files/patient_files_bloc.dart';
+import 'package:nirvar/bloc/patient_folder/patient_folder_bloc.dart';
 import 'package:nirvar/models/patient_files/patient_file.dart';
 import 'package:nirvar/models/patient_folder/patient_folder.dart';
 import 'package:nirvar/repository/patient_file/patient_file_repository.dart';
 import 'package:nirvar/screens/details/file_details_screen.dart';
+import 'package:nirvar/screens/search/search_screen.dart';
 import 'package:nirvar/screens/utils/file_type.dart';
 import 'package:nirvar/screens/widgets/upload_dialog.dart';
 import '../../core/resources/api_exception.dart';
@@ -33,6 +35,7 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
 
   int _selectedIndex = 0;
   final PatientFileRepository _repository = sl<PatientFileRepository>();
+  final GlobalKey<_FolderDetailsScreenState> myWidgetKey = GlobalKey();
 
   void _onTabSelected(int index) {
     setState(() {
@@ -73,7 +76,6 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
   Widget build(BuildContext context) {
 
     return BlocListener<PatientFileBloc,PatientFilesState>(
-        listenWhen: (previous, current) => previous.status != current.status,
         listener: (context, state) {
           if (state.status == PatientFilesStatus.success) {
             print("Folders updated successfully");
@@ -109,35 +111,36 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
           ),
         ),
       ),
-    ));
-
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        backgroundColor: AppColors.white,
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  _appBarSection(context),
-                  SizedBox(height: 16.h),
-                  _headerSection(context,widget.folder.name ?? ''),
-                  SizedBox(height: 16.h),
-                  _tabBarSection(),
-                  SizedBox(height: 16.h),
-                  _tabBarViewSection(),
-                  SizedBox(height: ScreenUtil().screenHeight * .1.h),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
+    ),
     );
+
+    // return DefaultTabController(
+    //   length: 2,
+    //   child: Scaffold(
+    //     backgroundColor: AppColors.white,
+    //     body: SafeArea(
+    //       child: SingleChildScrollView(
+    //         child: Padding(
+    //           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+    //           child: Column(
+    //             crossAxisAlignment: CrossAxisAlignment.start,
+    //             mainAxisAlignment: MainAxisAlignment.start,
+    //             children: [
+    //               _appBarSection(context),
+    //               SizedBox(height: 16.h),
+    //               _headerSection(context,widget.folder.name ?? ''),
+    //               SizedBox(height: 16.h),
+    //               _tabBarSection(),
+    //               SizedBox(height: 16.h),
+    //               _tabBarViewSection(),
+    //               SizedBox(height: ScreenUtil().screenHeight * .1.h),
+    //             ],
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //   ),
+    // );
   }
 
   Widget _appBarSection(BuildContext context) {
@@ -155,8 +158,25 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
                     Spacer(),
 
                     GestureDetector(
-                      onTap: () {
+                      onTap: () async {
+
+                        bool? result;
                         print('Search icon tapped');
+                       result = await  Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                            const SearchScreen(),
+                          ),
+                        );
+
+                       print(result);
+
+                        if(result == true){
+                            if(context.mounted){
+                              context.read<PatientFileBloc>().add(GetPatientFilesFromApi(widget.folder.folderId));
+                            }
+                        }
                       },
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 8.w),
@@ -291,16 +311,15 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
 
 
 
-
-  Widget _tabBarViewSection() {
-    return IndexedStack(
-      index: _selectedIndex,
-      children: [
-       _myTestReportTab(),
-       _myPrescriptionTab(),
-      ],
-    );
-  }
+  // Widget _tabBarViewSection() {
+  //   return IndexedStack(
+  //     index: _selectedIndex,
+  //     children: [
+  //      _myTestReportTab(),
+  //      _myPrescriptionTab(),
+  //     ],
+  //   );
+  // }
 
 
 

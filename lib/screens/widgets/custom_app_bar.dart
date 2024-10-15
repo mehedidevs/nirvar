@@ -20,25 +20,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         onTap: () => Navigator.of(context).pop(true),
         child: const Icon(Icons.arrow_back_ios, color: Colors.black),
       ),
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 20.sp,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          SizedBox(height: 2.h),
-          Container(
-            height: 2.h,
-            width: 100.w,
-            color: AppColors.shadyBlue,
-          ),
-        ],
-      ),
+      title: _credentialText(title),
       centerTitle: true,
       actions: [
         Stack(
@@ -77,4 +59,22 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
+
+  Widget _credentialText(String information) {
+    return Center(
+      child: Container(
+        decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: AppColors.primary, width: 2.h),
+            )),
+        child: Text(
+          information,
+          style: TextStyle(
+            fontSize: 24.sp,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
 }

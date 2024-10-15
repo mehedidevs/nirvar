@@ -74,7 +74,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: const CustomAppBar(title: 'Search'),
+      appBar: CustomAppBar(title: 'Search'),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -173,17 +173,16 @@ class _SearchScreenState extends State<SearchScreen> {
         return FileCard(
           patientFolder: folder,
           onUpdateSuccess: ()async {
-            setState(() {});
+            _onSearch();
             print("API CALLED AGAIN");
           },
           onDeleteSuccess: ()async {
-            setState(() {});
+            _onSearch();
             print("API CALLED AGAIN");
           },
           onComingBack: ()async{
-            setState(() {
-
-            });},
+            _onSearch();
+            },
         );
       }).toList(),
     );
@@ -196,10 +195,10 @@ class _SearchScreenState extends State<SearchScreen> {
           children: files.map((file) {
             return _healthItem(context,file,
                 onDeleteSuccess:(String message)async{
-                  setState(() {});
+                  _onSearch();
                 },
                 onRenameSuccess:(String message)async{
-                  setState(() {});
+                  _onSearch();
                 },
                 fileType: file.type ?? ''
             );
