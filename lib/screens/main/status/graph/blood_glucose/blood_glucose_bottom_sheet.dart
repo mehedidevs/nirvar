@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart' as dartz;
-import 'package:fl_chart/fl_chart.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nirvar/repository/diabetes/diabetes_repository.dart';
@@ -7,7 +7,7 @@ import 'package:nirvar/screens/main/status/graph/blood_glucose/blood_glucose_inp
 import 'package:nirvar/screens/main/status/graph/blood_glucose/monthly/monthly_glucose_chart.dart';
 import 'package:nirvar/screens/main/status/graph/blood_glucose/past_7_days/daily_glucose_chart.dart';
 import 'package:nirvar/screens/main/status/graph/blood_glucose/weekly/weekly_glucose_chart.dart';
-import 'package:path/path.dart';
+
 
 import '../../../../../core/resources/api_exception.dart';
 import '../../../../../injection_container.dart';
@@ -57,11 +57,22 @@ class BloodGlucoseBottomSheet extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      InkWell(onTap: () {
-                        Navigator.pushReplacement(
+                      InkWell(
+                          onTap: () async {
+                            bool? result;
+                      result = await  Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => BloodGlucoseInput()));
+                                builder: (context) => const BloodGlucoseInput()));
+
+                      print(result.toString());
+
+                      if(result == true){
+                       if(context.mounted){
+                         Navigator.of(context).pop(true);
+                       }
+                      }
+
                       }, child: circuler_add_button()),
                       SizedBox(width: 16.w),
                       Text(

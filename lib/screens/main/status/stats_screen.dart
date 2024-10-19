@@ -69,7 +69,12 @@ class _StatsScreenState extends State<StatsScreen> {
                           isScrollControlled: true,
                           backgroundColor: Colors.transparent,
                           builder: (context) => const BloodGlucoseBottomSheet(),
-                        );
+                        ).then((result){
+                          print(result.toString());
+                          if(result == true){
+                            setState(() {});
+                          }
+                        });
                       },
                       child: _getDiabetesAvg(),
                     ),
@@ -246,7 +251,12 @@ class _StatsScreenState extends State<StatsScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => const BloodPressureBottomSheet(),
-    );
+    ).then((result){
+      print(result.toString());
+      if(result == true){
+        setState(() {});
+      }
+    });
   }
 }
 

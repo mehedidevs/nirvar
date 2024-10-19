@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:nirvar/bloc/logout/logout_bloc.dart';
 import 'package:nirvar/screens/auth/sign_in_screen.dart';
 import 'package:nirvar/screens/main/profile/edit_profile_screen.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
-import 'package:nirvar/screens/utils/helper.dart';
 import 'package:nirvar/screens/widgets/custom_button.dart';
+import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 import '../../../injection_container.dart';
 import '../../../repository/authentication/auth_repository.dart';
-import '../../auth/sign_up_screen.dart';
-import '../../widgets/logout_dialog.dart';
 import 'account_settings_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -182,6 +178,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<bool> _showLogoutDialogAlternative(BuildContext context) async {
+
+    bool _isLoading = false;
+
     final result = await showDialog<bool>(
       context: context,
       builder: (context) {
@@ -206,19 +205,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 24.h),
-                Padding(
+
+                _isLoading ? const CustomChasingDots()
+                : Padding(
                   padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 16.w),
                   child: CustomButton(
                     text: 'Log Out',
                     onPressed: () async {
+
+                      setState(() {
+                        _isLoading = true;
+                      });
+
                       final result = await sl<AuthRepository>().logoutUser();
 
                       result.fold(
                             (failure) {
+                              setState(() {
+                                _isLoading = false;
+                              });
                           Navigator.of(context).pop(false);
                         },
                             (success) {
-
+                              setState(() {
+                                _isLoading = false;
+                              });
                               Navigator.of(context).pop(true);
                         },
                       );
@@ -227,7 +238,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 SizedBox(height: 8.h),
                 // Cancel Button
-                TextButton(
+               _isLoading ? const SizedBox() : TextButton(
                   onPressed: () {
                     Navigator.of(context).pop(false); // Return false when canceled
                   },

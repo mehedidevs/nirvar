@@ -6,6 +6,7 @@ import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/utils/helper.dart';
 import 'package:nirvar/screens/widgets/custom_app_bar.dart';
 import 'package:nirvar/screens/widgets/custom_button.dart';
+import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 import 'package:nirvar/screens/widgets/custom_textInput.dart';
 
 import '../../../../../injection_container.dart';
@@ -22,6 +23,7 @@ class _BloodPressureInputState extends State<BloodPressureInput> {
   final TextEditingController _systolicController = TextEditingController();
   final TextEditingController _diastolicController = TextEditingController();
   final BloodPressureRepository _repository = sl<BloodPressureRepository>();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -49,7 +51,7 @@ class _BloodPressureInputState extends State<BloodPressureInput> {
                     child: FittedBox(
                       child: Image.asset(
                         AssetsPath.bloodPressurePng,
-                        height: 250.h,
+                        height: 150.h,
                         width: 250.w,
                       ),
                     ),
@@ -72,7 +74,7 @@ class _BloodPressureInputState extends State<BloodPressureInput> {
                   ),
                   SizedBox(height: 8.h),
                   CustomTextField(
-                    hint: 'Ex. 140',
+                    hint: 'Ex. 120',
                     keyboardType: TextInputType.number,
                     controller: _systolicController,
                     validator: (value) {
@@ -91,7 +93,7 @@ class _BloodPressureInputState extends State<BloodPressureInput> {
                   ),
                   SizedBox(height: 8.h),
                   CustomTextField(
-                    hint: 'Ex. 140',
+                    hint: 'Ex. 80',
                     keyboardType: TextInputType.number,
                     controller: _diastolicController,
                     validator: (value) {
@@ -102,23 +104,37 @@ class _BloodPressureInputState extends State<BloodPressureInput> {
                     },
                   ),
                   SizedBox(height: 32.h),
-                  Padding(
+                  _isLoading ? const CustomChasingDots()
+                  : Padding(
                     padding:
                         EdgeInsets.symmetric(horizontal: 16.w, vertical: 0.h),
                     child: CustomButton(
                       text: 'Submit',
                       onPressed: () async {
                         if (_formKey.currentState?.validate() ?? false) {
+
+                          FocusManager.instance.primaryFocus?.unfocus();
+
+                          setState(() {
+                            _isLoading = true;
+                          });
+
                           final response = await _repository.storeBloodPressure(
                               int.parse(_systolicController.text),
                               int.parse(_diastolicController.text),
                           );
 
                           response.fold((failure){
+                            setState(() {
+                              _isLoading = false;
+                            });
                             context.flushBarErrorMessage(message: failure.message);
                           }, (success){
                             _systolicController.clear();
                             _diastolicController.clear();
+                            setState(() {
+                              _isLoading = false;
+                            });
                             context.flushBarSuccessMessage(message: success);
                           },);
                         }

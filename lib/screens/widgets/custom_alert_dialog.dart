@@ -5,6 +5,9 @@ import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/widgets/custom_button.dart';
 import 'package:nirvar/screens/widgets/disabled_button.dart';
 
+import '../../bloc/patient_folder/patient_folder_bloc.dart';
+import '../../injection_container.dart';
+
 class CustomAlertDialog extends StatefulWidget {
   @override
   _CustomAlertDialogState createState() => _CustomAlertDialogState();
@@ -120,6 +123,9 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
           } else if( selectedOption == 'Prescription'){
             result = await Navigator.push(context, MaterialPageRoute(builder: (context) =>  const RandomlyPrescriptionUploadScreen()));
           }
+
+          print(result.toString());
+
           if(result == true){
             if(context.mounted){
               Navigator.of(context).pop(true);

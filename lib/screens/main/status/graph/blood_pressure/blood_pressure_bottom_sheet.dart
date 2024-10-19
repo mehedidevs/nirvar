@@ -57,13 +57,17 @@ class BloodPressureBottomSheet extends StatelessWidget {
                   Row(
                     children: [
                       InkWell(
-                          onTap: () {
-                            Navigator.pushReplacement(
+                          onTap: () async {
+                            bool? result;
+                           result = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => BloodPressureInput()));
-
-
+                                    builder: (context) => const BloodPressureInput()));
+                           if(result == true){
+                             if(context.mounted){
+                               Navigator.of(context).pop(true);
+                             }
+                           }
                           },
                           child: circuler_add_button()),
                       SizedBox(width: 16.w),

@@ -299,7 +299,8 @@ class _MyFilesState extends State<MyFiles> {
           ),
         ),
 
-        ActionMenuButton(onCreateFolder: (){
+        ActionMenuButton(
+          onCreateFolder: (){
           showDialog(
             context: context,
             builder: (context) {
@@ -400,17 +401,16 @@ class _MyFilesState extends State<MyFiles> {
             },
           );
 
-        }, onFileUpload: () async {
+        },
+          onFileUpload: () async {
         final result = await  showDialog(context: context, builder: (context){
             return CustomAlertDialog();
           });
 
         if(result == true){
-          if(context.mounted){
-            context.read<PatientFolderBloc>().add(GetPatientFolderFromApi());
-          }
+         sl<PatientFolderBloc>().add(GetPatientFolderFromApi());
         }
-        }),
+        },),
       ],
     );
   }

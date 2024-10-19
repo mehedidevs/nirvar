@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nirvar/repository/diabetes/diabetes_repository.dart';
 import 'package:nirvar/screens/utils/helper.dart';
+import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 
 import '../../../../../injection_container.dart';
 import '../../../../utils/app_colors.dart';
@@ -21,6 +22,7 @@ class _BloodGlucoseInputState extends State<BloodGlucoseInput> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _bloodGlucoseController = TextEditingController();
   final DiabetesRepository _repository = sl<DiabetesRepository>();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -47,7 +49,7 @@ class _BloodGlucoseInputState extends State<BloodGlucoseInput> {
                     child: FittedBox(
                       child: Image.asset(
                         AssetsPath.bloodTransfusionPng,
-                        height: 250.h,
+                        height: 150.h,
                         width: 250.w,
                       ),
                     ),
@@ -81,22 +83,38 @@ class _BloodGlucoseInputState extends State<BloodGlucoseInput> {
                     },
                   ),
                   SizedBox(height: 32.h),
-                  Padding(
+
+                  _isLoading ? const CustomChasingDots()
+                      :Padding(
                     padding:
                         EdgeInsets.symmetric(horizontal: 16.w, vertical: 0.h),
                     child: CustomButton(
                       text: 'Submit',
                       onPressed: () async {
                         if (_formKey.currentState?.validate() ?? false) {
+
+                          FocusManager.instance.primaryFocus?.unfocus();
+
+                          setState(() {
+                            _isLoading = true;
+                          });
+
                           final response = await _repository.storeDiabetes(
                               double.parse(_bloodGlucoseController.text));
                           response.fold(
                             (failure) {
+                              setState(() {
+                                _isLoading = false;
+                              });
                               context.flushBarErrorMessage(
                                   message: failure.message);
+
                             },
                             (success) {
                               _bloodGlucoseController.clear();
+                              setState(() {
+                                _isLoading = false;
+                              });
                               context.flushBarSuccessMessage(message: success);
                             },
                           );
