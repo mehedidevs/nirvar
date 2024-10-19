@@ -650,7 +650,8 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
                       ),
                     ),
                   );
-                },);
+                },
+              );
             },
           ),
           // trailing: Icon(

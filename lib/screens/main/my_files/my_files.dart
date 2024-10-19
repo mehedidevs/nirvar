@@ -81,7 +81,6 @@ class _MyFilesState extends State<MyFiles> {
     // );
 
     return  BlocListener<PatientFolderBloc, PatientFolderState>(
-        listenWhen: (previous, current) => previous.status != current.status,
         listener: (context, state) {
           if (state.status == PatientFolderStatus.success) {
             // Success state: Trigger any additional UI updates or side effects here
@@ -169,14 +168,20 @@ class _MyFilesState extends State<MyFiles> {
     );
   }
 
-  Widget _searchAndNotification(context) {
+  Widget _searchAndNotification(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GestureDetector(
-          onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const SearchScreen()));
+          onTap: () async {
+            bool? result;
+           result = await Navigator.push(context, MaterialPageRoute(builder: (context) => const SearchScreen()));
+             if(result == true){
+               if(context.mounted){
+                 context.read<PatientFolderBloc>().add(GetPatientFolderFromApi());
+               }
+             }
           },
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 8.w),

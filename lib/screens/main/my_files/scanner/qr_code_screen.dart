@@ -77,10 +77,10 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
-                  height: ScreenUtil().screenHeight * .02.h,
+                  height: ScreenUtil().screenHeight * .03.h,
                 ),
                 SizedBox(
-                  height: .5.sh,
+                  height: .45.sh,
                   child: PrettyQrView.data(
                     data: url,
                     decoration: PrettyQrDecoration(
@@ -92,7 +92,7 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
                   ),
                 ),
 
-                SizedBox(height: 16.h),
+                SizedBox(height: ScreenUtil().screenHeight * .05.h),
 
                 // URL Container
                 Container(

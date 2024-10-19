@@ -124,17 +124,17 @@ class _FileCardState extends State<FileCard> {
                               widget.patientFolder.name ?? '';
                           final patientFolderRepository =
                               sl<PatientFolderRepository>();
-                          return AlertDialog(
+                          return Dialog(
+                            backgroundColor: AppColors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16.r),
                             ),
-                            content: Padding(
+                            child: Padding(
                               padding: EdgeInsets.all(16.w),
                               child: Form(
                                 key: _formKey,
                                 child: ListView(
                                   shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
                                   children: [
                                     Text(
                                       widget.patientFolder.name ?? '',
@@ -151,8 +151,7 @@ class _FileCardState extends State<FileCard> {
                                       hint: '',
                                       controller: _folderNameController,
                                       validator: (value) {
-                                        if (value == null ||
-                                            value.isEmpty) {
+                                        if (value == null || value.isEmpty) {
                                           return 'Please enter Folder Name';
                                         }
                                         return null;
@@ -160,35 +159,23 @@ class _FileCardState extends State<FileCard> {
                                     ),
                                     SizedBox(height: 32.h),
                                     Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: 0.h,
-                                          horizontal: 16.w),
+                                      padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 16.w),
                                       child: CustomButton(
                                         text: 'Save',
                                         onPressed: () async {
-                                          if (_formKey.currentState
-                                                  ?.validate() ??
-                                              false) {
-                                            final response =
-                                                await patientFolderRepository
-                                                    .updateFolder(
-                                                        widget
-                                                            .patientFolder
-                                                            .folderId,
-                                                        _folderNameController
-                                                            .text);
+                                          if (_formKey.currentState?.validate() ?? false) {
+                                            final response = await patientFolderRepository
+                                                .updateFolder(widget.patientFolder.folderId, _folderNameController.text);
                                             response.fold(
-                                              (failure) {
+                                                  (failure) {
                                                 if (context.mounted) {
-                                                  Navigator.of(context)
-                                                      .pop();
+                                                  Navigator.of(context).pop();
                                                 }
                                               },
-                                              (success) {
+                                                  (success) {
                                                 widget.onUpdateSuccess();
                                                 if (context.mounted) {
-                                                  Navigator.of(context)
-                                                      .pop();
+                                                  Navigator.of(context).pop();
                                                 }
                                               },
                                             );
@@ -197,21 +184,19 @@ class _FileCardState extends State<FileCard> {
                                       ),
                                     ),
                                     SizedBox(height: 8.h),
-                                    // Cancel Button
                                     TextButton(
                                       onPressed: () {
-                                        Navigator.of(context)
-                                            .pop(); // Close the dialog
+                                        Navigator.of(context).pop(); // Close the dialog
                                       },
                                       child: Text(
                                         'Cancel',
                                         style: TextStyle(
                                           fontSize: 14.sp,
-                                          color: AppColors
-                                              .primary, // Adjust the color as needed
+                                          color: AppColors.primary, // Adjust the color as needed
                                         ),
                                       ),
                                     ),
+
                                   ],
                                 ),
                               ),
