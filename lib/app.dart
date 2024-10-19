@@ -12,14 +12,9 @@ import 'package:nirvar/screens/main/my_files/upload/prescription_upload_screen.d
 import 'bloc/user_profile_details/user_profile_details_bloc.dart';
 import 'injection_container.dart';
 
-class NirvarApp extends StatefulWidget {
+class NirvarApp extends StatelessWidget {
   const NirvarApp({super.key});
 
-  @override
-  State<NirvarApp> createState() => _NirvarAppState();
-}
-
-class _NirvarAppState extends State<NirvarApp> {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(

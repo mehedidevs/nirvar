@@ -284,7 +284,7 @@ class _MyFilesState extends State<MyFiles> {
     );
   }
 
-  Widget _headerSection(context, {required Future<void> Function() onCreateSuccess}) {
+  Widget _headerSection(BuildContext context, {required Future<void> Function() onCreateSuccess}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -408,7 +408,9 @@ class _MyFilesState extends State<MyFiles> {
           });
 
         if(result == true){
-         sl<PatientFolderBloc>().add(GetPatientFolderFromApi());
+           if(context.mounted){
+             context.read<PatientFolderBloc>().add(GetPatientFolderFromApi());
+           }
         }
         },),
       ],
