@@ -7,6 +7,7 @@ import 'package:nirvar/bloc/login/login_bloc.dart';
 import 'package:nirvar/screens/auth/sign_up_screen.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/utils/helper.dart';
+import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 import 'package:nirvar/screens/widgets/welcome_screen.dart';
 
 import '../../injection_container.dart';
@@ -42,6 +43,11 @@ class _SignInScreenState extends State<SignInScreen> {
     super.dispose();
   }
 
+  void clear(){
+    _phoneNumberController.clear();
+    _passwordController.clear();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -60,6 +66,7 @@ class _SignInScreenState extends State<SignInScreen> {
         BlocConsumer<LoginBloc, LoginState>(
           listener: (context, state) {
             if (state.status == LoginStatus.success) {
+              clear();
               context.flushBarSuccessMessage(message: "Login successful");
               Future.delayed(const Duration(seconds: 2), () {
                 if(context.mounted){
@@ -126,7 +133,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   ForgotPasswordWidget(),
                   5.verticalSpace,
                   state.status == LoginStatus.loading
-                      ? SpinKitChasingDots(color: AppColors.primary, size: 25.sp)
+                      ? CustomChasingDots()
                       : CustomButton(
                           text: 'SIGN IN',
                           onPressed: () {
