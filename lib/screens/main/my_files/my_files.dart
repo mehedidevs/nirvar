@@ -133,6 +133,9 @@ class _MyFilesState extends State<MyFiles> {
           // Show an error message if data fetching fails
           return Center(child: Text('Error: ${state.errorMessage}', style: const TextStyle(color: AppColors.primary)));
         }else if(state.status == PatientFolderStatus.success){
+
+          print( "Folder Details: ${state.folderList}");
+
           return state.folderList.isEmpty ? const Center(
               child: Text(
                 'No folders available',
@@ -152,6 +155,7 @@ class _MyFilesState extends State<MyFiles> {
                   context.read<PatientFolderBloc>().add(GetPatientFolderFromApi());
                 },
                 onDeleteSuccess: () async {
+                  context.read<PatientFolderBloc>().add(DeletePatientFolderList(folder.folderId.toString()));
                   context.read<PatientFolderBloc>().add(GetPatientFolderFromApi());
                 },
                 onComingBack: () async {

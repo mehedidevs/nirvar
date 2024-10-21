@@ -7,7 +7,7 @@ sealed class PatientFolderEvent extends Equatable{
 }
 
 final class GetPatientFolderFromApi extends PatientFolderEvent{}
-class UpdatePatientFolderList extends PatientFolderEvent {
+final class UpdatePatientFolderList extends PatientFolderEvent {
   final PatientFolder newFolder;
 
   UpdatePatientFolderList(this.newFolder);
@@ -15,3 +15,14 @@ class UpdatePatientFolderList extends PatientFolderEvent {
   @override
   List<Object> get props => [newFolder];
 }
+
+final class DeletePatientFolderList extends PatientFolderEvent {
+  final String folderId;
+
+  DeletePatientFolderList(this.folderId);
+
+  @override
+  List<Object> get props => [folderId];
+}
+
+final class LogoutEvent extends PatientFolderEvent {}

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -8,6 +9,7 @@ import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/widgets/custom_button.dart';
 import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
+import '../../../bloc/patient_folder/patient_folder_bloc.dart';
 import '../../../injection_container.dart';
 import '../../../repository/authentication/auth_repository.dart';
 import 'account_settings_screen.dart';
@@ -161,6 +163,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           if(result == true){
                             print("CAll Back Result For success : $result");
                             if(context.mounted){
+                              // Somewhere in your logout button's onPressed or logout logic
+                              BlocProvider.of<PatientFolderBloc>(context).add(LogoutEvent());
                               Navigator.of(context, rootNavigator: true).pushReplacement(MaterialPageRoute(builder: (context) => const SignInScreen()));
                             }
                           }

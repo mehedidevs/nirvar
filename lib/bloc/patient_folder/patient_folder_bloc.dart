@@ -17,6 +17,8 @@ class PatientFolderBloc extends Bloc<PatientFolderEvent,PatientFolderState>{
   PatientFolderBloc(this._folderRepository) : super(const PatientFolderState()){
     on<GetPatientFolderFromApi>(_onGettingPatientFolderList);
     on<UpdatePatientFolderList>(_onUpdatingPatientFolderList);
+    on<DeletePatientFolderList>(_onDeletingPatientFolderItemFromList);
+    on<LogoutEvent>(_onLoggingOut);
   }
 
   FutureOr<void> _onGettingPatientFolderList(GetPatientFolderFromApi event, Emitter<PatientFolderState> emit) async {
@@ -50,11 +52,47 @@ class PatientFolderBloc extends Bloc<PatientFolderEvent,PatientFolderState>{
     // final updatedFolderList = List<PatientFolder>.from(state.folderList)
     //   ..add(event.newFolder); // Add the new folder to the existing list
 
-    final updatedFolderList = [event.newFolder, ...state.folderList];
+    List<PatientFolder> updatedFolderList = [];
+
+    if(state.folderList.isEmpty){
+      updatedFolderList = [event.newFolder];
+    }else{
+      updatedFolderList = [event.newFolder, ...state.folderList];
+    }
+
     // Emit the updated state with the new list
     emit(state.copyWith(
       folderList: updatedFolderList, // Updated list with the new folder
       status: PatientFolderStatus.success, // Ensure the status is set to success
     ));
   }
+
+  FutureOr<void> _onDeletingPatientFolderItemFromList(DeletePatientFolderList event, Emitter<PatientFolderState> emit) {
+    // Get the current list of folders
+    final currentFolderList = state.folderList;
+
+    // Remove the folder with the matching ID
+    final updatedFolderList = currentFolderList.where((folder) => event.folderId != folder.folderId.toString()).toList();
+
+    // Check if the updated list is empty and ensure state is updated accordingly
+    if (updatedFolderList.isEmpty) {
+      emit(state.copyWith(
+        folderList: [], // Empty list
+        status: PatientFolderStatus.success,
+      ));
+    } else {
+      emit(state.copyWith(
+        folderList: updatedFolderList, // Updated list without the removed folder
+        status: PatientFolderStatus.success,
+      ));
+    }
+  }
+
+
+
+  FutureOr<void> _onLoggingOut(LogoutEvent event, Emitter<PatientFolderState> emit) {
+    emit(state.copyWith(status: PatientFolderStatus.initial,folderList: List.empty()));
+  }
+
+
 }
