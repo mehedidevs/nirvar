@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:nirvar/bloc/account_holder/account_holder_bloc.dart';
 import 'package:nirvar/bloc/forgot_password/forgot_password_bloc.dart';
 import 'package:nirvar/bloc/forgot_password_otp_send/forgot_password_otp_send_bloc.dart';
 import 'package:nirvar/bloc/forgot_password_reset/forgot_password_reset_bloc.dart';
@@ -17,6 +18,8 @@ import 'package:nirvar/bloc/user_profile_update/user_profile_update_bloc.dart';
 import 'package:nirvar/core/constants/constants.dart';
 import 'package:nirvar/data/network/diabetes/diabetes_api_service.dart';
 import 'package:nirvar/data/preference/token_storage.dart';
+import 'package:nirvar/repository/account_holder/account_holder_repository.dart';
+import 'package:nirvar/repository/account_holder/account_holder_repository_impl.dart';
 import 'package:nirvar/repository/authentication/auth_repository.dart';
 import 'package:nirvar/repository/authentication/auth_repository_impl.dart';
 import 'package:nirvar/repository/blood_pressure/blood_pressure_repository.dart';
@@ -29,6 +32,8 @@ import 'package:nirvar/repository/patient_folder/patient_folder_repository.dart'
 import 'package:nirvar/repository/patient_folder/patient_folder_repository_impl.dart';
 
 
+import 'data/local/dao/account_holder_dao.dart';
+import 'data/local/db/account_holder_database.dart';
 import 'data/network/authentication/auth_api_service.dart';
 import 'data/network/blood_pressure/blood_pressure_api_service.dart';
 import 'data/network/file/file_api_service.dart';
@@ -40,6 +45,25 @@ final sl = GetIt.instance;
 
 Future<void> initializeDependencies() async {
 
+  //Local Database
+  // Register the AccountHolderDatabase
+  sl.registerSingletonAsync<AccountHolderDatabase>(
+        () async => await $FloorAccountHolderDatabase.databaseBuilder('app_database.db').build(),
+  );
+
+  // Register the DAO
+  sl.registerSingletonWithDependencies<AccountHolderDao>(
+        () => sl<AccountHolderDatabase>().accountHolderDAO,
+    dependsOn: [AccountHolderDatabase],
+  );
+
+  // Register the AccountHolderRepository implementation
+  sl.registerSingletonWithDependencies<AccountHolderRepository>(
+        () => AccountHolderRepositoryImpl(sl<AccountHolderDao>()),
+    dependsOn: [AccountHolderDao],
+  );
+
+  //Dio
   sl.registerSingleton<Dio>(
     Dio(
       BaseOptions(
@@ -102,6 +126,9 @@ Future<void> initializeDependencies() async {
 
   //Files
   sl.registerFactory<PatientFileBloc>(() => PatientFileBloc(sl<PatientFileRepository>()));
+
+  //AccountHolder
+  sl.registerFactory<AccountHolderBloc>(() => AccountHolderBloc(sl<AccountHolderRepository>(),sl<AuthRepository>()));
 
   await sl.allReady();
 }

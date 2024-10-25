@@ -3,14 +3,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:nirvar/bloc/account_holder/account_holder_bloc.dart';
+import 'package:nirvar/data/local/entity/account_holder.dart';
+import 'package:nirvar/data/preference/user_id_storage.dart';
+import 'package:nirvar/models/user_profile/user_profile.dart';
 import 'package:nirvar/screens/auth/sign_in_screen.dart';
 import 'package:nirvar/screens/main/profile/edit_profile_screen.dart';
+import 'package:nirvar/screens/switch_account/account_holders_screen.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/widgets/custom_button.dart';
 import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 import '../../../bloc/patient_folder/patient_folder_bloc.dart';
 import '../../../injection_container.dart';
+import '../../../repository/account_holder/account_holder_repository.dart';
 import '../../../repository/authentication/auth_repository.dart';
 import 'account_settings_screen.dart';
 
@@ -121,14 +127,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           style: TextStyle(fontSize: 16.sp)),
                       trailing: Icon(Icons.arrow_forward_ios, size: 16.sp),
                       onTap: () async {
-                    final result = await    Navigator.push(
+                        final result = await Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => EditProfileScreen()),
                         );
-                      if(result){
-                        setState(() {});
-                      }
+                        if (result) {
+                          setState(() {});
+                        }
                       },
                     ),
                     const Divider(),
@@ -148,6 +154,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const Divider(),
                     ListTile(
+                      leading: const Icon(Icons.switch_account_outlined,
+                          color: AppColors.black),
+                      title: Text('Switch Account',
+                          style: TextStyle(fontSize: 16.sp)),
+                      trailing: Icon(Icons.arrow_forward_ios, size: 16.sp),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AccountHoldersScreen()),
+                        );
+                      },
+                    ),
+                    const Divider(),
+                    ListTile(
                       leading: SvgPicture.asset(AssetsPath.logoutSvg,
                           colorFilter: const ColorFilter.mode(
                               AppColors.red, BlendMode.srcIn)),
@@ -158,14 +179,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       onTap: () {
                         bool? result;
                         WidgetsBinding.instance.addPostFrameCallback((_) async {
-                          result =  await  _showLogoutDialogAlternative(context);
+                          result = await _showLogoutDialogAlternative(context);
                           print("CAll Back Result : $result");
-                          if(result == true){
+                          if (result == true) {
                             print("CAll Back Result For success : $result");
-                            if(context.mounted){
+                            if (context.mounted) {
                               // Somewhere in your logout button's onPressed or logout logic
-                              BlocProvider.of<PatientFolderBloc>(context).add(LogoutEvent());
-                              Navigator.of(context, rootNavigator: true).pushReplacement(MaterialPageRoute(builder: (context) => const SignInScreen()));
+                              BlocProvider.of<PatientFolderBloc>(context)
+                                  .add(LogoutEvent());
+                              Navigator.of(context, rootNavigator: true)
+                                  .pushReplacement(MaterialPageRoute(
+                                      builder: (context) =>
+                                          const SignInScreen()));
                             }
                           }
                         });
@@ -182,7 +207,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<bool> _showLogoutDialogAlternative(BuildContext context) async {
-
     bool _isLoading = false;
 
     final result = await showDialog<bool>(
@@ -210,50 +234,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 SizedBox(height: 24.h),
 
-                _isLoading ? const CustomChasingDots()
-                : Padding(
-                  padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 16.w),
-                  child: CustomButton(
-                    text: 'Log Out',
-                    onPressed: () async {
+                _isLoading
+                    ? const CustomChasingDots()
+                    : Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 0.h, horizontal: 16.w),
+                        child: CustomButton(
+                          text: 'Log Out',
+                          onPressed: () async {
+                            setState(() {
+                              _isLoading = true;
+                            });
 
-                      setState(() {
-                        _isLoading = true;
-                      });
+                            final result =
+                                await sl<AuthRepository>().logoutUser();
 
-                      final result = await sl<AuthRepository>().logoutUser();
-
-                      result.fold(
-                            (failure) {
-                              setState(() {
-                                _isLoading = false;
-                              });
-                          Navigator.of(context).pop(false);
-                        },
-                            (success) {
-                              setState(() {
-                                _isLoading = false;
-                              });
-                              Navigator.of(context).pop(true);
-                        },
-                      );
-                    },
-                  ),
-                ),
+                            result.fold(
+                              (failure) {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                                Navigator.of(context).pop(false);
+                              },
+                              (success) {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                                Navigator.of(context).pop(true);
+                              },
+                            );
+                          },
+                        ),
+                      ),
                 SizedBox(height: 8.h),
                 // Cancel Button
-               _isLoading ? const SizedBox() : TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(false); // Return false when canceled
-                  },
-                  child: Text(
-                    'Cancel',
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      color: AppColors.primary, // Adjust the color if needed
-                    ),
-                  ),
-                ),
+                _isLoading
+                    ? const SizedBox()
+                    : TextButton(
+                        onPressed: () {
+                          Navigator.of(context)
+                              .pop(false); // Return false when canceled
+                        },
+                        child: Text(
+                          'Cancel',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color:
+                                AppColors.primary, // Adjust the color if needed
+                          ),
+                        ),
+                      ),
               ],
             ),
           ),
@@ -261,144 +291,173 @@ class _ProfileScreenState extends State<ProfileScreen> {
       },
     );
 
-    return result ?? false; // If the dialog is dismissed without a return value, return false
+    return result ??
+        false; // If the dialog is dismissed without a return value, return false
   }
-
-
-
 
   Widget _getUserInformation() {
     final authRepository = sl<AuthRepository>();
     return FutureBuilder(
-        future: authRepository.getUserProfile(),
-        builder: (context,snapshot){
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: SpinKitChasingDots(
-                color: AppColors.primary, size: 50.sp)); // Show a loading indicator while waiting for data
-          }
+      future: authRepository.getUserProfile(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(
+              child: SpinKitChasingDots(
+                  color: AppColors.primary,
+                  size: 50
+                      .sp)); // Show a loading indicator while waiting for data
+        }
 
-          if (!snapshot.hasData) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 50.r,
-                      backgroundColor: AppColors.white,
-                      child: Icon(Icons.person, size: 60.sp),
-                    ),
-                    // Positioned Camera Icon Button
-                    Positioned(
-                      bottom: 2,
-                      right: 0,
-                      child: SvgPicture.asset(
-                        AssetsPath.cameraSvg,
-                        height: 25.h,
-                        width: 25.w,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 12.h),
-                Text(
-                  'N/A',
-                  style: TextStyle(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.bold,
+        if (!snapshot.hasData) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 50.r,
+                    backgroundColor: AppColors.white,
+                    child: Icon(Icons.person, size: 60.sp),
                   ),
+                  // Positioned Camera Icon Button
+                  Positioned(
+                    bottom: 2,
+                    right: 0,
+                    child: SvgPicture.asset(
+                      AssetsPath.cameraSvg,
+                      height: 25.h,
+                      width: 25.w,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 12.h),
+              Text(
+                'N/A',
+                style: TextStyle(
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.bold,
                 ),
-              ],
-            );
-          }
+              ),
+            ],
+          );
+        }
 
-          return snapshot.data!.fold(
-                  (error){
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Stack(
-                          children: [
-                            CircleAvatar(
-                              radius: 50.r,
-                              backgroundColor: AppColors.white,
-                              child: Icon(Icons.person, size: 60.sp),
-                            ),
-                            // Positioned Camera Icon Button
-                            Positioned(
-                              bottom: 2,
-                              right: 0,
-                              child: SvgPicture.asset(
-                                AssetsPath.cameraSvg,
-                                height: 25.h,
-                                width: 25.w,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 12.h),
-                        Text(
-                          error.message,
-                          style: TextStyle(
-                            fontSize: 20.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    );
-          },
-                  (success){
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Stack(
-                          children: [
+        return snapshot.data!.fold((error) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 50.r,
+                    backgroundColor: AppColors.white,
+                    child: Icon(Icons.person, size: 60.sp),
+                  ),
+                  // Positioned Camera Icon Button
+                  Positioned(
+                    bottom: 2,
+                    right: 0,
+                    child: SvgPicture.asset(
+                      AssetsPath.cameraSvg,
+                      height: 25.h,
+                      width: 25.w,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 12.h),
+              Text(
+                error.message,
+                style: TextStyle(
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          );
+        }, (success) {
+          _updateTheAccountHolder(success);
 
-                            (success.photo == null || success.photo!.isEmpty) ? CircleAvatar(
-                              radius: 50.r,
-                              backgroundColor: AppColors.white,
-                              child: Icon(Icons.person, size: 60.sp),
-                            ): CircleAvatar(
-                              radius: 50.r,
-                              backgroundColor: AppColors.white,
-                              child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(50.r),
-                                  child: Image.network(success.photo ?? "",fit: BoxFit.cover)),
-                            ),
-                            // Positioned Camera Icon Button
-                            Positioned(
-                              bottom: 2,
-                              right: 0,
-                              child: SvgPicture.asset(
-                                AssetsPath.cameraSvg,
-                                height: 25.h,
-                                width: 25.w,
-                              ),
-                            ),
-                          ],
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Stack(
+                children: [
+                  (success.photo == null || success.photo!.isEmpty)
+                      ? CircleAvatar(
+                          radius: 50.r,
+                          backgroundColor: AppColors.white,
+                          child: Icon(Icons.person, size: 60.sp),
+                        )
+                      : CircleAvatar(
+                          radius: 50.r,
+                          backgroundColor: AppColors.white,
+                          child: ClipRRect(
+                              borderRadius: BorderRadius.circular(50.r),
+                              child: Image.network(success.photo ?? "",
+                                  fit: BoxFit.cover)),
                         ),
-                        SizedBox(height: 12.h),
-                        Text(
-                          success.name ?? "N/A",
-                          style: TextStyle(
-                            fontSize: 20.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          success.email ?? 'N/A',
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            color: Colors.white.withOpacity(0.7),
-                          ),
-                        ),
-                      ],
-                    );
-                  });
+                  // Positioned Camera Icon Button
+                  Positioned(
+                    bottom: 2,
+                    right: 0,
+                    child: SvgPicture.asset(
+                      AssetsPath.cameraSvg,
+                      height: 25.h,
+                      width: 25.w,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 12.h),
+              Text(
+                success.name ?? "N/A",
+                style: TextStyle(
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(
+                success.email ?? 'N/A',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: Colors.white.withOpacity(0.7),
+                ),
+              ),
+            ],
+          );
+        });
+      },
+    );
+  }
 
+  Future<void> _updateTheAccountHolder(UserProfile userProfile) async {
+    try {
+      // Get the user ID from storage
+      int? userId = await sl<UserIdStorage>().getUserID();
+      // Fetch the account holder by ID using the Bloc
+      final bloc = sl<AccountHolderBloc>();
+      if (userId != null || userId != 0) {
+        var user = await sl<AccountHolderRepository>().findAccountHolderById(userId!);
+        if(user != null){
+          AccountHolder accountHolder = AccountHolder(
+              id: user.id,
+              role: user.role,
+              password: user.password,
+              email: userProfile.email,
+              number: user.number,
+              photo: userProfile.photo,
+              name: userProfile.name,
+          );
+          bloc.add(AccountHolderUpdated(accountHolder: accountHolder));
 
-
-        },);
+          print('User Updated');
+        }
+      }
+    } catch (e) {
+      // Handle any errors
+      print("Error updating the account holder: $e");
+    }
   }
 }
-

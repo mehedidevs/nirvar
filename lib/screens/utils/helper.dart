@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 
+import '../../data/local/entity/account_holder.dart';
 import '../../models/created_folder_for_prescription/created_folder_for_prescription.dart';
 import '../../models/patient_folder/patient_folder.dart';
+import '../../models/user/user.dart';
 
 // Helper method to show error message
 extension FlushBarMessage on BuildContext {
@@ -52,6 +54,22 @@ extension CreatedFolderForPrescriptionMapper on CreatedFolderForPrescription {
     );
   }
 }
+
+extension UserToAccountHolder on User {
+  /// Converts a User object and password into an AccountHolder object.
+  AccountHolder toAccountHolder(String password) {
+    return AccountHolder(
+      id: id,
+      name: name,
+      email: email,
+      number: number,
+      password: password, // Add the password explicitly
+      photo: photo,
+      role: role,
+    );
+  }
+}
+
 
 
 

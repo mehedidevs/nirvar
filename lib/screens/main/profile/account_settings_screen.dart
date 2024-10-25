@@ -7,7 +7,11 @@ import 'package:nirvar/bloc/password_change/password_change_bloc.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/helper.dart';
 import 'package:nirvar/screens/widgets/labeled_text_form_field.dart';
+import '../../../bloc/account_holder/account_holder_bloc.dart';
+import '../../../data/local/entity/account_holder.dart';
+import '../../../data/preference/user_id_storage.dart';
 import '../../../injection_container.dart';
+import '../../../repository/account_holder/account_holder_repository.dart';
 import '../../../repository/authentication/auth_repository.dart';
 import '../../utils/assets_path.dart';
 import '../../widgets/custom_button.dart';
@@ -40,7 +44,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     );
   }
 
-  Widget _buildUI(context) {
+  Widget _buildUI(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -105,6 +109,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               listener: (context, state) {
                 if (state.status == PasswordChangeStatus.success) {
                   context.flushBarSuccessMessage(message: state.successMessage);
+                  _updateTheAccountHolder(_confirmPasswordController.text);
                   clearController();
                   Future.delayed(const Duration(seconds: 2), () {
                     if (context.mounted) {
@@ -391,6 +396,35 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
         });
       },);
 
+  }
+
+  Future<void> _updateTheAccountHolder(String newPassword) async {
+    try {
+      // Get the user ID from storage
+      int? userId = await sl<UserIdStorage>().getUserID();
+      // Fetch the account holder by ID using the Bloc
+      final bloc = sl<AccountHolderBloc>();
+      if (userId != null || userId != 0) {
+        var user = await sl<AccountHolderRepository>().findAccountHolderById(userId!);
+        if(user != null){
+          AccountHolder accountHolder = AccountHolder(
+            id: user.id,
+            role: user.role,
+            password: newPassword,
+            email: user.email,
+            number: user.number,
+            photo: user.photo,
+            name: user.name,
+          );
+          bloc.add(AccountHolderUpdated(accountHolder: accountHolder));
+
+          print('User Updated');
+        }
+      }
+    } catch (e) {
+      // Handle any errors
+      print("Error updating the account holder: $e");
+    }
   }
 
   @override

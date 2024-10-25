@@ -20,4 +20,23 @@ abstract class AccountHolderDao {
   // Get all AccountHolders
   @Query('SELECT * FROM account_holders')
   Future<List<AccountHolder>> getAllAccountHolders();
+
+  // Get an AccountHolder by id (since id is unique)
+  @Query('SELECT * FROM account_holders WHERE id = :id LIMIT 1')
+  Future<AccountHolder?> findAccountHolderById(int id);
+
+  // Upsert method: Insert if not exists, otherwise update
+  Future<void> upsertAccountHolder(AccountHolder accountHolder) async {
+    final existingAccountHolder = await findAccountHolderById(accountHolder.id);
+    if (existingAccountHolder != null) {
+      // User exists, update the existing one
+      await updateAccountHolder(accountHolder);
+    } else {
+      // User doesn't exist, insert a new one
+      await insertAccountHolder(accountHolder);
+    }
+  }
+
+
+
 }

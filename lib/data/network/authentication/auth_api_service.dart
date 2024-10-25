@@ -1,4 +1,8 @@
 import 'dart:io';
+import 'package:nirvar/bloc/account_holder/account_holder_bloc.dart';
+import 'package:nirvar/data/local/entity/account_holder.dart';
+import 'package:nirvar/repository/account_holder/account_holder_repository.dart';
+import 'package:nirvar/screens/utils/helper.dart';
 import 'package:path/path.dart' as path;
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
@@ -8,6 +12,7 @@ import 'package:nirvar/models/user_profile_update/user_profile_update.dart';
 
 import '../../../core/constants/constants.dart';
 import '../../../core/resources/api_exception.dart';
+import '../../../injection_container.dart';
 import '../../../models/register_otp/register_otp.dart';
 import '../../../models/user/user.dart';
 import '../../preference/token_storage.dart';
@@ -66,6 +71,11 @@ class AuthApiService {
 
         if (responseData['status'] == 1) {
           User data = User.fromJson(responseData['data']);
+          //Going to work on here for Account Holder Local Database
+          //this is mainly used for the Account Switching
+          final accountHolder = data.toAccountHolder(password);
+          sl<AccountHolderBloc>().add(UpsertAccountHolder(accountHolder: accountHolder));
+
           _tokenStorage.saveToken(responseData['token']);
           _userIdStorage.saveUserID(data.id);
           print(await _tokenStorage.getToken());
@@ -233,9 +243,26 @@ class AuthApiService {
         final Map<String, dynamic> responseData = response.data;
         if (responseData['status'] == 1) {
           String data = responseData['message'];
+          String phoneNumber = responseData['number'];
+
+          //handling the local database for account switching
+          final accountHolder = AccountHolder(id: userId,
+              name: credentials.name,
+              photo: credentials.photo,
+              number: phoneNumber,
+              email: credentials.email,
+              password: credentials.password,
+          );
+          sl<AccountHolderBloc>().add(InsertAccountHolder(accountHolder: accountHolder));
           return Right(data);
         } else if (responseData['status'] == 0) {
-          return Left(ApiException(responseData['message']));
+          // Get error message (like the email already taken)
+          final Map<String, dynamic> message = responseData['message'];
+          if (message.containsKey('email')) {
+            String emailError = message['email'][0];
+            return Left(ApiException(emailError)); // Handle the error here
+          }
+          return Left(ApiException('Unknown Error'));
         } else {
           return Left(ApiException('Something Went Wrong'));
         }

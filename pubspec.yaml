@@ -51,11 +51,13 @@ dependencies:
 
 
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
   retrofit_generator: '>=8.0.0 <10.0.0'
+  floor_generator: ^1.4.2
   build_runner: ^2.3.3
   json_serializable: ^6.8.0
   freezed: ^2.5.7

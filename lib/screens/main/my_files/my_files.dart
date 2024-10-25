@@ -10,6 +10,7 @@ import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/utils/helper.dart';
 import 'package:nirvar/screens/widgets/action_menu_button.dart';
 import 'package:nirvar/screens/widgets/custom_alert_dialog.dart';
+import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 import '../../../core/resources/api_exception.dart';
 import '../../../injection_container.dart';
 import '../../../models/patient_folder/patient_folder.dart';
@@ -124,11 +125,7 @@ class _MyFilesState extends State<MyFiles> {
     return BlocBuilder<PatientFolderBloc,PatientFolderState>(
       builder: (context,state){
         if (state.status == PatientFolderStatus.loading) {
-          return Center(
-              child: SpinKitChasingDots(
-                  color: AppColors.primary,
-                  size: 50
-                      .sp));
+          return Center(child: CustomChasingDots(size: 50.sp));
         }else if (state.status == PatientFolderStatus.failure) {
           // Show an error message if data fetching fails
           return Center(child: Text('Error: ${state.errorMessage}', style: const TextStyle(color: AppColors.primary)));
