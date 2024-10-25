@@ -42,12 +42,17 @@ class AccountDirectory extends StatelessWidget {
           contentPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
           leading: ClipRRect(
             borderRadius: BorderRadius.circular(12.r),
-            child: Image.network(
+            child: accountHolder.photo != null && accountHolder.photo!.isNotEmpty
+                ? Image.network(
               accountHolder.photo!,
               height: 50.h,
               width: 50.w,
               fit: BoxFit.cover,
-            ),
+              errorBuilder: (context, error, stackTrace) {
+                return _buildPlaceholderImage(); // in case the image fails to load
+              },
+            )
+                : _buildPlaceholderImage(),
           ),
           title: Text(
             accountHolder.name ?? '',
@@ -132,10 +137,32 @@ class AccountDirectory extends StatelessWidget {
                   );
                 },);
             },
-              child: SvgPicture.asset(AssetsPath.deleteLogoSvg),),
+              child: SvgPicture.asset(AssetsPath.deleteLogoSvg, height: 25.h,width: 25.w)),
           ),
 
         ),
       );
   }
+
+  Widget _buildPlaceholderImage() {
+    return Container(
+      padding: EdgeInsets.all(4.w), // Border width
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: AppColors.primary, // Border color
+          width: 4.w, // Border thickness
+        ),
+      ),
+      child: CircleAvatar(
+        radius: 25.r, // Adjust the radius as needed
+        backgroundColor: Colors.transparent,
+        child: Icon(
+          Icons.person,
+          size: 25.r,
+        ),
+      ),
+    );
+  }
+
 }
