@@ -66,11 +66,13 @@ final class FetchAccountHolderByID extends AccountHolderEvent {
 }
 
 // Event to handle API call or sync action for the account holder
-final class SyncAccountHolder extends AccountHolderEvent {
+final class SwitchingAccountHolder extends AccountHolderEvent {
   final AccountHolder accountHolder;
 
-  SyncAccountHolder({required this.accountHolder});
+  SwitchingAccountHolder({required this.accountHolder});
 
   @override
   List<Object?> get props => [accountHolder];
 }
+
+final class LogOutAccountEvent extends AccountHolderEvent{}

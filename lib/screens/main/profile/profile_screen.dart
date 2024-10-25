@@ -185,8 +185,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             print("CAll Back Result For success : $result");
                             if (context.mounted) {
                               // Somewhere in your logout button's onPressed or logout logic
-                              BlocProvider.of<PatientFolderBloc>(context)
-                                  .add(LogoutEvent());
+                              BlocProvider.of<PatientFolderBloc>(context).add(LogoutEvent());
+                              BlocProvider.of<AccountHolderBloc>(context).add(LogOutAccountEvent());
                               Navigator.of(context, rootNavigator: true)
                                   .pushReplacement(MaterialPageRoute(
                                       builder: (context) =>

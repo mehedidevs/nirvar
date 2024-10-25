@@ -20,10 +20,14 @@ class SwitchAccountScreen extends StatefulWidget {
 }
 
 class _SwitchAccountScreenState extends State<SwitchAccountScreen> {
+
+  final AccountHolderBloc accountHolderBloc = sl<AccountHolderBloc>();
+
+
   @override
   void initState() {
     super.initState();
-    sl<AccountHolderBloc>().add(SyncAccountHolder(accountHolder: widget.accountHolder));
+    accountHolderBloc.add(SwitchingAccountHolder(accountHolder: widget.accountHolder));
   }
 
   @override
@@ -42,27 +46,11 @@ class _SwitchAccountScreenState extends State<SwitchAccountScreen> {
       listener: (context, state) {
         if(state.status == AccountHolderStatus.success){
           context.flushBarSuccessMessage(message: 'Account Switch Successfully');
-          Future.delayed(const Duration(seconds: 2), () {
-            if(context.mounted){
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => SplashScreen()),
-              );
-            }
-          });
+          navigateToScreen(context, SplashScreen());
         }
        else if(state.status == AccountHolderStatus.failure){
           context.flushBarErrorMessage(message: state.errorMessage);
-          Future.delayed(const Duration(seconds: 2), () {
-            if(context.mounted){
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const MainScreen(),
-                ),
-              );
-            }
-          });
+          navigateToScreen(context, MainScreen());
         }
       },
 
@@ -89,5 +77,14 @@ class _SwitchAccountScreenState extends State<SwitchAccountScreen> {
       ],
     );
   }
+
+  void navigateToScreen(BuildContext context, Widget screen) {
+    Future.delayed(const Duration(seconds: 2), () {
+      if (context.mounted) {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => screen));
+      }
+    });
+  }
+
 
 }

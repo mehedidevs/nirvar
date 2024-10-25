@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nirvar/data/network/authentication/auth_api_service.dart';
 import 'package:nirvar/data/preference/user_id_storage.dart';
 import 'package:nirvar/repository/account_holder/account_holder_repository.dart';
 import 'package:nirvar/repository/authentication/auth_repository.dart';
 
 import '../../data/local/entity/account_holder.dart';
 import '../../injection_container.dart';
+import '../patient_folder/patient_folder_bloc.dart';
 
 part 'account_holder_event.dart';
 
@@ -17,18 +19,21 @@ class AccountHolderBloc extends Bloc<AccountHolderEvent, AccountHolderState> {
   final AccountHolderRepository _repository;
   final AuthRepository _authRepository;
 
-  AccountHolderBloc(this._repository,this._authRepository) : super(const AccountHolderState()) {
+  AccountHolderBloc(this._repository, this._authRepository)
+      : super(const AccountHolderState()) {
     on<FetchAllAccountHolders>(_onFetchingAllAccountHolders);
     on<InsertAccountHolder>(_onInsertAccountHolder);
     on<UpsertAccountHolder>(_onUpsertAccountHolder);
     on<AccountHolderUpdated>(_onAccountHolderUpdated);
     on<DeleteAccountHolder>(_onDeleteAccountHolder);
     on<FetchAccountHolderByID>(_onFetchAccountHolderByID);
-    on<SyncAccountHolder>(_onSyncAccountHolder);
+    on<SwitchingAccountHolder>(_onSyncAccountHolder);
+    on<LogOutAccountEvent>(_onLoggingOutAccount);
   }
 
   FutureOr<void> _onFetchingAllAccountHolders(
       FetchAllAccountHolders event, Emitter<AccountHolderState> emit) async {
+    emit(state.copyWith(status: AccountHolderStatus.loading));
     await _fetchAndEmitAccountHolders(emit);
   }
 
@@ -39,7 +44,8 @@ class AccountHolderBloc extends Bloc<AccountHolderEvent, AccountHolderState> {
       await _repository.insertAccountHolder(event.accountHolder);
       await _fetchAndEmitAccountHolders(emit);
     } catch (e) {
-      emit(state.copyWith(status: AccountHolderStatus.failure, errorMessage: e.toString()));
+      emit(state.copyWith(
+          status: AccountHolderStatus.failure, errorMessage: e.toString()));
     }
   }
 
@@ -50,7 +56,8 @@ class AccountHolderBloc extends Bloc<AccountHolderEvent, AccountHolderState> {
       await _repository.upsertAccountHolder(event.accountHolder);
       await _fetchAndEmitAccountHolders(emit);
     } catch (e) {
-      emit(state.copyWith(status: AccountHolderStatus.failure, errorMessage: e.toString()));
+      emit(state.copyWith(
+          status: AccountHolderStatus.failure, errorMessage: e.toString()));
     }
   }
 
@@ -61,7 +68,8 @@ class AccountHolderBloc extends Bloc<AccountHolderEvent, AccountHolderState> {
       await _repository.updateAccountHolder(event.accountHolder);
       await _fetchAndEmitAccountHolders(emit);
     } catch (e) {
-      emit(state.copyWith(status: AccountHolderStatus.failure, errorMessage: e.toString()));
+      emit(state.copyWith(
+          status: AccountHolderStatus.failure, errorMessage: e.toString()));
     }
   }
 
@@ -72,7 +80,8 @@ class AccountHolderBloc extends Bloc<AccountHolderEvent, AccountHolderState> {
       await _repository.deleteAccountHolder(event.accountHolder);
       await _fetchAndEmitAccountHolders(emit);
     } catch (e) {
-      emit(state.copyWith(status: AccountHolderStatus.failure, errorMessage: e.toString()));
+      emit(state.copyWith(
+          status: AccountHolderStatus.failure, errorMessage: e.toString()));
     }
   }
 
@@ -82,34 +91,76 @@ class AccountHolderBloc extends Bloc<AccountHolderEvent, AccountHolderState> {
     try {
       final accountHolder = await _repository.findAccountHolderById(event.id);
       if (accountHolder != null) {
-        emit(state.copyWith(status: AccountHolderStatus.success, selectedAccountHolder: accountHolder));
+        emit(state.copyWith(
+            status: AccountHolderStatus.success,
+            selectedAccountHolder: accountHolder));
       } else {
-        emit(state.copyWith(status: AccountHolderStatus.failure, errorMessage: 'Account Holder not found'));
+        emit(state.copyWith(
+            status: AccountHolderStatus.failure,
+            errorMessage: 'Account Holder not found'));
       }
     } catch (e) {
-      emit(state.copyWith(status: AccountHolderStatus.failure, errorMessage: e.toString()));
+      emit(state.copyWith(
+          status: AccountHolderStatus.failure, errorMessage: e.toString()));
     }
   }
 
   // Refactor repetitive fetching logic into this method
-  Future<void> _fetchAndEmitAccountHolders(Emitter<AccountHolderState> emit) async {
+  Future<void> _fetchAndEmitAccountHolders(
+      Emitter<AccountHolderState> emit) async {
     try {
       final response = await _repository.getAllAccountHolders();
       int? excludedId = await sl<UserIdStorage>().getUserID();
-      final allAccountHolders = _filterExcludedAccountHolders(response, excludedId);
-      emit(state.copyWith(status: AccountHolderStatus.success, accountHolders: allAccountHolders));
+      final allAccountHolders =
+          _filterExcludedAccountHolders(response, excludedId);
+      emit(state.copyWith(
+          status: AccountHolderStatus.success,
+          accountHolders: allAccountHolders));
     } catch (e) {
-      emit(state.copyWith(status: AccountHolderStatus.failure, errorMessage: e.toString()));
+      emit(state.copyWith(
+          status: AccountHolderStatus.failure, errorMessage: e.toString()));
     }
   }
 
-  List<AccountHolder> _filterExcludedAccountHolders(List<AccountHolder> accountHolders, int? excludedId) {
-    return accountHolders.where((accountHolder) => accountHolder.id != excludedId).toList();
+  List<AccountHolder> _filterExcludedAccountHolders(
+      List<AccountHolder> accountHolders, int? excludedId) {
+    return accountHolders
+        .where((accountHolder) => accountHolder.id != excludedId)
+        .toList();
   }
 
-  FutureOr<void> _onSyncAccountHolder(SyncAccountHolder event, Emitter<AccountHolderState> emit) {
+  FutureOr<void> _onSyncAccountHolder(
+      SwitchingAccountHolder event, Emitter<AccountHolderState> emit) async {
+    emit(state.copyWith(status: AccountHolderStatus.loading));
 
+    try {
+      final logoutResponse = await _authRepository.logoutUser();
+      logoutResponse.fold(
+        (failure) => emit(state.copyWith(
+            status: AccountHolderStatus.failure,
+            errorMessage: failure.message)),
+        (success) async {
+              sl<PatientFolderBloc>().add(LogoutEvent());
+              emit(state.copyWith(status: AccountHolderStatus.initial,accountHolders: List.empty()));
+              String phoneNumber = event.accountHolder.number ?? '';
+              String password = event.accountHolder.password ?? '';
+             final loginResponse = await _authRepository.loginUser(phoneNumber,password);
 
+             loginResponse.fold((failure) => emit(state.copyWith(
+                 status: AccountHolderStatus.failure,
+                 errorMessage: failure.message)),
+                     (success){
+                       emit(state.copyWith(status: AccountHolderStatus.success));
+                     });
+        },
+      );
+    } catch (e) {
+      emit(state.copyWith(
+          status: AccountHolderStatus.failure, errorMessage: e.toString()));
+    }
+  }
+
+  FutureOr<void> _onLoggingOutAccount(LogOutAccountEvent event, Emitter<AccountHolderState> emit) {
+    emit(state.copyWith(status: AccountHolderStatus.initial));
   }
 }
-

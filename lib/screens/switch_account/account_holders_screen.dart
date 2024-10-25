@@ -25,16 +25,30 @@ class _AccountHoldersScreenState extends State<AccountHoldersScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Trigger the fetch event each time dependencies change
+    context.read<AccountHolderBloc>().add(FetchAllAccountHolders());
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      resizeToAvoidBottomInset: false,
-      appBar: CustomAppBar(title: 'Choose An Account'),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            child: _buildUI(context),
+    return BlocListener<AccountHolderBloc,AccountHolderState>(
+      listener: (context,state){
+        if(state.status == AccountHolderStatus.initial){
+          context.read<AccountHolderBloc>().add(FetchAllAccountHolders());
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.white,
+        resizeToAvoidBottomInset: false,
+        appBar: CustomAppBar(title: 'Choose An Account'),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              child: _buildUI(context),
+            ),
           ),
         ),
       ),
@@ -45,15 +59,20 @@ class _AccountHoldersScreenState extends State<AccountHoldersScreen> {
     return BlocBuilder<AccountHolderBloc, AccountHolderState>(
       builder: (context, state) {
         if (state.status == AccountHolderStatus.loading) {
+
+          print('Loading....');
+
           return Center(child: CustomChasingDots(size: 50.sp));
         } else if (state.status == AccountHolderStatus.failure) {
           // Show an error message if data fetching fails
+
+          print(state.errorMessage);
           return Center(
               child: Text(state.errorMessage,
                   style: const TextStyle(color: AppColors.primary)));
         } else if (state.status == AccountHolderStatus.success) {
           List<AccountHolder>? accountList = state.accountHolders;
-
+          print('Account holders: ${accountList.toString()}');
           return accountList.isEmpty
               ? const Center(
                   child: Text('No Account is available',
