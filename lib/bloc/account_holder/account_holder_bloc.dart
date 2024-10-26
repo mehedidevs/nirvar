@@ -2,14 +2,12 @@ import 'dart:async';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:nirvar/data/network/authentication/auth_api_service.dart';
 import 'package:nirvar/data/preference/user_id_storage.dart';
 import 'package:nirvar/repository/account_holder/account_holder_repository.dart';
 import 'package:nirvar/repository/authentication/auth_repository.dart';
-
 import '../../data/local/entity/account_holder.dart';
 import '../../injection_container.dart';
-import '../patient_folder/patient_folder_bloc.dart';
+
 
 part 'account_holder_event.dart';
 
