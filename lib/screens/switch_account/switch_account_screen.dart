@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nirvar/bloc/account_holder/account_holder_bloc.dart';
+import 'package:nirvar/bloc/patient_folder/patient_folder_bloc.dart';
 import 'package:nirvar/data/local/entity/account_holder.dart';
 import 'package:nirvar/screens/auth/splash_screen.dart';
 import 'package:nirvar/screens/utils/helper.dart';
@@ -21,13 +22,10 @@ class SwitchAccountScreen extends StatefulWidget {
 
 class _SwitchAccountScreenState extends State<SwitchAccountScreen> {
 
-  final AccountHolderBloc accountHolderBloc = sl<AccountHolderBloc>();
-
-
   @override
   void initState() {
     super.initState();
-    accountHolderBloc.add(SwitchingAccountHolder(accountHolder: widget.accountHolder));
+    context.read<AccountHolderBloc>().add(SwitchingAccountHolder(accountHolder: widget.accountHolder));
   }
 
   @override
@@ -45,6 +43,8 @@ class _SwitchAccountScreenState extends State<SwitchAccountScreen> {
    return BlocConsumer<AccountHolderBloc,AccountHolderState>(
       listener: (context, state) {
         if(state.status == AccountHolderStatus.success){
+          BlocProvider.of<PatientFolderBloc>(context).add(LogoutEvent());
+          context.read<AccountHolderBloc>().add(LogOutAccountEvent());
           context.flushBarSuccessMessage(message: 'Account Switch Successfully');
           navigateToScreen(context, SplashScreen());
         }
@@ -85,6 +85,4 @@ class _SwitchAccountScreenState extends State<SwitchAccountScreen> {
       }
     });
   }
-
-
 }

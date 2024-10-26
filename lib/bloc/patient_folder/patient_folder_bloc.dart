@@ -90,7 +90,7 @@ class PatientFolderBloc extends Bloc<PatientFolderEvent,PatientFolderState>{
 
 
 
-  void _onLoggingOut(LogoutEvent event, Emitter<PatientFolderState> emit) {
+  FutureOr<void> _onLoggingOut(LogoutEvent event, Emitter<PatientFolderState> emit) {
     emit(state.copyWith(status: PatientFolderStatus.initial,folderList: List.empty()));
   }
 

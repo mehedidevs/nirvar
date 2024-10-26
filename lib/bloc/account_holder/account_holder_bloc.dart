@@ -133,34 +133,40 @@ class AccountHolderBloc extends Bloc<AccountHolderEvent, AccountHolderState> {
       SwitchingAccountHolder event, Emitter<AccountHolderState> emit) async {
     emit(state.copyWith(status: AccountHolderStatus.loading));
 
+    bool isLogOut = false;
+
     try {
       final logoutResponse = await _authRepository.logoutUser();
       logoutResponse.fold(
         (failure) => emit(state.copyWith(
             status: AccountHolderStatus.failure,
             errorMessage: failure.message)),
-        (success) async {
-              sl<PatientFolderBloc>().add(LogoutEvent());
-              emit(state.copyWith(status: AccountHolderStatus.initial,accountHolders: List.empty()));
-              String phoneNumber = event.accountHolder.number ?? '';
-              String password = event.accountHolder.password ?? '';
-             final loginResponse = await _authRepository.loginUser(phoneNumber,password);
-
-             loginResponse.fold((failure) => emit(state.copyWith(
-                 status: AccountHolderStatus.failure,
-                 errorMessage: failure.message)),
-                     (success){
-                       emit(state.copyWith(status: AccountHolderStatus.success));
-                     });
-        },
+        (success) => isLogOut = true,
       );
+
+      if (isLogOut == true) {
+        String phoneNumber = event.accountHolder.number ?? '';
+        String password = event.accountHolder.password ?? '';
+        final loginResponse =
+            await _authRepository.loginUser(phoneNumber, password);
+
+        loginResponse.fold(
+          (failure) => emit(state.copyWith(
+              status: AccountHolderStatus.failure,
+              errorMessage: failure.message)),
+          (success) {
+            emit(state.copyWith(status: AccountHolderStatus.success));
+          },
+        );
+      }
     } catch (e) {
       emit(state.copyWith(
           status: AccountHolderStatus.failure, errorMessage: e.toString()));
     }
   }
 
-  FutureOr<void> _onLoggingOutAccount(LogOutAccountEvent event, Emitter<AccountHolderState> emit) {
+  FutureOr<void> _onLoggingOutAccount(
+      LogOutAccountEvent event, Emitter<AccountHolderState> emit) {
     emit(state.copyWith(status: AccountHolderStatus.initial));
   }
 }
