@@ -1,3 +1,4 @@
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:nirvar/bloc/account_holder/account_holder_bloc.dart';
@@ -15,6 +16,7 @@ import 'package:nirvar/bloc/resend_otp/resend_otp_bloc.dart';
 import 'package:nirvar/bloc/sign_up/signup_bloc.dart';
 import 'package:nirvar/bloc/user_profile_details/user_profile_details_bloc.dart';
 import 'package:nirvar/bloc/user_profile_update/user_profile_update_bloc.dart';
+import 'package:nirvar/core/constants/app_contstants.dart';
 import 'package:nirvar/core/constants/constants.dart';
 import 'package:nirvar/data/network/diabetes/diabetes_api_service.dart';
 import 'package:nirvar/data/preference/token_storage.dart';
@@ -48,7 +50,7 @@ Future<void> initializeDependencies() async {
   //Local Database
   // Register the AccountHolderDatabase
   sl.registerSingletonAsync<AccountHolderDatabase>(
-        () async => await $FloorAccountHolderDatabase.databaseBuilder('app_database.db').build(),
+        () async => await $FloorAccountHolderDatabase.databaseBuilder(AppConstants.accountHolderDatabaseName).build(),
   );
 
   // Register the DAO
@@ -62,6 +64,10 @@ Future<void> initializeDependencies() async {
         () => AccountHolderRepositoryImpl(sl<AccountHolderDao>()),
     dependsOn: [AccountHolderDao],
   );
+
+
+  //DeviceInfoPlugin
+  sl.registerSingleton<DeviceInfoPlugin>(DeviceInfoPlugin());
 
   //Dio
   sl.registerSingleton<Dio>(
