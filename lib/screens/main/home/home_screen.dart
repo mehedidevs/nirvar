@@ -53,11 +53,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void didUpdateWidget(covariant HomeScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-
     if(sl<PatientFolderBloc>().state.status == PatientFolderStatus.initial){
       context.read<PatientFolderBloc>().add(GetPatientFolderFromApi());
     }
-
+    sl<AuthRepository>().getUserProfile();
   }
 
   @override
