@@ -70,24 +70,7 @@ extension UserToAccountHolder on User {
   }
 }
 
-enum DeviceType {
-  Android,
-  iOS,
-  Unknown,
-}
 
-extension DeviceTypeExtension on DeviceType {
-  String get name {
-    switch (this) {
-      case DeviceType.Android:
-        return 'Android';
-      case DeviceType.iOS:
-        return 'iOS';
-      default:
-        return 'Unknown';
-    }
-  }
-}
 
 
 

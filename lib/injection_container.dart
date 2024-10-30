@@ -1,5 +1,6 @@
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get_it/get_it.dart';
 import 'package:nirvar/bloc/account_holder/account_holder_bloc.dart';
 import 'package:nirvar/bloc/forgot_password/forgot_password_bloc.dart';
@@ -19,6 +20,7 @@ import 'package:nirvar/bloc/user_profile_update/user_profile_update_bloc.dart';
 import 'package:nirvar/core/constants/app_contstants.dart';
 import 'package:nirvar/core/constants/constants.dart';
 import 'package:nirvar/data/network/diabetes/diabetes_api_service.dart';
+import 'package:nirvar/data/network/notification/notification_api_service.dart';
 import 'package:nirvar/data/preference/token_storage.dart';
 import 'package:nirvar/repository/account_holder/account_holder_repository.dart';
 import 'package:nirvar/repository/account_holder/account_holder_repository_impl.dart';
@@ -28,10 +30,14 @@ import 'package:nirvar/repository/blood_pressure/blood_pressure_repository.dart'
 import 'package:nirvar/repository/blood_pressure/blood_pressure_repository_impl.dart';
 import 'package:nirvar/repository/diabetes/diabetes_repository.dart';
 import 'package:nirvar/repository/diabetes/diabetes_repository_impl.dart';
+import 'package:nirvar/repository/notification/notification_repository.dart';
+import 'package:nirvar/repository/notification/notification_repository_impl.dart';
 import 'package:nirvar/repository/patient_file/patient_file_repository.dart';
 import 'package:nirvar/repository/patient_file/patient_file_repository_impl.dart';
 import 'package:nirvar/repository/patient_folder/patient_folder_repository.dart';
 import 'package:nirvar/repository/patient_folder/patient_folder_repository_impl.dart';
+import 'package:nirvar/screens/notification/firebase/firebase_api.dart';
+
 
 
 import 'data/local/dao/account_holder_dao.dart';
@@ -46,6 +52,11 @@ import 'data/preference/user_id_storage.dart';
 final sl = GetIt.instance;
 
 Future<void> initializeDependencies() async {
+
+  //Firebase
+  sl.registerLazySingleton<FirebaseMessaging>(() => FirebaseMessaging.instance);
+  sl.registerLazySingleton<FirebaseApi>(() => FirebaseApi());
+
 
   //Local Database
   // Register the AccountHolderDatabase
@@ -91,6 +102,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton<FileApiService>(() => FileApiService(sl<Dio>(), sl<TokenStorage>(), sl<UserIdStorage>()));
   sl.registerLazySingleton<BloodPressureApiService>(() => BloodPressureApiService(sl<Dio>(), sl<TokenStorage>(), sl<UserIdStorage>()));
   sl.registerLazySingleton<DiabetesApiService>(() => DiabetesApiService(sl<Dio>(), sl<TokenStorage>(), sl<UserIdStorage>()));
+  sl.registerLazySingleton<NotificationApiService>(() => NotificationApiService(sl<Dio>(), sl<TokenStorage>(), sl<UserIdStorage>()));
 
 
   //Binding The Repository
@@ -99,6 +111,7 @@ Future<void> initializeDependencies() async {
   sl.registerLazySingleton<PatientFileRepository>(()=>PatientFileRepositoryImpl(sl<FileApiService>()));
   sl.registerLazySingleton<BloodPressureRepository>(()=>BloodPressureRepositoryImpl(sl<BloodPressureApiService>()));
   sl.registerLazySingleton<DiabetesRepository>(()=>DiabetesRepositoryImpl(sl<DiabetesApiService>()));
+  sl.registerLazySingleton<NotificationRepository>(()=>NotificationRepositoryImpl(sl<NotificationApiService>()));
 
 
 

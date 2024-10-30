@@ -13,10 +13,12 @@ import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 import 'package:nirvar/screens/widgets/file_card.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../bloc/patient_folder/patient_folder_bloc.dart';
 import '../../../core/resources/api_exception.dart';
 import '../../../injection_container.dart';
 import '../../../models/patient_folder/patient_folder.dart';
+import '../../../repository/notification/notification_repository.dart';
 import '../../../repository/patient_folder/patient_folder_repository.dart';
 import '../../notification/notification_screen.dart';
 import '../../widgets/health_card.dart';
@@ -41,7 +43,40 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     context.read<PatientFolderBloc>().add(GetPatientFolderFromApi());
+    _sendDeviceInfo();
     super.initState();
+  }
+
+  Future<void> _sendDeviceInfo() async {
+    // Check if device info is already sent for the session
+    bool isDeviceInfoSent = await _isDeviceInfoAlreadySent();
+    if (isDeviceInfoSent) return;
+
+    // Call the API to send device information
+    final result = await sl<NotificationRepository>().sendDeviceCredentials();
+
+    result.fold(
+          (error) {
+        // Handle the error, maybe show a message or log it
+        print('Error sending device info: ${error.message}');
+        // Optionally retry if needed
+      },
+          (message) async {
+        print('Device info sent successfully');
+        await _markDeviceInfoAsSent();
+      },
+    );
+  }
+
+  Future<bool> _isDeviceInfoAlreadySent() async {
+    // Check SharedPreferences (or any persistent storage) for device info sent status
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('isDeviceInfoSent') ?? false;
+  }
+
+  Future<void> _markDeviceInfoAsSent() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isDeviceInfoSent', true);
   }
 
   @override
