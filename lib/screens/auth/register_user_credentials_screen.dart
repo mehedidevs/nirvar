@@ -47,7 +47,15 @@ class _RegisterUserCredentialsScreenState
   bool _isNewPasswordObscured = true;
   bool _isConfirmPasswordObscured = true;
 
-  List<String> validGenders = ['Male', 'Female', 'Other'];
+  List<String> validGenders = ['male', 'female', 'other'];
+
+  bool _isChecked = false;
+
+  void _toggleCheckbox() {
+    setState(() {
+      _isChecked = !_isChecked;
+    });
+  }
 
   @override
   void dispose() {
@@ -83,11 +91,11 @@ class _RegisterUserCredentialsScreenState
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => sl<RegisterUseCredentialsBloc>(),
-      child: _buildUI(),
+      child: _buildUI(context),
     );
   }
 
-  Widget _buildUI() {
+  Widget _buildUI(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
       resizeToAvoidBottomInset: false,
@@ -216,7 +224,7 @@ class _RegisterUserCredentialsScreenState
                             if (value == null || value.isEmpty) {
                               return 'Please enter your gender'; // if the field is required
                             }
-                            if (!validGenders.contains(value)) {
+                            if (!validGenders.contains(value.toLowerCase())) {
                               return 'Enter Invalid gender';
                             }
 
@@ -319,6 +327,34 @@ class _RegisterUserCredentialsScreenState
                             return null;
                           },
                         ),
+                        SizedBox(height: 16.h),
+                      Row(
+                        children: [
+                          Flexible(
+                            flex: 1,
+                            child: Checkbox(
+                              value: _isChecked,
+                              onChanged: (_) => _toggleCheckbox(),
+                              activeColor: AppColors.primary,
+                            ),
+                          ),
+                          Flexible(
+                            flex: 2,
+                            child: GestureDetector(
+                              onTap: _toggleCheckbox,
+                              child: Text(
+                                'Accept Terms of Service and Data Policy.',
+                                style: TextStyle(
+                                  fontSize: 10.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.primary,
+                                ),
+                                maxLines: 2,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                         SizedBox(height: 32.h),
                         (state.status == RegisterUserCredentialsStatus.loading)
                             ? SpinKitChasingDots(
@@ -340,7 +376,7 @@ class _RegisterUserCredentialsScreenState
                                     }
 
                                     if (userId != null) {
-                                      if (context.mounted) {
+                                      if (context.mounted && _isChecked == true) {
                                         context
                                             .read<RegisterUseCredentialsBloc>()
                                             .add(
@@ -375,6 +411,10 @@ class _RegisterUserCredentialsScreenState
                                             .read<RegisterUseCredentialsBloc>()
                                             .add(
                                                 RegisterUserCredentialsApiCall());
+                                      }
+                                      else if(context.mounted && _isChecked == false){
+                                        context.flushBarErrorMessage(
+                                            message: 'Accept Terms and Conditions');
                                       }
                                     }
                                   }
