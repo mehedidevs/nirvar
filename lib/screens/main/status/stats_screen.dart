@@ -278,7 +278,7 @@ Widget _headerSection(BuildContext context) {
             context,
             MaterialPageRoute(
               builder: (context) =>
-                  const NotificationScreen(hasNotification: false),
+                  const NotificationScreen(isComingFromNotification: false),
             ),
           );
         },

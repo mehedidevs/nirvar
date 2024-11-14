@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:nirvar/screens/main/home/home_screen.dart';
+import 'package:nirvar/screens/main/main_screen.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 
 import '../utils/app_colors.dart';
 
 class NotificationScreen extends StatelessWidget {
-  final bool hasNotification;
+  final bool isComingFromNotification;
 
-  const NotificationScreen({Key? key, required this.hasNotification}) : super(key: key);
+  const NotificationScreen({super.key, required this.isComingFromNotification});
 
   @override
   Widget build(BuildContext context) {
@@ -25,11 +27,15 @@ class NotificationScreen extends StatelessWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () {
-            Navigator.of(context).pop();
+            if(isComingFromNotification == true){
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreen()));
+            }else{
+              Navigator.of(context).pop();
+            }
           },
         ),
       ),
-      body: SafeArea(child: hasNotification ? _buildNotificationList() : _buildNoNotificationView()),
+      body: SafeArea(child: isComingFromNotification ? _buildNotificationList() : _buildNoNotificationView()),
     );
   }
 

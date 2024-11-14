@@ -194,7 +194,7 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                            const NotificationScreen(hasNotification: true),
+                            const NotificationScreen(isComingFromNotification: true),
                           ),
                         );
 

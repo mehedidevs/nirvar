@@ -55,7 +55,7 @@ Future<void> initializeDependencies() async {
 
   //Firebase
   sl.registerLazySingleton<FirebaseMessaging>(() => FirebaseMessaging.instance);
-  sl.registerLazySingleton<FirebaseApi>(() => FirebaseApi());
+
 
 
   //Local Database

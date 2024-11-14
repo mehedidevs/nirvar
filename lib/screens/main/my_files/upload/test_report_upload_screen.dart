@@ -88,7 +88,7 @@ class _TestReportUploadScreenState extends State<TestReportUploadScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        const NotificationScreen(hasNotification: true),
+                        const NotificationScreen(isComingFromNotification: true),
                   ),
                 );
               },

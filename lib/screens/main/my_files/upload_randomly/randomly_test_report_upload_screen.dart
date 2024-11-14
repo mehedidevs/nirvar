@@ -90,7 +90,7 @@ class _RandomlyTestReportUploadScreenState
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        const NotificationScreen(hasNotification: true),
+                        const NotificationScreen(isComingFromNotification: true),
                   ),
                 );
               },

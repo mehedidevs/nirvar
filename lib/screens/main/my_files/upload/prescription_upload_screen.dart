@@ -80,7 +80,7 @@ class _PrescriptionUploadScreenState extends State<PrescriptionUploadScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        const NotificationScreen(hasNotification: true),
+                        const NotificationScreen(isComingFromNotification: true),
                   ),
                 );
               },

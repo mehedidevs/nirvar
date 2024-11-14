@@ -378,7 +378,7 @@ class _RandomlyPrescriptionUploadScreenState
                   context,
                   MaterialPageRoute(
                     builder: (context) =>
-                        const NotificationScreen(hasNotification: true),
+                        const NotificationScreen(isComingFromNotification: true),
                   ),
                 );
               },
