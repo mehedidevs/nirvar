@@ -7,10 +7,10 @@ class EditDeleteMenu extends StatelessWidget {
   final VoidCallback onDelete;
 
   const EditDeleteMenu({
-    Key? key,
+    super.key,
     required this.onEdit,
     required this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

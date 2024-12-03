@@ -19,7 +19,7 @@ import '../../../../widgets/circuler_add_button.dart';
 import '../../../../widgets/custom_chasing_dots.dart';
 
 class BloodPressureBottomSheet extends StatelessWidget {
-  const BloodPressureBottomSheet({Key? key}) : super(key: key);
+  const BloodPressureBottomSheet({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -207,7 +207,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<bool> _showLogoutDialogAlternative(BuildContext context) async {
-    bool _isLoading = false;
+    bool isLoading = false;
 
     final result = await showDialog<bool>(
       context: context,
@@ -234,7 +234,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 SizedBox(height: 24.h),
 
-                _isLoading
+                isLoading
                     ? const CustomChasingDots()
                     : Padding(
                         padding: EdgeInsets.symmetric(
@@ -243,7 +243,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           text: 'Log Out',
                           onPressed: () async {
                             setState(() {
-                              _isLoading = true;
+                              isLoading = true;
                             });
 
                             final result =
@@ -252,13 +252,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             result.fold(
                               (failure) {
                                 setState(() {
-                                  _isLoading = false;
+                                  isLoading = false;
                                 });
                                 Navigator.of(context).pop(false);
                               },
                               (success) {
                                 setState(() {
-                                  _isLoading = false;
+                                  isLoading = false;
                                 });
                                 Navigator.of(context).pop(true);
                               },
@@ -268,7 +268,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                 SizedBox(height: 8.h),
                 // Cancel Button
-                _isLoading
+                isLoading
                     ? const SizedBox()
                     : TextButton(
                         onPressed: () {

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:nirvar/bloc/register_user_credentials/register_user_credentials_bloc.dart';
 import 'package:nirvar/models/user_credentials/user_credentials.dart';
 import 'package:nirvar/screens/main/main_screen.dart';
 import 'package:nirvar/screens/utils/helper.dart';
+import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 
 import '../../data/preference/user_id_storage.dart';
 import '../../injection_container.dart';
@@ -48,6 +48,10 @@ class _RegisterUserCredentialsScreenState
   bool _isConfirmPasswordObscured = true;
 
   List<String> validGenders = ['male', 'female', 'other'];
+
+  // Selected values
+  String? _selectedBloodGroup;
+  String? _selectedGender;
 
   bool _isChecked = false;
 
@@ -115,7 +119,7 @@ class _RegisterUserCredentialsScreenState
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>  MainScreen()));
+                              builder: (context) => MainScreen()));
                     }
                   });
                 } else if (state.status ==
@@ -214,22 +218,78 @@ class _RegisterUserCredentialsScreenState
                           },
                         ),
                         _generalInformationText(),
-                        LabeledTextFormField(
-                          label: 'Gender*',
-                          hint: 'ex. Male,Female',
-                          controller: _genderController,
-                          obscureText: false,
-                          hasToggle: false,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your gender'; // if the field is required
-                            }
-                            if (!validGenders.contains(value.toLowerCase())) {
-                              return 'Enter Invalid gender';
-                            }
-
-                            return null; // No error if a valid option is selected
-                          },
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Gender*',
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                color: Colors.grey[700],
+                              ),
+                              textAlign: TextAlign.start,
+                            ),
+                            SizedBox(height: 8.h),
+                            DropdownButtonFormField<String>(
+                              decoration: InputDecoration(
+                                hintText: 'ex. Male, Female',
+                                hintStyle: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: Colors.grey[500],
+                                ),
+                                alignLabelWithHint: true,
+                                // Ensures alignment consistency
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.r),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey.shade300,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.r),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey.shade300,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.r),
+                                  borderSide: const BorderSide(
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                                filled: true,
+                                fillColor: Colors.white,
+                              ),
+                              value: _selectedGender,
+                              items: genders.map((gender) {
+                                return DropdownMenuItem(
+                                  value: gender,
+                                  child: Text(gender),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedGender = value;
+                                });
+                              },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please select a gender';
+                                }
+                                return null;
+                              },
+                              hint: Text(
+                                'ex. Male, Female',
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: Colors.grey[500],
+                                ),
+                              ),
+                              isExpanded:
+                                  true, // Ensures the dropdown takes up the full width
+                            ),
+                          ],
                         ),
                         SizedBox(height: 8.h),
                         LabeledTextFormField(
@@ -238,6 +298,13 @@ class _RegisterUserCredentialsScreenState
                           controller: _dateOfBirthController,
                           obscureText: false,
                           hasToggle: false,
+                          readOnly: true,
+                          suffixIcon: IconButton(
+                            icon: Icon(Icons.calendar_today,color: AppColors.primary),
+                            onPressed: () async{
+                              _dateOfBirthController.text = await pickDate(context);
+                            },
+                          ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your Date Of Birth';
@@ -246,18 +313,78 @@ class _RegisterUserCredentialsScreenState
                           },
                         ),
                         SizedBox(height: 8.h),
-                        LabeledTextFormField(
-                          label: 'Blood Group*',
-                          hint: 'A+',
-                          controller: _bloodGroupController,
-                          obscureText: false,
-                          hasToggle: false,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your Blood Group';
-                            }
-                            return null;
-                          },
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Blood Group*',
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                color: Colors.grey[700],
+                              ),
+                              textAlign: TextAlign.start,
+                            ),
+                            SizedBox(height: 8.h),
+                            DropdownButtonFormField<String>(
+                              decoration: InputDecoration(
+                                hintText: 'A+',
+                                hintStyle: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: Colors.grey[500],
+                                ),
+                                alignLabelWithHint: true,
+                                // Ensures alignment consistency
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.r),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey.shade300,
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.r),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey.shade300,
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8.r),
+                                  borderSide: const BorderSide(
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                                filled: true,
+                                fillColor: Colors.white,
+                              ),
+                              value: _selectedBloodGroup,
+                              items: bloodGroups.map((bloodGroups) {
+                                return DropdownMenuItem(
+                                  value: bloodGroups,
+                                  child: Text(bloodGroups),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  _selectedGender = value;
+                                });
+                              },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please select a Blood Group';
+                                }
+                                return null;
+                              },
+                              hint: Text(
+                                'A+',
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: Colors.grey[500],
+                                ),
+                              ),
+                              isExpanded:
+                                  true, // Ensures the dropdown takes up the full width
+                            ),
+                          ],
                         ),
                         SizedBox(height: 8.h),
                         LabeledTextFormField(
@@ -328,37 +455,36 @@ class _RegisterUserCredentialsScreenState
                           },
                         ),
                         SizedBox(height: 16.h),
-                      Row(
-                        children: [
-                          Flexible(
-                            flex: 1,
-                            child: Checkbox(
-                              value: _isChecked,
-                              onChanged: (_) => _toggleCheckbox(),
-                              activeColor: AppColors.primary,
-                            ),
-                          ),
-                          Flexible(
-                            flex: 2,
-                            child: GestureDetector(
-                              onTap: _toggleCheckbox,
-                              child: Text(
-                                'Accept Terms of Service and Data Policy.',
-                                style: TextStyle(
-                                  fontSize: 10.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.primary,
-                                ),
-                                maxLines: 2,
+                        Row(
+                          children: [
+                            Flexible(
+                              flex: 1,
+                              child: Checkbox(
+                                value: _isChecked,
+                                onChanged: (_) => _toggleCheckbox(),
+                                activeColor: AppColors.primary,
                               ),
                             ),
-                          ),
-                        ],
-                      ),
+                            Flexible(
+                              flex: 2,
+                              child: GestureDetector(
+                                onTap: _toggleCheckbox,
+                                child: Text(
+                                  'Accept Terms of Service and Data Policy.',
+                                  style: TextStyle(
+                                    fontSize: 10.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.primary,
+                                  ),
+                                  maxLines: 2,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                         SizedBox(height: 32.h),
                         (state.status == RegisterUserCredentialsStatus.loading)
-                            ? SpinKitChasingDots(
-                                color: AppColors.primary, size: 25.sp)
+                            ? CustomChasingDots()
                             : CustomButton(
                                 text: 'Verify',
                                 onPressed: () async {
@@ -376,7 +502,8 @@ class _RegisterUserCredentialsScreenState
                                     }
 
                                     if (userId != null) {
-                                      if (context.mounted && _isChecked == true) {
+                                      if (context.mounted &&
+                                          _isChecked == true) {
                                         context
                                             .read<RegisterUseCredentialsBloc>()
                                             .add(
@@ -384,14 +511,12 @@ class _RegisterUserCredentialsScreenState
                                                 credentials: UserCredentials(
                                                   userId: userId,
                                                   name: _nameController.text,
-                                                  gender:
-                                                      _genderController.text,
+                                                  gender: _selectedGender ?? '',
                                                   dateOfBirth:
                                                       _dateOfBirthController
                                                           .text,
                                                   bloodGroup:
-                                                      _bloodGroupController
-                                                          .text,
+                                                      _selectedBloodGroup ?? '',
                                                   heightIn:
                                                       _inchesController.text,
                                                   heightFt:
@@ -411,10 +536,11 @@ class _RegisterUserCredentialsScreenState
                                             .read<RegisterUseCredentialsBloc>()
                                             .add(
                                                 RegisterUserCredentialsApiCall());
-                                      }
-                                      else if(context.mounted && _isChecked == false){
+                                      } else if (context.mounted &&
+                                          _isChecked == false) {
                                         context.flushBarErrorMessage(
-                                            message: 'Accept Terms and Conditions');
+                                            message:
+                                                'Accept Terms and Conditions');
                                       }
                                     }
                                   }

@@ -2,6 +2,7 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 
 import '../../data/local/entity/account_holder.dart';
@@ -70,9 +71,43 @@ extension UserToAccountHolder on User {
   }
 }
 
+// Dropdown options for Blood Group and Gender
+final List<String> bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+final List<String> genders = ['Male', 'Female', 'Other'];
 
+/// Function to show a custom date picker
+Future<String> pickDate(BuildContext context) async {
+  DateTime initialDate = DateTime.now();
+  DateTime? pickedDate = await showDatePicker(
+    context: context,
+    initialDate: initialDate,
+    firstDate: DateTime(1900), // Allow dates from 2000
+    lastDate: DateTime(2100), // Allow dates up to 2100
+    helpText: 'Select Date',
+    fieldLabelText: 'Enter Date',
+    fieldHintText: 'Month/Date/Year',
+    builder: (context, child) {
+      return Theme(
+        data: Theme.of(context).copyWith(
+          dialogTheme: DialogTheme(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.r),
+            ),
+          ),
+        ),
+        child: child!,
+      );
+    },
+  );
 
+  if (pickedDate != null) {
+    // Format the selected date and set it in the TextFormField
+    String formattedDate = DateFormat('yyyy-MM-dd').format(pickedDate);
+    return formattedDate;
+  }
 
+  return 'No Date Is Found';
+}
 
 
 

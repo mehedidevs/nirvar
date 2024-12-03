@@ -45,8 +45,8 @@ class _RandomlyTestReportUploadScreenState
   int? folderId;
 
   Future<void> _pickFile() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
       setState(() {
@@ -279,9 +279,9 @@ class _RandomlyTestReportUploadScreenState
                                   showDialog(
                                       context: context,
                                       builder: (context){
-                                        final _formKey = GlobalKey<FormState>();
-                                        TextEditingController _fileReNameController = TextEditingController();
-                                        _fileReNameController.text = _fileName ?? ' ';
+                                        final formKey = GlobalKey<FormState>();
+                                        TextEditingController fileReNameController = TextEditingController();
+                                        fileReNameController.text = _fileName ?? ' ';
                                         return Dialog(
                                           backgroundColor: AppColors.white,
                                           shape: RoundedRectangleBorder(
@@ -290,7 +290,7 @@ class _RandomlyTestReportUploadScreenState
                                           child: Padding(
                                             padding: EdgeInsets.all(16.w),
                                             child: Form(
-                                              key: _formKey,
+                                              key: formKey,
                                               child: ListView(
                                                 shrinkWrap: true,
                                                 children: [
@@ -309,7 +309,7 @@ class _RandomlyTestReportUploadScreenState
                                                   LabeledTextFormField(
                                                     label: 'Edit File Name',
                                                     hint: '',
-                                                    controller: _fileReNameController,
+                                                    controller: fileReNameController,
                                                     validator: (value){
                                                       if (value == null || value.isEmpty) {
                                                         return 'Please enter Folder Name';
@@ -325,7 +325,7 @@ class _RandomlyTestReportUploadScreenState
                                                       text: 'Save',
                                                       onPressed: ()  {
                                                         setState(() {
-                                                          _fileName = _fileReNameController.text;
+                                                          _fileName = fileReNameController.text;
                                                         });
                                                         Navigator.of(context).pop();
                                                       },

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:nirvar/screens/utils/app_colors.dart'; // Make sure to import your AppColors
+import 'package:nirvar/screens/utils/app_colors.dart';
 
 class LabeledTextFormField extends StatelessWidget {
   final String label;
@@ -10,21 +10,23 @@ class LabeledTextFormField extends StatelessWidget {
   final bool obscureText;
   final bool enabled;
   final bool hasToggle;
+  final Widget? suffixIcon;
   final void Function()? onVisibilityToggle;
   final bool readOnly;
 
   const LabeledTextFormField({
-    Key? key,
+    super.key,
     required this.label,
     required this.hint,
     this.controller,
     this.validator,
     this.obscureText = false,
     this.enabled = true,
-    this.hasToggle = false, // Initialize with default value as false
+    this.hasToggle = false,
+    this.suffixIcon, // Accept any widget as a suffix icon
     this.onVisibilityToggle,
     this.readOnly = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +73,7 @@ class LabeledTextFormField extends StatelessWidget {
             ),
             filled: true,
             fillColor: Colors.white,
-            suffixIcon: hasToggle // Use the new property to control visibility toggle
+            suffixIcon: hasToggle
                 ? IconButton(
               icon: Icon(
                 obscureText ? Icons.visibility_off : Icons.visibility,
@@ -79,7 +81,7 @@ class LabeledTextFormField extends StatelessWidget {
               ),
               onPressed: onVisibilityToggle,
             )
-                : null,
+                : suffixIcon, // Use the custom suffix icon if provided
           ),
         ),
       ],

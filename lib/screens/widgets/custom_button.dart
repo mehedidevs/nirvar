@@ -1,8 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class CustomButton extends StatelessWidget {
+class CustomButton extends StatefulWidget {
   final String text;
   final VoidCallback onPressed;
   final double widthFactor;
@@ -10,32 +9,47 @@ class CustomButton extends StatelessWidget {
   final List<Color> gradientColors;
 
   const CustomButton({
-    Key? key,
+    super.key,
     required this.text,
     required this.onPressed,
-    this.widthFactor = 0.9, // Default to 80% of screen width
-    this.heightFactor = 0.08, // Default to 8% of screen height
+    this.widthFactor = 0.9,
+    this.heightFactor = 0.08,
     this.gradientColors = const [Color(0xFF6BB5BE), Color(0xFF74B192)],
-  }) : super(key: key);
+  });
 
+  @override
+  State<CustomButton> createState() => _CustomButtonState();
+}
+
+class _CustomButtonState extends State<CustomButton> {
+  bool _isPressed = false;
+  Future<void> _handlePress() async {
+    if (_isPressed) return;
+    setState(() => _isPressed = true);
+    try {
+      widget.onPressed();
+    } finally {
+      setState(() => _isPressed = false);
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onPressed,
+      onTap:_isPressed ? null : _handlePress,
       child: Container(
-        width: ScreenUtil().screenWidth * widthFactor,
-        height: ScreenUtil().screenHeight * heightFactor,
+        width: ScreenUtil().screenWidth * widget.widthFactor,
+        height: ScreenUtil().screenHeight * widget.heightFactor,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15.r),
           gradient: LinearGradient(
-            colors: gradientColors,
+            colors: widget.gradientColors,
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
         ),
         child: Center(
           child: Text(
-            text,
+            widget.text,
             style: Theme.of(context).textTheme.titleSmall,
           ),
         ),

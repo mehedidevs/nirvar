@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 
 class ClickableText extends StatelessWidget {
@@ -11,13 +10,13 @@ class ClickableText extends StatelessWidget {
   final VoidCallback onTap;
 
   const ClickableText({
-    Key? key,
+    super.key,
     required this.regularText,
     required this.clickableText,
     required this.onTap,
     this.regularTextStyle,
     this.clickableTextStyle,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

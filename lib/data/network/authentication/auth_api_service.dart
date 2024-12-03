@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:nirvar/bloc/account_holder/account_holder_bloc.dart';
 import 'package:nirvar/data/local/entity/account_holder.dart';
-import 'package:nirvar/repository/account_holder/account_holder_repository.dart';
 import 'package:nirvar/screens/utils/helper.dart';
 import 'package:path/path.dart' as path;
 import 'package:dartz/dartz.dart';

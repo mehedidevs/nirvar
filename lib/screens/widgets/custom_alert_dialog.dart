@@ -5,10 +5,10 @@ import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/widgets/custom_button.dart';
 import 'package:nirvar/screens/widgets/disabled_button.dart';
 
-import '../../bloc/patient_folder/patient_folder_bloc.dart';
-import '../../injection_container.dart';
 
 class CustomAlertDialog extends StatefulWidget {
+  const CustomAlertDialog({super.key});
+
   @override
   _CustomAlertDialogState createState() => _CustomAlertDialogState();
 }

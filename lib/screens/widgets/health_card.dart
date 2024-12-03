@@ -10,7 +10,7 @@ class HealthCard extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
 
-  HealthCard({
+  const HealthCard({super.key, 
     required this.value,
     required this.average,
     required this.label,

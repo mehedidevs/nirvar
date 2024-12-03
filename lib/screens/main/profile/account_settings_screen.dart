@@ -18,6 +18,8 @@ import '../../widgets/custom_button.dart';
 import '../main_screen.dart';
 
 class AccountSettingsScreen extends StatefulWidget {
+  const AccountSettingsScreen({super.key});
+
   @override
   State<AccountSettingsScreen> createState() => _AccountSettingsScreenState();
 }
@@ -159,7 +161,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                                     ),
                                   ),
                                   SizedBox(height: 1.h),
-                                  Container(
+                                  SizedBox(
                                     width: 150.w,
                                     child: Divider(
                                       color: AppColors.primary,

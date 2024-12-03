@@ -10,10 +10,10 @@ class CustomChasingDots extends StatelessWidget {
 
   // Constructor with optional color and size
   const CustomChasingDots({
-    Key? key,
+    super.key,
     this.color, // optional color field
     this.size,  // optional size field
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

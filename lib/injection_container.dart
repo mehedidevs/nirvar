@@ -18,10 +18,16 @@ import 'package:nirvar/bloc/sign_up/signup_bloc.dart';
 import 'package:nirvar/bloc/user_profile_details/user_profile_details_bloc.dart';
 import 'package:nirvar/bloc/user_profile_update/user_profile_update_bloc.dart';
 import 'package:nirvar/core/constants/app_contstants.dart';
-import 'package:nirvar/core/constants/constants.dart';
+import 'package:nirvar/data/local/dao/account_holder_dao.dart';
+import 'package:nirvar/data/local/db/account_holder_database.dart';
+import 'package:nirvar/data/network/authentication/auth_api_service.dart';
+import 'package:nirvar/data/network/blood_pressure/blood_pressure_api_service.dart';
 import 'package:nirvar/data/network/diabetes/diabetes_api_service.dart';
+import 'package:nirvar/data/network/file/file_api_service.dart';
+import 'package:nirvar/data/network/folder/folder_api_service.dart';
 import 'package:nirvar/data/network/notification/notification_api_service.dart';
 import 'package:nirvar/data/preference/token_storage.dart';
+import 'package:nirvar/data/preference/user_id_storage.dart';
 import 'package:nirvar/repository/account_holder/account_holder_repository.dart';
 import 'package:nirvar/repository/account_holder/account_holder_repository_impl.dart';
 import 'package:nirvar/repository/authentication/auth_repository.dart';
@@ -36,118 +42,117 @@ import 'package:nirvar/repository/patient_file/patient_file_repository.dart';
 import 'package:nirvar/repository/patient_file/patient_file_repository_impl.dart';
 import 'package:nirvar/repository/patient_folder/patient_folder_repository.dart';
 import 'package:nirvar/repository/patient_folder/patient_folder_repository_impl.dart';
-import 'package:nirvar/screens/notification/firebase/firebase_api.dart';
 
-
-
-import 'data/local/dao/account_holder_dao.dart';
-import 'data/local/db/account_holder_database.dart';
-import 'data/network/authentication/auth_api_service.dart';
-import 'data/network/blood_pressure/blood_pressure_api_service.dart';
-import 'data/network/file/file_api_service.dart';
-import 'data/network/folder/folder_api_service.dart';
-import 'data/preference/user_id_storage.dart';
-
+import 'core/constants/constants.dart';
 
 final sl = GetIt.instance;
 
 Future<void> initializeDependencies() async {
 
-  //Firebase
-  sl.registerLazySingleton<FirebaseMessaging>(() => FirebaseMessaging.instance);
+  // Register Local Database
+  _initializeLocalDatabase();
 
-
-
-  //Local Database
-  // Register the AccountHolderDatabase
-  sl.registerSingletonAsync<AccountHolderDatabase>(
-        () async => await $FloorAccountHolderDatabase.databaseBuilder(AppConstants.accountHolderDatabaseName).build(),
-  );
-
-  // Register the DAO
-  sl.registerSingletonWithDependencies<AccountHolderDao>(
-        () => sl<AccountHolderDatabase>().accountHolderDAO,
-    dependsOn: [AccountHolderDatabase],
-  );
-
-  // Register the AccountHolderRepository implementation
-  sl.registerSingletonWithDependencies<AccountHolderRepository>(
-        () => AccountHolderRepositoryImpl(sl<AccountHolderDao>()),
-    dependsOn: [AccountHolderDao],
-  );
-
-
-  //DeviceInfoPlugin
+  // Register Device Info Plugin
   sl.registerSingleton<DeviceInfoPlugin>(DeviceInfoPlugin());
 
-  //Dio
+  // Register Dio with custom base options
   sl.registerSingleton<Dio>(
     Dio(
       BaseOptions(
         baseUrl: appBaseURL,
         connectTimeout: const Duration(seconds: 5),
         receiveTimeout: const Duration(seconds: 10),
+        sendTimeout: const Duration(seconds: 10),
       ),
     ),
   );
 
-
-  //Shared Preference
+  // Register Shared Preferences
   sl.registerLazySingleton<TokenStorage>(() => TokenStorage());
   sl.registerLazySingleton<UserIdStorage>(() => UserIdStorage());
 
-  //API Service
-  sl.registerLazySingleton<AuthApiService>(() => AuthApiService(sl<Dio>(), sl<TokenStorage>(), sl<UserIdStorage>()));
-  sl.registerLazySingleton<FolderApiService>(() => FolderApiService(sl<Dio>(), sl<TokenStorage>(), sl<UserIdStorage>()));
-  sl.registerLazySingleton<FileApiService>(() => FileApiService(sl<Dio>(), sl<TokenStorage>(), sl<UserIdStorage>()));
-  sl.registerLazySingleton<BloodPressureApiService>(() => BloodPressureApiService(sl<Dio>(), sl<TokenStorage>(), sl<UserIdStorage>()));
-  sl.registerLazySingleton<DiabetesApiService>(() => DiabetesApiService(sl<Dio>(), sl<TokenStorage>(), sl<UserIdStorage>()));
-  sl.registerLazySingleton<NotificationApiService>(() => NotificationApiService(sl<Dio>(), sl<TokenStorage>(), sl<UserIdStorage>()));
+  // Register API Services
+  _initializeApiServices();
 
+  // Register Repositories
+  _initializeRepositories();
 
-  //Binding The Repository
+  // Register Blocs
+  _initializeBlocs();
+
+  await sl.allReady();
+}
+
+void _initializeLocalDatabase() {
+  // Database
+  sl.registerSingletonAsync<AccountHolderDatabase>(
+        () async => await $FloorAccountHolderDatabase
+        .databaseBuilder(AppConstants.accountHolderDatabaseName)
+        .build(),
+  );
+
+  // DAO
+  sl.registerSingletonWithDependencies<AccountHolderDao>(
+        () => sl<AccountHolderDatabase>().accountHolderDAO,
+    dependsOn: [AccountHolderDatabase],
+  );
+
+  // Repository
+  sl.registerSingletonWithDependencies<AccountHolderRepository>(
+        () => AccountHolderRepositoryImpl(sl<AccountHolderDao>()),
+    dependsOn: [AccountHolderDao],
+  );
+}
+
+void _initializeApiServices() {
+  sl.registerLazySingleton<AuthApiService>(
+        () => AuthApiService(sl<Dio>(), sl<TokenStorage>(), sl<UserIdStorage>()),
+  );
+  sl.registerLazySingleton<FolderApiService>(
+        () => FolderApiService(sl<Dio>(), sl<TokenStorage>(), sl<UserIdStorage>()),
+  );
+  sl.registerLazySingleton<FileApiService>(
+        () => FileApiService(sl<Dio>(), sl<TokenStorage>(), sl<UserIdStorage>()),
+  );
+  sl.registerLazySingleton<BloodPressureApiService>(
+        () => BloodPressureApiService(sl<Dio>(), sl<TokenStorage>(), sl<UserIdStorage>()),
+  );
+  sl.registerLazySingleton<DiabetesApiService>(
+        () => DiabetesApiService(sl<Dio>(), sl<TokenStorage>(), sl<UserIdStorage>()),
+  );
+  sl.registerLazySingleton<NotificationApiService>(
+        () => NotificationApiService(sl<Dio>(), sl<TokenStorage>(), sl<UserIdStorage>()),
+  );
+}
+
+void _initializeRepositories() {
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl<AuthApiService>()));
   sl.registerLazySingleton<PatientFolderRepository>(() => PatientFolderRepositoryImpl(sl<FolderApiService>()));
-  sl.registerLazySingleton<PatientFileRepository>(()=>PatientFileRepositoryImpl(sl<FileApiService>()));
-  sl.registerLazySingleton<BloodPressureRepository>(()=>BloodPressureRepositoryImpl(sl<BloodPressureApiService>()));
-  sl.registerLazySingleton<DiabetesRepository>(()=>DiabetesRepositoryImpl(sl<DiabetesApiService>()));
-  sl.registerLazySingleton<NotificationRepository>(()=>NotificationRepositoryImpl(sl<NotificationApiService>()));
+  sl.registerLazySingleton<PatientFileRepository>(() => PatientFileRepositoryImpl(sl<FileApiService>()));
+  sl.registerLazySingleton<BloodPressureRepository>(() => BloodPressureRepositoryImpl(sl<BloodPressureApiService>()));
+  sl.registerLazySingleton<DiabetesRepository>(() => DiabetesRepositoryImpl(sl<DiabetesApiService>()));
+  sl.registerLazySingleton<NotificationRepository>(() => NotificationRepositoryImpl(sl<NotificationApiService>()));
+}
 
-
-
-  //Bloc
+void _initializeBlocs() {
+  // Authentication
   sl.registerFactory<LoginBloc>(() => LoginBloc(sl<AuthRepository>()));
   sl.registerFactory<LogOutBloc>(() => LogOutBloc(sl<AuthRepository>()));
-
-  //Registration
   sl.registerFactory<SignUpBloc>(() => SignUpBloc(sl<AuthRepository>()));
   sl.registerFactory<RegisterOtpSendBloc>(() => RegisterOtpSendBloc(sl<AuthRepository>()));
   sl.registerFactory<RegisterUseCredentialsBloc>(() => RegisterUseCredentialsBloc(sl<AuthRepository>()));
-
-  //Profile
   sl.registerFactory<UserProfileDetailsBloc>(() => UserProfileDetailsBloc(sl<AuthRepository>()));
   sl.registerFactory<UserProfileUpdateBloc>(() => UserProfileUpdateBloc(sl<AuthRepository>()));
-
-
-  //Forgot Password
   sl.registerFactory<ForgotPasswordBloc>(() => ForgotPasswordBloc(sl<AuthRepository>()));
   sl.registerFactory<ForgotPasswordOtpSendBloc>(() => ForgotPasswordOtpSendBloc(sl<AuthRepository>()));
   sl.registerFactory<ForgotPasswordResetBloc>(() => ForgotPasswordResetBloc(sl<AuthRepository>()));
-
-  //Change Password
   sl.registerFactory<PasswordChangeBloc>(() => PasswordChangeBloc(sl<AuthRepository>()));
-
-  //Resend OTP
   sl.registerFactory<ResendOtpBloc>(() => ResendOtpBloc(sl<AuthRepository>()));
 
-  //Folder
+  // Patient Management
   sl.registerFactory<PatientFolderBloc>(() => PatientFolderBloc(sl<PatientFolderRepository>()));
-
-  //Files
   sl.registerFactory<PatientFileBloc>(() => PatientFileBloc(sl<PatientFileRepository>()));
 
-  //AccountHolder
-  sl.registerFactory<AccountHolderBloc>(() => AccountHolderBloc(sl<AccountHolderRepository>(),sl<AuthRepository>()));
-
-  await sl.allReady();
+  // Account Holder
+  sl.registerFactory<AccountHolderBloc>(() => AccountHolderBloc(sl<AccountHolderRepository>(), sl<AuthRepository>()));
 }

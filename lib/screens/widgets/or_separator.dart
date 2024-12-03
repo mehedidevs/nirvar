@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 
 class OrSeparator extends StatelessWidget {
+  const OrSeparator({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Padding(

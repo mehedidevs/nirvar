@@ -36,8 +36,8 @@ class _PrescriptionUploadScreenState extends State<PrescriptionUploadScreen> {
   bool _loading = false;
 
   Future<void> _pickFile(ImageSource source) async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? pickedFile = await _picker.pickImage(source: source);
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(source: source);
     if (pickedFile != null) {
       setState(() {
         _selectedFile = File(pickedFile.path);
@@ -255,9 +255,9 @@ class _PrescriptionUploadScreenState extends State<PrescriptionUploadScreen> {
                             showDialog(
                                 context: context,
                                 builder: (context){
-                                  final _formKey = GlobalKey<FormState>();
-                                  TextEditingController _fileReNameController = TextEditingController();
-                                  _fileReNameController.text = _fileName ?? ' ';
+                                  final formKey = GlobalKey<FormState>();
+                                  TextEditingController fileReNameController = TextEditingController();
+                                  fileReNameController.text = _fileName ?? ' ';
                                   return Dialog(
                                     backgroundColor: AppColors.white,
                                     shape: RoundedRectangleBorder(
@@ -266,7 +266,7 @@ class _PrescriptionUploadScreenState extends State<PrescriptionUploadScreen> {
                                     child: Padding(
                                       padding: EdgeInsets.all(16.w),
                                       child: Form(
-                                        key: _formKey,
+                                        key: formKey,
                                         child: ListView(
                                           shrinkWrap: true,
                                           children: [
@@ -285,7 +285,7 @@ class _PrescriptionUploadScreenState extends State<PrescriptionUploadScreen> {
                                             LabeledTextFormField(
                                               label: 'Edit File Name',
                                               hint: '',
-                                              controller: _fileReNameController,
+                                              controller: fileReNameController,
                                               validator: (value){
                                                 if (value == null || value.isEmpty) {
                                                   return 'Please enter Folder Name';
@@ -301,7 +301,7 @@ class _PrescriptionUploadScreenState extends State<PrescriptionUploadScreen> {
                                                 text: 'Save',
                                                 onPressed: ()  {
                                                   setState(() {
-                                                    _fileName = _fileReNameController.text;
+                                                    _fileName = fileReNameController.text;
                                                   });
                                                   Navigator.of(context).pop();
                                                 },

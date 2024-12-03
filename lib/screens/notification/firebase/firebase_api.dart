@@ -8,7 +8,7 @@ import '../../../injection_container.dart';
 import '../../../main.dart';
 
 class FirebaseApi {
-  final FirebaseMessaging _firebaseMessaging = sl<FirebaseMessaging>();
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   Future<void> initNotification() async {
     try {

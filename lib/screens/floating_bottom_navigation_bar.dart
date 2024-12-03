@@ -8,7 +8,7 @@ class FloatingBottomNavigationBar extends StatelessWidget {
   final int selectedIndex;
   final Function(int) onItemTapped;
 
-  FloatingBottomNavigationBar({
+  const FloatingBottomNavigationBar({super.key, 
     required this.selectedIndex,
     required this.onItemTapped,
   });

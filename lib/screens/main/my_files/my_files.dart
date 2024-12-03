@@ -310,8 +310,8 @@ class _MyFilesState extends State<MyFiles> {
           showDialog(
             context: context,
             builder: (context) {
-              final _formKey = GlobalKey<FormState>();
-              TextEditingController _folderNameController = TextEditingController();
+              final formKey = GlobalKey<FormState>();
+              TextEditingController folderNameController = TextEditingController();
               final patientFolderRepository = sl<PatientFolderRepository>();
 
               return Dialog(
@@ -330,7 +330,7 @@ class _MyFilesState extends State<MyFiles> {
                       child: Padding(
                         padding: EdgeInsets.all(16.w),
                         child: Form(
-                          key: _formKey,
+                          key: formKey,
                           child: ListView(
                            shrinkWrap: true,
                             children: [
@@ -347,7 +347,7 @@ class _MyFilesState extends State<MyFiles> {
                               LabeledTextFormField(
                                 label: 'Enter Folder Name',
                                 hint: '',
-                                controller: _folderNameController,
+                                controller: folderNameController,
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter Folder Name';
@@ -364,8 +364,8 @@ class _MyFilesState extends State<MyFiles> {
                                 child: CustomButton(
                                   text: 'Save',
                                   onPressed: () async {
-                                    if (_formKey.currentState?.validate() ?? false) {
-                                      final response = await patientFolderRepository.createFolderForPrescription(_folderNameController.text);
+                                    if (formKey.currentState?.validate() ?? false) {
+                                      final response = await patientFolderRepository.createFolderForPrescription(folderNameController.text);
                                       response.fold((failure){
                                         if (context.mounted) {
                                           Navigator.of(context).pop();

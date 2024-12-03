@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nirvar/models/patient_folder/patient_folder.dart';
-import 'package:nirvar/screens/auth/change_password.dart';
 import 'package:nirvar/screens/details/folder_details_screen.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
-import 'package:nirvar/screens/utils/helper.dart';
 import 'package:nirvar/screens/widgets/labeled_text_form_field.dart';
 
 import '../../injection_container.dart';
@@ -117,10 +115,10 @@ class _FileCardState extends State<FileCard> {
                       showDialog(
                         context: context,
                         builder: (context) {
-                          final _formKey = GlobalKey<FormState>();
-                          TextEditingController _folderNameController =
+                          final formKey = GlobalKey<FormState>();
+                          TextEditingController folderNameController =
                               TextEditingController();
-                          _folderNameController.text =
+                          folderNameController.text =
                               widget.patientFolder.name ?? '';
                           final patientFolderRepository =
                               sl<PatientFolderRepository>();
@@ -132,7 +130,7 @@ class _FileCardState extends State<FileCard> {
                             child: Padding(
                               padding: EdgeInsets.all(16.w),
                               child: Form(
-                                key: _formKey,
+                                key: formKey,
                                 child: ListView(
                                   shrinkWrap: true,
                                   children: [
@@ -149,7 +147,7 @@ class _FileCardState extends State<FileCard> {
                                     LabeledTextFormField(
                                       label: 'Edit Folder Name',
                                       hint: '',
-                                      controller: _folderNameController,
+                                      controller: folderNameController,
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
                                           return 'Please enter Folder Name';
@@ -163,9 +161,9 @@ class _FileCardState extends State<FileCard> {
                                       child: CustomButton(
                                         text: 'Save',
                                         onPressed: () async {
-                                          if (_formKey.currentState?.validate() ?? false) {
+                                          if (formKey.currentState?.validate() ?? false) {
                                             final response = await patientFolderRepository
-                                                .updateFolder(widget.patientFolder.folderId, _folderNameController.text);
+                                                .updateFolder(widget.patientFolder.folderId, folderNameController.text);
                                             response.fold(
                                                   (failure) {
                                                 if (context.mounted) {

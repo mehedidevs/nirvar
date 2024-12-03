@@ -8,11 +8,11 @@ class StatusIconText extends StatelessWidget {
   final Color textColor;
 
   const StatusIconText({
-    Key? key,
+    super.key,
     required this.assetPath,
     required this.text,
     required this.textColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -5,7 +5,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nirvar/bloc/patient_files/patient_files_bloc.dart';
-import 'package:nirvar/bloc/patient_folder/patient_folder_bloc.dart';
 import 'package:nirvar/models/patient_files/patient_file.dart';
 import 'package:nirvar/models/patient_folder/patient_folder.dart';
 import 'package:nirvar/repository/patient_file/patient_file_repository.dart';
@@ -567,9 +566,9 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
               showDialog(
                 context: context,
                 builder: (context){
-                  final _formKey = GlobalKey<FormState>();
-                  TextEditingController _fileReNameController = TextEditingController();
-                  _fileReNameController.text = file.rename ?? '';
+                  final formKey = GlobalKey<FormState>();
+                  TextEditingController fileReNameController = TextEditingController();
+                  fileReNameController.text = file.rename ?? '';
                   return Dialog(
                     backgroundColor: AppColors.white,
                     shape: RoundedRectangleBorder(
@@ -578,7 +577,7 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
                     child: Padding(
                       padding: EdgeInsets.all(16.w),
                       child: Form(
-                        key: _formKey,
+                        key: formKey,
                         child: ListView(
                           shrinkWrap: true,
                           children: [
@@ -597,7 +596,7 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
                             LabeledTextFormField(
                               label: 'Edit Folder Name',
                               hint: '',
-                              controller: _fileReNameController,
+                              controller: fileReNameController,
                               validator: (value){
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter Folder Name';
@@ -612,8 +611,8 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
                               child: CustomButton(
                                 text: 'Save',
                                 onPressed: () async {
-                                  if(_formKey.currentState?.validate() ?? false){
-                                    final response = await _repository.renameFile(widget.folder.folderId, file.fileId, fileType, _fileReNameController.text);
+                                  if(formKey.currentState?.validate() ?? false){
+                                    final response = await _repository.renameFile(widget.folder.folderId, file.fileId, fileType, fileReNameController.text);
                                     response.fold((failure){
                                       if(context.mounted){
                                         Navigator.of(context).pop();

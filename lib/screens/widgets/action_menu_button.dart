@@ -7,7 +7,7 @@ class ActionMenuButton extends StatelessWidget {
   final VoidCallback onCreateFolder;
   final VoidCallback onFileUpload;
 
-  const ActionMenuButton({Key? key, required this.onCreateFolder, required this.onFileUpload}) : super(key: key);
+  const ActionMenuButton({super.key, required this.onCreateFolder, required this.onFileUpload});
 
   @override
   Widget build(BuildContext context) {

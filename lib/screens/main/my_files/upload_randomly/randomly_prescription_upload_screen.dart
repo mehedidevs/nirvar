@@ -102,8 +102,8 @@ class _RandomlyPrescriptionUploadScreenState
   }
 
   Future<void> _pickFile(ImageSource source) async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? pickedFile = await _picker.pickImage(source: source);
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(source: source);
     if (pickedFile != null) {
       setState(() {
         _selectedFile = File(pickedFile.path);
@@ -192,7 +192,7 @@ class _RandomlyPrescriptionUploadScreenState
 
             // If a potential name is found, add to the list of doctor names
             if (potentialName.isNotEmpty) {
-              doctorNames.add('Dr. ' + potentialName.join(' '));
+              doctorNames.add('Dr. ${potentialName.join(' ')}');
             }
           }
         }
@@ -246,9 +246,9 @@ class _RandomlyPrescriptionUploadScreenState
       context: context,
       barrierDismissible: false,
       builder: (context) {
-        final _formKey = GlobalKey<FormState>();
-        TextEditingController _folderNameController = TextEditingController();
-        _folderNameController.text = department;
+        final formKey = GlobalKey<FormState>();
+        TextEditingController folderNameController = TextEditingController();
+        folderNameController.text = department;
 
         return Dialog(
           backgroundColor: AppColors.white,
@@ -268,7 +268,7 @@ class _RandomlyPrescriptionUploadScreenState
                 child: Padding(
                   padding: EdgeInsets.all(16.w),
                   child: Form(
-                    key: _formKey,
+                    key: formKey,
                     child: ListView(
                       shrinkWrap: true,
                       children: [
@@ -285,7 +285,7 @@ class _RandomlyPrescriptionUploadScreenState
                         LabeledTextFormField(
                           label: 'Edit Folder Name',
                           hint: '',
-                          controller: _folderNameController,
+                          controller: folderNameController,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter Folder Name';
@@ -300,11 +300,11 @@ class _RandomlyPrescriptionUploadScreenState
                           child: CustomButton(
                             text: 'Confirm',
                             onPressed: () async {
-                              if (_formKey.currentState?.validate() ?? false) {
+                              if (formKey.currentState?.validate() ?? false) {
                                 //Need to check in the existing folder Or Create New
 
                                 if (getExistingFolder(
-                                    _folderNameController.text)) {
+                                    folderNameController.text)) {
                                   if (context.mounted) {
                                     Navigator.of(context).pop(true);
                                   }
@@ -312,7 +312,7 @@ class _RandomlyPrescriptionUploadScreenState
                                   //ACTUAL PROBLEM LIES HERE
 
                                   final response = await _folderRepository
-                                      .createFolderForPrescription(_folderNameController.text);
+                                      .createFolderForPrescription(folderNameController.text);
 
                                   response.fold(
                                     (failure) {
@@ -576,10 +576,10 @@ class _RandomlyPrescriptionUploadScreenState
                 showDialog(
                     context: context,
                     builder: (context) {
-                      final _formKey = GlobalKey<FormState>();
-                      TextEditingController _fileReNameController =
+                      final formKey = GlobalKey<FormState>();
+                      TextEditingController fileReNameController =
                           TextEditingController();
-                      _fileReNameController.text = _fileName ?? ' ';
+                      fileReNameController.text = _fileName ?? ' ';
                       return Dialog(
                         backgroundColor: AppColors.white,
                         shape: RoundedRectangleBorder(
@@ -588,7 +588,7 @@ class _RandomlyPrescriptionUploadScreenState
                         child: Padding(
                           padding: EdgeInsets.all(16.w),
                           child: Form(
-                            key: _formKey,
+                            key: formKey,
                             child: ListView(
                               shrinkWrap: true,
                               children: [
@@ -607,7 +607,7 @@ class _RandomlyPrescriptionUploadScreenState
                                 LabeledTextFormField(
                                   label: 'Edit File Name',
                                   hint: '',
-                                  controller: _fileReNameController,
+                                  controller: fileReNameController,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
                                       return 'Please enter Folder Name';
@@ -623,7 +623,7 @@ class _RandomlyPrescriptionUploadScreenState
                                     text: 'Save',
                                     onPressed: () {
                                       setState(() {
-                                        _fileName = _fileReNameController.text;
+                                        _fileName = fileReNameController.text;
                                       });
                                       Navigator.of(context).pop();
                                     },

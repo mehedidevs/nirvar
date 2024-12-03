@@ -7,7 +7,6 @@ import 'package:nirvar/data/local/entity/account_holder.dart';
 import 'package:nirvar/screens/auth/splash_screen.dart';
 import 'package:nirvar/screens/utils/helper.dart';
 import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
-import '../../injection_container.dart';
 import '../main/main_screen.dart';
 import '../utils/app_colors.dart';
 
