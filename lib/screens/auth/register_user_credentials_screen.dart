@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:nirvar/bloc/register_user_credentials/register_user_credentials_bloc.dart';
 import 'package:nirvar/models/user_credentials/user_credentials.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
+import 'package:nirvar/routes/routes_name.dart';
 import 'package:nirvar/screens/main/main_screen.dart';
 import 'package:nirvar/screens/utils/helper.dart';
 
@@ -112,10 +114,11 @@ class _RegisterUserCredentialsScreenState
                   clearAllFields();
                   Future.delayed(const Duration(seconds: 2), () {
                     if (context.mounted) {
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>  MainScreen()));
+                      context.pushReplacementNamed(routeName: RoutesName.mainScreen);
+                      // Navigator.pushReplacement(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: (context) =>  MainScreen()));
                     }
                   });
                 } else if (state.status ==

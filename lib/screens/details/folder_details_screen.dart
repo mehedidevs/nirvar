@@ -9,6 +9,7 @@ import 'package:nirvar/bloc/patient_folder/patient_folder_bloc.dart';
 import 'package:nirvar/models/patient_files/patient_file.dart';
 import 'package:nirvar/models/patient_folder/patient_folder.dart';
 import 'package:nirvar/repository/patient_file/patient_file_repository.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
 import 'package:nirvar/screens/details/file_details_screen.dart';
 import 'package:nirvar/screens/search/search_screen.dart';
 import 'package:nirvar/screens/utils/file_type.dart';
@@ -148,7 +149,7 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     GestureDetector(
-                      onTap: () => Navigator.of(context).pop(true), // Pop with a boolean true
+                      onTap: () => context.pop(true), // Pop with a boolean true
                       child: const Icon(
                         Icons.arrow_back_ios,
                         color: Colors.black,

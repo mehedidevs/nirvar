@@ -18,6 +18,8 @@ import '../../widgets/custom_button.dart';
 import '../main_screen.dart';
 
 class AccountSettingsScreen extends StatefulWidget {
+  const AccountSettingsScreen({super.key});
+
   @override
   State<AccountSettingsScreen> createState() => _AccountSettingsScreenState();
 }

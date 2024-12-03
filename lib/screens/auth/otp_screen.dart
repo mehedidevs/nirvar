@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nirvar/bloc/register_otp_send/register_otp_send_bloc.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
+import 'package:nirvar/routes/routes_name.dart';
 import 'package:nirvar/screens/auth/register_user_credentials_screen.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
@@ -49,10 +51,13 @@ class _OtpScreenState extends State<OtpScreen> {
                 context.flushBarSuccessMessage(message: state.successMessage);
                 Future.delayed(const Duration(seconds: 2), () {
                   if (context.mounted) {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const RegisterUserCredentialsScreen()));
+
+                    context.pushReplacementNamed(routeName: RoutesName.registerUserCredentials);
+
+                    // Navigator.pushReplacement(
+                    //     context,
+                    //     MaterialPageRoute(
+                    //         builder: (context) => const RegisterUserCredentialsScreen()));
                   }
                 });
               } else if (state.status == RegisterOtpSendStatus.failure) {
