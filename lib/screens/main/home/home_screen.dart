@@ -9,6 +9,7 @@ import 'package:nirvar/models/blood_pressure_last_seven_days/blood_pressure_hist
 import 'package:nirvar/repository/authentication/auth_repository.dart';
 import 'package:nirvar/repository/blood_pressure/blood_pressure_repository.dart';
 import 'package:nirvar/repository/diabetes/diabetes_repository.dart';
+import 'package:nirvar/screens/notification/firebase/firebase_api.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
@@ -32,6 +33,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final patientFolderRepository = sl<PatientFolderRepository>();
+  FirebaseApi firebaseApi = FirebaseApi();
   int _selectedIndex = 0;
 
   void _onTabSelected(int index) {
@@ -42,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    firebaseApi.setupInteractMessageWhenTerminated();
     context.read<PatientFolderBloc>().add(GetPatientFolderFromApi());
     _sendDeviceInfo();
     super.initState();

@@ -54,29 +54,34 @@ class _StatsScreenState extends State<StatsScreen> {
                 SizedBox(height: 8.h),
                 _headerSection(context),
                 SizedBox(height: 16.h),
-                InkWell(
-                    onTap: _showBpGraph,
-                    child: _getBloodPressureAvg(),
+                Material(
+                  child: InkWell(
+                      onTap: _showBpGraph,
+                      child: _getBloodPressureAvg(),
+                  ),
                 ),
                 SizedBox(height: 16.h),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    InkWell(
-                      onTap: () {
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Colors.transparent,
-                          builder: (context) => const BloodGlucoseBottomSheet(),
-                        ).then((result){
-                          print(result.toString());
-                          if(result == true){
-                            setState(() {});
-                          }
-                        });
-                      },
-                      child: _getDiabetesAvg(),
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (context) => const BloodGlucoseBottomSheet(),
+                          ).then((result){
+                            print(result.toString());
+                            if(result == true){
+                              setState(() {});
+                            }
+                          });
+                        },
+                        child: _getDiabetesAvg(),
+                      ),
                     ),
                     _getUserWeight(),
                   ],
