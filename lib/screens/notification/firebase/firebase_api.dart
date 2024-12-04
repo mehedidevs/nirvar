@@ -1,9 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
 import 'package:nirvar/data/preference/token_storage.dart';
 import 'package:nirvar/data/preference/user_id_storage.dart';
-import 'package:nirvar/screens/auth/sign_in_screen.dart';
-import 'package:nirvar/screens/notification/notification_screen.dart';
+import 'package:nirvar/routes/routes_name.dart';
 import '../../../injection_container.dart';
 import '../../../main.dart';
 
@@ -15,12 +13,12 @@ class FirebaseApi {
       // Request notification permissions
       await _firebaseMessaging.requestPermission();
 
-      // Get the FCM token and log it for debugging purposes
+      // Get the FCM token for debugging
       final fCMToken = await _firebaseMessaging.getToken();
-      if (fCMToken == null) {
-        print('Failed to get FCM token');
-      } else {
+      if (fCMToken != null) {
         print('FCM TOKEN: $fCMToken');
+      } else {
+        print('Failed to get FCM token');
       }
 
       // Set up notification handlers
@@ -31,54 +29,58 @@ class FirebaseApi {
   }
 
   void setupNotificationHandler() {
-    // Foreground message handler
+    // Foreground notifications
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Message received: ${message.notification?.title}');
+      print('Foreground notification received: ${message.notification?.title}');
       if (message.data.isNotEmpty) {
-        String? action = message.data['action'];
-        print('Notification action: $action');
-        // Handle specific actions if needed
+        print(message.data.toString());
       }
-      handleNotificationTap();
+      _handleNotificationAction(message.data);
     });
 
-    // Background/terminated message handler
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+    // Background notifications (app in background or terminated)
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('Notification tapped: ${message.notification?.title}');
-
+      if (message.data.isNotEmpty) {
+        _handleNotificationAction(message.data);
+      }
     });
 
-    // Handle messages when the app is in a terminated state
-    FirebaseMessaging.onBackgroundMessage(backgroundMessageHandler);
+    // Handle background messages (terminated state)
+    FirebaseMessaging.onBackgroundMessage(_backgroundMessageHandler);
   }
 
-  // Background message handler for terminated state
-  Future<void> backgroundMessageHandler(RemoteMessage message) async {
+  static Future<void> _backgroundMessageHandler(RemoteMessage message) async {
     print('Handling background message: ${message.notification?.title}');
-    await handleNotificationTap();
+    if (message.data.isNotEmpty) {
+      await _handleNotificationAction(message.data);
+    }
   }
 
-
-  static Future<void> handleNotificationTap() async {
+  static Future<void> _handleNotificationAction(Map<String, dynamic> data) async {
+    final String? action = data['action'];
+    final String? identifier = data['unique_identifier'];
 
     TokenStorage tokenStorage = sl<TokenStorage>();
     UserIdStorage userIdStorage = sl<UserIdStorage>();
 
-     String? bearerToken =  await tokenStorage.getToken();
-     int? userId = await userIdStorage.getUserID();
+    final String? bearerToken = await tokenStorage.getToken();
+    final int? userId = await userIdStorage.getUserID();
 
-    if (bearerToken != null && bearerToken.isNotEmpty && userId != null) {
-      // Navigate to Notification Details Page
-      print('Navigating to Notification Details Page');
-      navigatorKey.currentState?.pushReplacement(
-        MaterialPageRoute(builder: (context) => NotificationScreen(isComingFromNotification: true)),
-      );
-    } else {
-      // Navigate to Login Page
-      print('Bearer token or User ID is missing. Redirecting to Sign-In.');
-      navigatorKey.currentState?.pushReplacement(
-        MaterialPageRoute(builder: (context) => SignInScreen()),
-      );
+    if (bearerToken == null || bearerToken.isEmpty || userId == null) {
+      print('User not authenticated. Redirecting to Sign-In screen.');
+      navigatorKey.currentState?.pushNamed(RoutesName.signInScreen);
+      return;
     }
+
+    if(action != null && action.contains('complete') && identifier != null){
+      if(identifier.contains('weekly_report_diabetes')){
+        navigatorKey.currentState?.pushNamed(RoutesName.bloodGlucoseBottomSheet);
+      }
+      if(identifier.contains('weekly_report_blood_pressure')){
+        navigatorKey.currentState?.pushNamed(RoutesName.bloodPressureBottomSheet);
+      }
+    }
+
   }
 }

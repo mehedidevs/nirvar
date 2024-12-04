@@ -96,7 +96,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Phone Number is Required';
-                      } else if (value.length < 11) {
+                      } else if (value.length < 11 || value.length > 11) {
                         return 'Phone number must be 11 digits';
                       }
                       return null;
