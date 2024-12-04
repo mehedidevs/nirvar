@@ -153,7 +153,7 @@ class FirebaseApi {
         navigatorKey.currentState?.pushNamed(RoutesName.bloodPressureBottomSheet);
       }
     } else {
-      navigatorKey.currentState?.pushNamed(RoutesName.bloodPressureBottomSheet);
+      navigatorKey.currentState?.pushNamed(RoutesName.splashScreen);
     }
   }
 
