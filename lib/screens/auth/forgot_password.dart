@@ -4,6 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nirvar/bloc/forgot_password/forgot_password_bloc.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
+import 'package:nirvar/routes/routes_name.dart';
 import 'package:nirvar/screens/auth/forgot_password_otp_screen.dart';
 import 'package:nirvar/screens/auth/sign_up_screen.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
@@ -54,12 +56,15 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               _phoneNumberController.clear();
               Future.delayed(const Duration(seconds: 2), () {
                 if(context.mounted){
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            ForgotPasswordOtpScreen(phoneNumber: state.phoneNumber.toString())),
-                  );
+
+                  context.pushReplacementNamed(routeName: RoutesName.forgotPasswordOtpScreen,arguments: state.phoneNumber.toString());
+
+                  // Navigator.pushReplacement(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //       builder: (context) =>
+                  //           ForgotPasswordOtpScreen(phoneNumber: state.phoneNumber.toString())),
+                  // );
                 }
               });
             } else if (state.status == ForgotPasswordStatus.error) {
@@ -121,14 +126,16 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             return null;
           }
 
-  Widget _goToSignUpScreen(context) {
+  Widget _goToSignUpScreen(BuildContext context) {
     return Center(
       child: ClickableText(
         regularText: 'Don’t have an account?',
         clickableText: 'Sign Up',
         onTap: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const SignUpScreen()));
+          context.pushNamed(routeName: RoutesName.signUpScreen);
+
+          // Navigator.push(context,
+          //     MaterialPageRoute(builder: (context) => const SignUpScreen()));
         },
       ),
     );

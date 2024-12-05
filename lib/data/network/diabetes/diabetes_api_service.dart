@@ -2,7 +2,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:nirvar/core/resources/api_exception.dart';
+import 'package:nirvar/models/glucose_level/glucose_level.dart';
 import 'package:nirvar/models/glucose_level_weekly/blood_glucose_weekly.dart';
+import 'package:nirvar/models/patient_glucose/patient_glucose.dart';
 
 import '../../../core/constants/constants.dart';
 import '../../../models/glucose_level_last_seven_days/glucose_level_for_past_seven_days.dart';
@@ -107,7 +109,7 @@ class DiabetesApiService {
       }
     } on DioException catch (e) {
       return Left(ApiException.fromDioError(e));
-    } catch (e) {
+    } catch (e, stackTrace) {
       // Optionally log the error and stack trace
       return Left(ApiException(e.toString()));
     }
@@ -132,7 +134,7 @@ class DiabetesApiService {
       }
     } on DioException catch (e) {
       return Left(ApiException.fromDioError(e));
-    } catch (e) {
+    } catch (e, stackTrace) {
       // Optionally log the error and stack trace
       return Left(ApiException(e.toString()));
     }
@@ -156,7 +158,7 @@ class DiabetesApiService {
       }
     } on DioException catch (e) {
       return Left(ApiException.fromDioError(e));
-    } catch (e) {
+    } catch (e, stackTrace) {
       // Optionally log the error and stack trace
       return Left(ApiException(e.toString()));
     }

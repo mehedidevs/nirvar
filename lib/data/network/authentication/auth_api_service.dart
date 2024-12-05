@@ -8,9 +8,9 @@ import 'package:dio/dio.dart';
 import 'package:nirvar/models/user_credentials/user_credentials.dart';
 import 'package:nirvar/models/user_profile/user_profile.dart';
 import 'package:nirvar/models/user_profile_update/user_profile_update.dart';
-
 import '../../../core/constants/constants.dart';
 import '../../../core/resources/api_exception.dart';
+import '../../../core/resources/custom_interceptor.dart';
 import '../../../injection_container.dart';
 import '../../../models/register_otp/register_otp.dart';
 import '../../../models/user/user.dart';
@@ -23,7 +23,7 @@ class AuthApiService {
   final UserIdStorage _userIdStorage;
 
   AuthApiService(this._dio, this._tokenStorage, this._userIdStorage) {
-    _dio.interceptors.add(
+    _dio.interceptors.addAll([
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           options.headers['Accept'] = 'accept/json';
@@ -46,7 +46,16 @@ class AuthApiService {
           return handler.next(e);
         },
       ),
-    );
+      PrettyDioLogger(
+        requestHeader: true,
+        requestBody: true,
+        responseBody: true,
+        responseHeader: false,
+        compact: true,
+        maxWidth: 90,
+      ),
+      sl<CustomInterceptor>(),
+    ]);
   }
 
   Future<Either<ApiException, User>> loginUser(

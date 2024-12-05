@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nirvar/bloc/forgot_password_otp_send/forgot_password_otp_send_bloc.dart';
+import 'package:nirvar/bloc/resend_otp/resend_otp_bloc.dart';
 import 'package:nirvar/screens/auth/change_password.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/helper.dart';
