@@ -1,9 +1,8 @@
 import 'dart:ui';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:nirvar/core/constants/app_contstants.dart';
-import 'package:nirvar/screens/utils/app_colors.dart';
-import 'package:nirvar/screens/utils/assets_path.dart';
+
+
 
 class LocalNotificationService {
   static bool _isInitialized = false;
