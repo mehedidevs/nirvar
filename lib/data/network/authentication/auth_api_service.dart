@@ -8,6 +8,7 @@ import 'package:dio/dio.dart';
 import 'package:nirvar/models/user_credentials/user_credentials.dart';
 import 'package:nirvar/models/user_profile/user_profile.dart';
 import 'package:nirvar/models/user_profile_update/user_profile_update.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import '../../../core/constants/constants.dart';
 import '../../../core/resources/api_exception.dart';
 import '../../../core/resources/custom_interceptor.dart';
