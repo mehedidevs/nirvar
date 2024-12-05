@@ -27,7 +27,7 @@ class FirebaseApi {
     await _flutterLocalNotificationsPlugin.initialize(
       settings,
       onDidReceiveNotificationResponse: (response) {
-        handleNotificationAction(message.data);
+        _handleNotificationAction(message.data);
         print('Notification payload: ${response.payload}');
       },
     );
@@ -77,7 +77,7 @@ class FirebaseApi {
   //handle tap on notification when app is in background or terminated
   Future<void> setupInteractMessage()async{
     FirebaseMessaging.onMessageOpenedApp.listen((event) {
-      handleNotificationAction(event.data);
+      _handleNotificationAction(event.data);
     });
   }
 
@@ -85,7 +85,7 @@ class FirebaseApi {
     // when app is terminated
     final initialMessage = await _firebaseMessaging.getInitialMessage();
     if(initialMessage != null){
-      handleNotificationAction(initialMessage.data);
+      _handleNotificationAction(initialMessage.data);
     }
   }
 
@@ -130,7 +130,7 @@ class FirebaseApi {
   }
 
   // Handle Notification Action
-  static Future<void> handleNotificationAction(Map<String, dynamic> data) async {
+  static Future<void> _handleNotificationAction(Map<String, dynamic> data) async {
     final String? action = data['action'];
     final String? identifier = data['unique_identifier'];
 

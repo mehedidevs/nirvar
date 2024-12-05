@@ -1,6 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:nirvar/screens/notification/firebase/firebase_api.dart';
+import 'package:nirvar/screens/notification/local/local_notification_service.dart';
 import 'app.dart';
 import 'injection_container.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -19,6 +20,7 @@ Future<void> main() async{
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await initializeDependencies();
   await FirebaseApi().initNotification();
+  await LocalNotificationService.initialize();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(const NirvarApp());
 }

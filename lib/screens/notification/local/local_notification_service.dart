@@ -1,6 +1,6 @@
 import 'dart:ui';
-
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:nirvar/screens/utils/helper.dart';
 
 
 
@@ -28,7 +28,10 @@ class LocalNotificationService {
     _isInitialized = true;
 
     if (_isInitialized) {
-      await _scheduleDailyNotification(hour: 12, minute: 17);
+      //Morning Reminder Notification
+      await _scheduleDailyNotification(hour: 10, minute: 0);
+      //Evening Reminder Notification
+      await _scheduleDailyNotification(hour: 22, minute: 0);
     } else {
       throw Exception(
           'NotificationService is not initialized. Call initialize() first.');
@@ -89,10 +92,8 @@ class LocalNotificationService {
         id: 12,
         channelKey: 'basic_channel',
         title: 'Reminder',
-        body: 'This is your scheduled notification!',
-        // wakeUpScreen: true,
-        // category: NotificationCategory.Alarm,
-        notificationLayout: NotificationLayout.Default,
+        body: getRandomHealthMessage(),
+        notificationLayout: NotificationLayout.Default
       ),
       schedule: NotificationCalendar(
         hour: hour,
@@ -104,7 +105,6 @@ class LocalNotificationService {
     );
   }
 
-  //I am going to redirect to Product Details Page to show the Product
 
   /// Cancel all notifications.
   static Future<void> cancelAllNotifications() async {
