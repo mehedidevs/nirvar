@@ -5,8 +5,11 @@ import 'package:dio/dio.dart';
 import 'package:nirvar/core/resources/api_exception.dart';
 import 'package:nirvar/models/latest_uploaded_files/latest_uploaded_file.dart';
 import 'package:nirvar/models/patient_files/patient_file.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../../../core/constants/constants.dart';
+import '../../../core/resources/custom_interceptor.dart';
+import '../../../injection_container.dart';
 import '../../../models/preccription_data/prescription_data.dart';
 import '../../preference/token_storage.dart';
 import '../../preference/user_id_storage.dart';
@@ -20,7 +23,7 @@ class FileApiService{
   final UserIdStorage _userIdStorage;
 
   FileApiService(this._dio, this._tokenStorage, this._userIdStorage) {
-    _dio.interceptors.add(
+    _dio.interceptors.addAll([
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           options.headers['Accept'] = 'accept/json';
@@ -43,7 +46,16 @@ class FileApiService{
           return handler.next(e);
         },
       ),
-    );
+      PrettyDioLogger(
+        requestHeader: true,
+        requestBody: true,
+        responseBody: true,
+        responseHeader: false,
+        compact: true,
+        maxWidth: 90,
+      ),
+      sl<CustomInterceptor>(),
+    ]);
   }
 
 

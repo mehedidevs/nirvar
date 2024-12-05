@@ -40,6 +40,7 @@ import 'package:nirvar/screens/notification/firebase/firebase_api.dart';
 
 
 
+import 'core/resources/custom_interceptor.dart';
 import 'data/local/dao/account_holder_dao.dart';
 import 'data/local/db/account_holder_database.dart';
 import 'data/network/authentication/auth_api_service.dart';
@@ -90,6 +91,8 @@ Future<void> initializeDependencies() async {
       ),
     ),
   );
+
+  sl.registerLazySingleton<CustomInterceptor>(() => CustomInterceptor(dio:sl<Dio>()));
 
 
   //Shared Preference

@@ -5,8 +5,11 @@ import 'package:nirvar/core/resources/api_exception.dart';
 import 'package:nirvar/models/glucose_level/glucose_level.dart';
 import 'package:nirvar/models/glucose_level_weekly/blood_glucose_weekly.dart';
 import 'package:nirvar/models/patient_glucose/patient_glucose.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../../../core/constants/constants.dart';
+import '../../../core/resources/custom_interceptor.dart';
+import '../../../injection_container.dart';
 import '../../../models/glucose_level_last_seven_days/glucose_level_for_past_seven_days.dart';
 import '../../../models/glucose_level_monthly/blood_glucose_monthly.dart';
 import '../../preference/token_storage.dart';
@@ -18,7 +21,7 @@ class DiabetesApiService {
   final UserIdStorage _userIdStorage;
 
   DiabetesApiService(this._dio, this._tokenStorage, this._userIdStorage) {
-    _dio.interceptors.add(
+    _dio.interceptors.addAll([
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           options.headers['Accept'] = 'accept/json';
@@ -41,7 +44,16 @@ class DiabetesApiService {
           return handler.next(e);
         },
       ),
-    );
+      PrettyDioLogger(
+        requestHeader: true,
+        requestBody: true,
+        responseBody: true,
+        responseHeader: false,
+        compact: true,
+        maxWidth: 90,
+      ),
+      sl<CustomInterceptor>(),
+    ]);
   }
 
   Future<Either<ApiException,String>> storeDiabetes(double sugarLevel) async{

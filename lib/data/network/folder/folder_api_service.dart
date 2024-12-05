@@ -7,8 +7,11 @@ import 'package:nirvar/models/patient_files/patient_file.dart';
 import 'package:nirvar/models/patient_folder/patient_folder.dart';
 import 'package:nirvar/models/search_response/search_response_data.dart';
 import 'package:nirvar/models/selected_folder/selected_folder.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../../../core/constants/constants.dart';
+import '../../../core/resources/custom_interceptor.dart';
+import '../../../injection_container.dart';
 import '../../../models/created_folder_for_prescription/created_folder_for_prescription.dart';
 import '../../preference/token_storage.dart';
 import '../../preference/user_id_storage.dart';
@@ -19,7 +22,7 @@ class FolderApiService {
   final UserIdStorage _userIdStorage;
 
   FolderApiService(this._dio, this._tokenStorage, this._userIdStorage) {
-    _dio.interceptors.add(
+    _dio.interceptors.addAll([
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           options.headers['Accept'] = 'accept/json';
@@ -42,7 +45,16 @@ class FolderApiService {
           return handler.next(e);
         },
       ),
-    );
+      PrettyDioLogger(
+        requestHeader: true,
+        requestBody: true,
+        responseBody: true,
+        responseHeader: false,
+        compact: true,
+        maxWidth: 90,
+      ),
+      sl<CustomInterceptor>(),
+    ]);
   }
 
   Stream<Either<ApiException, List<PatientFolder>>> getAllFolders() async* {

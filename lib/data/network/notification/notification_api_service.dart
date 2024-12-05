@@ -4,7 +4,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:nirvar/core/constants/constants.dart';
 import 'package:nirvar/core/resources/api_exception.dart';
 import 'package:nirvar/core/resources/device_info.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
+import '../../../core/resources/custom_interceptor.dart';
 import '../../../injection_container.dart';
 import '../../preference/token_storage.dart';
 import '../../preference/user_id_storage.dart';
@@ -16,7 +18,7 @@ class NotificationApiService {
   final _firebaseMessaging = sl<FirebaseMessaging>();
 
   NotificationApiService(this._dio,this._tokenStorage,this._userIdStorage,) {
-    _dio.interceptors.add(
+    _dio.interceptors.addAll([
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           options.headers['Accept'] = 'accept/json';
@@ -39,7 +41,16 @@ class NotificationApiService {
           return handler.next(e);
         },
       ),
-    );
+      PrettyDioLogger(
+        requestHeader: true,
+        requestBody: true,
+        responseBody: true,
+        responseHeader: false,
+        compact: true,
+        maxWidth: 90,
+      ),
+      sl<CustomInterceptor>(),
+    ]);
   }
 
   Future<Either<ApiException, String>> sendDeviceCredentials() async {
