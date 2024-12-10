@@ -13,6 +13,7 @@ class LabeledTextFormField extends StatelessWidget {
   final Widget? suffixIcon;
   final void Function()? onVisibilityToggle;
   final bool readOnly;
+  final TextInputType? keyboardType;
 
   const LabeledTextFormField({
     super.key,
@@ -23,9 +24,10 @@ class LabeledTextFormField extends StatelessWidget {
     this.obscureText = false,
     this.enabled = true,
     this.hasToggle = false,
-    this.suffixIcon, // Accept any widget as a suffix icon
+    this.suffixIcon,
     this.onVisibilityToggle,
     this.readOnly = false,
+    this.keyboardType = TextInputType.text,
   });
 
   @override
@@ -47,6 +49,7 @@ class LabeledTextFormField extends StatelessWidget {
           obscureText: obscureText,
           enabled: enabled,
           readOnly: readOnly,
+          keyboardType: keyboardType,
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(

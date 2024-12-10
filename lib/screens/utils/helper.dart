@@ -90,6 +90,7 @@ Future<String> pickDate(BuildContext context) async {
       return Theme(
         data: Theme.of(context).copyWith(
           dialogTheme: DialogTheme(
+            backgroundColor: AppColors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16.r),
             ),

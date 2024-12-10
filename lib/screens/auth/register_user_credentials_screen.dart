@@ -231,15 +231,22 @@ class _RegisterUserCredentialsScreenState
                         LabeledTextFormField(
                           label: 'Date of Birth*',
                           hint: '2000-01-31',
+                          readOnly: true,
                           controller: _dateOfBirthController,
                           obscureText: false,
                           hasToggle: false,
+                            suffixIcon: IconButton(
+                              icon: Icon(Icons.calendar_today,color: AppColors.primary),
+                              onPressed: () async {
+                                _dateOfBirthController.text = await pickDate(context);
+                              },
+                            ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please enter your Date Of Birth';
                             }
                             return null;
-                          },
+                          }
                         ),
                         SizedBox(height: 8.h),
                         LabeledDropdown(
@@ -258,6 +265,7 @@ class _RegisterUserCredentialsScreenState
                           label: 'Weight',
                           hint: '72Kgs',
                           controller: _weightController,
+                          keyboardType: TextInputType.number,
                           obscureText: false,
                           hasToggle: false,
                           validator: (value) {
