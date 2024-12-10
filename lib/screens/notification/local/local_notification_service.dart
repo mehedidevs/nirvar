@@ -9,7 +9,7 @@ class LocalNotificationService {
 
   static Future<void> initialize() async {
     await AwesomeNotifications().initialize(
-      "assets/images/app_icon.png",
+      null,
       [
         NotificationChannel(
           channelKey: 'basic_channel',
@@ -29,7 +29,7 @@ class LocalNotificationService {
 
     if (_isInitialized) {
       //Morning Reminder Notification
-      await _scheduleDailyNotification(hour: 10, minute: 0);
+      await _scheduleDailyNotification(hour: 11, minute: 15);
       //Evening Reminder Notification
       await _scheduleDailyNotification(hour: 22, minute: 0);
     } else {

@@ -1,5 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nirvar/screens/notification/firebase/firebase_api.dart';
 import 'package:nirvar/screens/notification/local/local_notification_service.dart';
 import 'app.dart';
@@ -19,10 +20,11 @@ Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await initializeDependencies();
-  await FirebaseApi().initNotification();
   await LocalNotificationService.initialize();
+  await FirebaseApi().initNotification();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(const NirvarApp());
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
 }
 
 //Testing Started

@@ -15,4 +15,14 @@ class NotificationRepositoryImpl extends NotificationRepository{
    return _apiService.sendDeviceCredentials();
   }
 
+  @override
+  Future<Either<ApiException, String>> showNotification() {
+    return _apiService.showNotification();
+  }
+
+  @override
+  Future<Either<ApiException, String>> showNotificationDetails(int notificationId) {
+   return _apiService.showNotificationDetails(notificationId);
+  }
+
 }

@@ -67,7 +67,9 @@ const String doctorSpecialities = '/patient/doctor/specialities';
 const String patientSearch = '/patient/search';
 const String deviceInformation = '/patient/fcm-token';
 
-
+//Notification
+const String patientNotification = '/patient/notifications';
+const String patientNotificationDetails = '/patient/read/notification';
 
 
 

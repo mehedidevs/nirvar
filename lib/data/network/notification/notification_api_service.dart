@@ -110,4 +110,57 @@ class NotificationApiService {
       return Left(ApiException(e.toString()));
     }
   }
+
+  Future<Either<ApiException,String>> showNotification() async{
+    try{
+      final response = await _dio.get(patientNotification);
+      if(response.statusCode == 200){
+        final Map<String, dynamic> responseData = response.data;
+        if (responseData['status'] == 1  &&  responseData['message'] == "success" ) {
+          final data = responseData['data'] ?? '';
+          //need to set up the data and model class
+          return Right(data);
+        }else if (responseData['status'] == 0) {
+          return Left(ApiException("Notification not found"));
+        } else {
+          return Left(ApiException('Something Went Wrong'));
+        }
+      }else {
+        return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
+      }
+    }on DioException catch (e) {
+      return Left(ApiException.fromDioError(e));
+    } catch (e) {
+      return Left(ApiException(e.toString()));
+    }
+  }
+
+  Future<Either<ApiException,String>> showNotificationDetails(int notificationId) async{
+
+    var formData = FormData.fromMap({
+      'notification_id': notificationId,
+    });
+
+    try{
+      final response = await _dio.get(patientNotificationDetails,data:formData);
+      if(response.statusCode == 200){
+        final Map<String, dynamic> responseData = response.data;
+        if (responseData['status'] == 1  &&  responseData['message'] == "success") {
+          final data = responseData['data'] ?? '';
+          //need to set up the data and model class
+          return Right(data);
+        }else if (responseData['status'] == 0) {
+          return Left(ApiException("Notification not found"));
+        } else {
+          return Left(ApiException('Something Went Wrong'));
+        }
+      }else {
+        return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
+      }
+    }on DioException catch (e) {
+      return Left(ApiException.fromDioError(e));
+    } catch (e) {
+      return Left(ApiException(e.toString()));
+    }
+  }
 }
