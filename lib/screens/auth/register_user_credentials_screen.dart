@@ -11,6 +11,7 @@ import '../../data/preference/user_id_storage.dart';
 import '../../injection_container.dart';
 import '../utils/app_colors.dart';
 import '../widgets/custom_button.dart';
+import '../widgets/labeled_dropdown.dart';
 import '../widgets/labeled_text_form_field.dart';
 
 class RegisterUserCredentialsScreen extends StatefulWidget {
@@ -47,7 +48,8 @@ class _RegisterUserCredentialsScreenState
   bool _isNewPasswordObscured = true;
   bool _isConfirmPasswordObscured = true;
 
-  List<String> validGenders = ['male', 'female', 'other'];
+  String? _selectedGender;
+  String? _selectedBloodGroup;
 
   bool _isChecked = false;
 
@@ -214,23 +216,17 @@ class _RegisterUserCredentialsScreenState
                           },
                         ),
                         _generalInformationText(),
-                        LabeledTextFormField(
-                          label: 'Gender*',
-                          hint: 'ex. Male,Female',
-                          controller: _genderController,
-                          obscureText: false,
-                          hasToggle: false,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your gender'; // if the field is required
-                            }
-                            if (!validGenders.contains(value.toLowerCase())) {
-                              return 'Enter Invalid gender';
-                            }
-
-                            return null; // No error if a valid option is selected
-                          },
-                        ),
+                        LabeledDropdown(
+                      label: 'Gender*',
+                      hint: 'ex. Male, Female',
+                      value: _selectedGender,
+                      items: genders,
+                      onChanged: (value) {
+                        _selectedGender = value;
+                      },
+                      validator: (value) =>
+                      value == null ? 'Please select your gender' : null,
+                    ),
                         SizedBox(height: 8.h),
                         LabeledTextFormField(
                           label: 'Date of Birth*',
@@ -246,18 +242,16 @@ class _RegisterUserCredentialsScreenState
                           },
                         ),
                         SizedBox(height: 8.h),
-                        LabeledTextFormField(
+                        LabeledDropdown(
                           label: 'Blood Group*',
-                          hint: 'A+',
-                          controller: _bloodGroupController,
-                          obscureText: false,
-                          hasToggle: false,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your Blood Group';
-                            }
-                            return null;
+                          hint:  'A+',
+                          value: _selectedBloodGroup,
+                          items: bloodGroups,
+                          onChanged: (value) {
+                            _selectedBloodGroup = value;
                           },
+                          validator: (value) =>
+                          value == null ? 'Please select your blood group' : null,
                         ),
                         SizedBox(height: 8.h),
                         LabeledTextFormField(
