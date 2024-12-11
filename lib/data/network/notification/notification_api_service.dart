@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:nirvar/core/constants/constants.dart';
 import 'package:nirvar/core/resources/api_exception.dart';
 import 'package:nirvar/core/resources/device_info.dart';
+import 'package:nirvar/models/health_notification/health_notification.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../../../core/resources/custom_interceptor.dart';
@@ -111,15 +112,20 @@ class NotificationApiService {
     }
   }
 
-  Future<Either<ApiException,String>> showNotification() async{
+  Future<Either<ApiException,List<HealthNotification>>> showNotification() async{
     try{
       final response = await _dio.get(patientNotification);
       if(response.statusCode == 200){
         final Map<String, dynamic> responseData = response.data;
         if (responseData['status'] == 1  &&  responseData['message'] == "success" ) {
-          final data = responseData['data'] ?? '';
-          //need to set up the data and model class
-          return Right(data);
+          final List<dynamic> data = responseData['data'];
+          if(data.isNotEmpty){
+            final List<HealthNotification> notificationList = data
+                .map((fileJson) => HealthNotification.fromJson(fileJson as Map<String, dynamic>))
+                .toList();
+            return Right(notificationList);
+          }
+          return Right([]);
         }else if (responseData['status'] == 0) {
           return Left(ApiException("Notification not found"));
         } else {

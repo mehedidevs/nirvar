@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nirvar/bloc/account_holder/account_holder_bloc.dart';
+import 'package:nirvar/bloc/health_status_notification/health_status_notification_bloc.dart';
 import 'package:nirvar/bloc/logout/logout_bloc.dart';
 import 'package:nirvar/bloc/patient_files/patient_files_bloc.dart';
 import 'package:nirvar/bloc/patient_folder/patient_folder_bloc.dart';
@@ -34,6 +35,7 @@ class NirvarApp extends StatelessWidget {
             BlocProvider(create: (context) => sl<PatientFolderBloc>()..add(GetPatientFolderFromApi())),
             BlocProvider(create: (context) => sl<PatientFileBloc>()),
             BlocProvider(create: (context) => sl<AccountHolderBloc>()..add(FetchAllAccountHolders())),
+            BlocProvider(create: (context) => sl<HealthStatusNotificationBloc>()),
           ],
           child: PopScope(
             canPop: false,
@@ -43,8 +45,8 @@ class NirvarApp extends StatelessWidget {
               title: "Application",
               theme: AppTheme.lightTheme,
               onGenerateRoute:  RouteGenerator.generateRoute,
-              // initialRoute: RoutesName.splashScreen,
-              home: RegisterUserCredentialsScreen(),
+              initialRoute: RoutesName.splashScreen,
+              home: SplashScreen(),
             ),
           ),
         );

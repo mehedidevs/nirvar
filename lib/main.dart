@@ -24,7 +24,7 @@ Future<void> main() async{
   await FirebaseApi().initNotification();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(const NirvarApp());
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 }
 
 //Testing Started

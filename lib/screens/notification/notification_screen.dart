@@ -1,44 +1,75 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:nirvar/bloc/health_status_notification/health_status_notification_bloc.dart';
+import 'package:nirvar/models/health_notification/health_notification.dart';
 import 'package:nirvar/screens/main/main_screen.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
+import 'package:nirvar/screens/widgets/error_message_display.dart';
+import 'package:nirvar/screens/widgets/initial_state_display.dart';
+import 'package:nirvar/screens/widgets/loading_state_display.dart';
 
 import '../utils/app_colors.dart';
 
-class NotificationScreen extends StatelessWidget {
+class NotificationScreen extends StatefulWidget {
   final bool isComingFromNotification;
 
   const NotificationScreen({super.key, required this.isComingFromNotification});
 
   @override
+  State<NotificationScreen> createState() => _NotificationScreenState();
+}
+
+class _NotificationScreenState extends State<NotificationScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<HealthStatusNotificationBloc>().add(GetNotificationFromApi());
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        title: Text(
-          'Notifications',
-          style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () {
-            if(isComingFromNotification == true){
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreen()));
-            }else{
-              Navigator.of(context).pop();
-            }
-          },
-        ),
-      ),
-      body: SafeArea(child: isComingFromNotification ? _buildNotificationList() : _buildNoNotificationView()),
+    return BlocBuilder<HealthStatusNotificationBloc, HealthStatusNotificationState>(
+      builder: (context, state) {
+        return switch (state.status) {
+          NotificationStatus.initial => const InitialStateDisplay(),
+          NotificationStatus.loading => const LoadingStateDisplay(),
+          NotificationStatus.success => _buildUI(context,state.notificationList),
+          NotificationStatus.failure => ErrorMessageDisplay(message: state.errorMessage),
+        };
+      },
     );
   }
 
-  Widget _buildNotificationList() {
+  Scaffold _buildUI(BuildContext context, List<HealthNotification> notificationList) {
+    return Scaffold(
+    backgroundColor: AppColors.white,
+    appBar: AppBar(
+      backgroundColor: AppColors.white,
+      title: Text(
+        'Notifications',
+        style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold),
+      ),
+      centerTitle: true,
+      elevation: 0,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_ios),
+        onPressed: () {
+          if(widget.isComingFromNotification == true){
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreen()));
+          }else{
+            Navigator.of(context).pop();
+          }
+        },
+      ),
+    ),
+    body: SafeArea(child: notificationList.isNotEmpty ? _buildNotificationList(notificationList) : _buildNoNotificationView()),
+  );
+  }
+
+  Widget _buildNotificationList(List<HealthNotification> notificationList) {
     final notifications = [
       {'title': 'Reports', 'subtitle': 'Check your schedule Today', 'icon': AssetsPath.reportNotificationSvg},
       {'title': 'Prescriptions', 'subtitle': 'Check your schedule Today', 'icon': AssetsPath.prescriptionNotificationSvg},

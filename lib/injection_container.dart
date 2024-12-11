@@ -6,6 +6,7 @@ import 'package:nirvar/bloc/account_holder/account_holder_bloc.dart';
 import 'package:nirvar/bloc/forgot_password/forgot_password_bloc.dart';
 import 'package:nirvar/bloc/forgot_password_otp_send/forgot_password_otp_send_bloc.dart';
 import 'package:nirvar/bloc/forgot_password_reset/forgot_password_reset_bloc.dart';
+import 'package:nirvar/bloc/health_status_notification/health_status_notification_bloc.dart';
 import 'package:nirvar/bloc/login/login_bloc.dart';
 import 'package:nirvar/bloc/logout/logout_bloc.dart';
 import 'package:nirvar/bloc/password_change/password_change_bloc.dart';
@@ -187,4 +188,6 @@ void _registerBlocs() {
   // Account Holder
   sl.registerFactory<AccountHolderBloc>(
           () => AccountHolderBloc(sl<AccountHolderRepository>(), sl<AuthRepository>()));
+
+  sl.registerFactory<HealthStatusNotificationBloc>(() => HealthStatusNotificationBloc(repository: sl<NotificationRepository>()));
 }

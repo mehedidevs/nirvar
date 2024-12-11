@@ -2,6 +2,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:nirvar/core/resources/api_exception.dart';
 import 'package:nirvar/data/network/notification/notification_api_service.dart';
+import 'package:nirvar/models/health_notification/health_notification.dart';
 import 'package:nirvar/repository/notification/notification_repository.dart';
 
 class NotificationRepositoryImpl extends NotificationRepository{
@@ -16,7 +17,7 @@ class NotificationRepositoryImpl extends NotificationRepository{
   }
 
   @override
-  Future<Either<ApiException, String>> showNotification() {
+  Future<Either<ApiException, List<HealthNotification>>> showNotification() {
     return _apiService.showNotification();
   }
 
