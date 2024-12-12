@@ -21,7 +21,7 @@ class _AccountHoldersScreenState extends State<AccountHoldersScreen> {
   @override
   void initState() {
     super.initState();
-    sl<AccountHolderBloc>().add(FetchAllAccountHolders());
+    context.read<AccountHolderBloc>().add(FetchAllAccountHolders());
   }
 
   @override

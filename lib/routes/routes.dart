@@ -73,8 +73,7 @@ class RouteGenerator {
       case RoutesName.bloodPressureInput:
         return MaterialPageRoute(builder: (_) => const BloodPressureInput());
       case RoutesName.notificationScreen:
-        final isComingFromNotification = settings.arguments as bool;
-        return MaterialPageRoute(builder: (_) => NotificationScreen(isComingFromNotification: isComingFromNotification));
+        return MaterialPageRoute(builder: (_) => NotificationScreen());
       case RoutesName.searchScreen:
         return MaterialPageRoute(builder: (_) => const SearchScreen());
       case RoutesName.accountHoldersScreen:

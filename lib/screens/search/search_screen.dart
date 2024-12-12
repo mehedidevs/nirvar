@@ -72,44 +72,47 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      appBar: CustomAppBar(title: 'Search'),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                CustomTextField(
-                  hint: 'Enter search data...',
-                  keyboardType: TextInputType.text,
-                  controller: _searchController,
-                  prefixIcon: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.w),
-                    child: Icon(
-                      Icons.search,
-                      color: AppColors.primary,
-                      size: 24.sp,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: AppColors.white,
+        appBar: CustomAppBar(title: 'Search'),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  CustomTextField(
+                    hint: 'Enter search data...',
+                    keyboardType: TextInputType.text,
+                    controller: _searchController,
+                    prefixIcon: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.w),
+                      child: Icon(
+                        Icons.search,
+                        color: AppColors.primary,
+                        size: 24.sp,
+                      ),
                     ),
+                    onFieldSubmitted: (value) {
+                      _onSearch();
+                    },
                   ),
-                  onFieldSubmitted: (value) {
-                    _onSearch();
-                  },
-                ),
-                SizedBox(height: 16.h),
-                if (_isLoading)
-                  Center(child: CustomChasingDots(size: 50.sp)) // A custom loading widget
-                else if (_errorMessage != null)
-                  Text(
-                    _errorMessage!,
-                    style: TextStyle(color: Colors.red),
-                  )
-                else if (_searchData != null)
-                    _buildSearchResults(),
-              ],
+                  SizedBox(height: 16.h),
+                  if (_isLoading)
+                    Center(child: CustomChasingDots(size: 50.sp)) // A custom loading widget
+                  else if (_errorMessage != null)
+                    Text(
+                      _errorMessage!,
+                      style: TextStyle(color: Colors.red),
+                    )
+                  else if (_searchData != null)
+                      _buildSearchResults(),
+                ],
+              ),
             ),
           ),
         ),

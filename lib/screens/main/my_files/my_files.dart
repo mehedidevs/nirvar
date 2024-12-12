@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nirvar/bloc/patient_folder/patient_folder_bloc.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
 import 'package:nirvar/screens/search/search_screen.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/utils/helper.dart';
@@ -15,6 +16,7 @@ import '../../../core/resources/api_exception.dart';
 import '../../../injection_container.dart';
 import '../../../models/patient_folder/patient_folder.dart';
 import '../../../repository/patient_folder/patient_folder_repository.dart';
+import '../../../routes/routes_name.dart';
 import '../../notification/notification_screen.dart';
 import '../../utils/app_colors.dart';
 import '../../widgets/custom_button.dart';
@@ -195,14 +197,7 @@ class _MyFilesState extends State<MyFiles> {
         ),
         GestureDetector(
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    const NotificationScreen(isComingFromNotification: true),
-              ),
-            );
-
+            context.pushNamed(routeName: RoutesName.notificationScreen);
             print('Notification icon tapped');
           },
           child: Stack(

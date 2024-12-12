@@ -6,6 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:nirvar/repository/blood_pressure/blood_pressure_repository.dart';
 import 'package:nirvar/repository/diabetes/diabetes_repository.dart';
 import 'package:nirvar/repository/patient_file/patient_file_repository.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
 import 'package:nirvar/screens/main/status/graph/blood_glucose/blood_glucose_bottom_sheet.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
@@ -13,6 +14,7 @@ import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 import '../../../injection_container.dart';
 import '../../../models/patient_blood_pressure/patient_blood_pressure.dart';
 import '../../../repository/authentication/auth_repository.dart';
+import '../../../routes/routes_name.dart';
 import '../../notification/notification_screen.dart';
 import '../../utils/assets_path.dart';
 import '../../utils/blood_pressure_utils.dart';
@@ -279,13 +281,7 @@ Widget _headerSection(BuildContext context) {
       ),
       GestureDetector(
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  const NotificationScreen(isComingFromNotification: false),
-            ),
-          );
+          context.pushNamed(routeName: RoutesName.notificationScreen);
         },
         child: SvgPicture.asset(AssetsPath.notificationWithBadgeSvg),
       ),

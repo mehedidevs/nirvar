@@ -9,6 +9,8 @@ import 'package:nirvar/models/blood_pressure_last_seven_days/blood_pressure_hist
 import 'package:nirvar/repository/authentication/auth_repository.dart';
 import 'package:nirvar/repository/blood_pressure/blood_pressure_repository.dart';
 import 'package:nirvar/repository/diabetes/diabetes_repository.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
+import 'package:nirvar/routes/routes_name.dart';
 import 'package:nirvar/screens/notification/firebase/firebase_api.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
@@ -390,13 +392,7 @@ Widget _headerSection(BuildContext context) {
       const Spacer(),
       IconButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    const NotificationScreen(isComingFromNotification: true),
-              ),
-            );
+            context.pushNamed(routeName: RoutesName.notificationScreen);
           },
           icon: SvgPicture.asset(AssetsPath.notificationWithBadgeSvg))
     ],

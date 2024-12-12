@@ -32,97 +32,100 @@ class _BloodGlucoseInputState extends State<BloodGlucoseInput> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      appBar: const CustomAppBar(title: 'Daily Input'),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 8.h),
-                  Center(
-                    child: FittedBox(
-                      child: Image.asset(
-                        AssetsPath.bloodTransfusionPng,
-                        height: 150.h,
-                        width: 250.w,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: AppColors.white,
+        appBar: const CustomAppBar(title: 'Daily Input'),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 8.h),
+                    Center(
+                      child: FittedBox(
+                        child: Image.asset(
+                          AssetsPath.bloodTransfusionPng,
+                          height: 150.h,
+                          width: 250.w,
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 8.h),
-                  Text(
-                    'Enter Your Today’s Glucose Points',
-                    style: TextStyle(
-                        color: AppColors.primary,
-                        fontSize: 24.sp,
-                        fontWeight: FontWeight.w700),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 16.h),
-                  Text(
-                    'Points',
-                    style:
-                        TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.start,
-                  ),
-                  SizedBox(height: 8.h),
-                  CustomTextField(
-                    hint: 'Ex. 5.5',
-                    keyboardType: TextInputType.number,
-                    controller: _bloodGlucoseController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Glucose Point is Required';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: 32.h),
-
-                  _isLoading ? const CustomChasingDots()
-                      :Padding(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 0.h),
-                    child: CustomButton(
-                      text: 'Submit',
-                      onPressed: () async {
-                        if (_formKey.currentState?.validate() ?? false) {
-
-                          FocusManager.instance.primaryFocus?.unfocus();
-
-                          setState(() {
-                            _isLoading = true;
-                          });
-
-                          final response = await _repository.storeDiabetes(
-                              double.parse(_bloodGlucoseController.text));
-                          response.fold(
-                            (failure) {
-                              setState(() {
-                                _isLoading = false;
-                              });
-                              context.flushBarErrorMessage(
-                                  message: failure.message);
-
-                            },
-                            (success) {
-                              _bloodGlucoseController.clear();
-                              setState(() {
-                                _isLoading = false;
-                              });
-                              context.flushBarSuccessMessage(message: success);
-                            },
-                          );
+                    SizedBox(height: 8.h),
+                    Text(
+                      'Enter Your Today’s Glucose Points',
+                      style: TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 24.sp,
+                          fontWeight: FontWeight.w700),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 16.h),
+                    Text(
+                      'Points',
+                      style:
+                          TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.start,
+                    ),
+                    SizedBox(height: 8.h),
+                    CustomTextField(
+                      hint: 'Ex. 5.5',
+                      keyboardType: TextInputType.number,
+                      controller: _bloodGlucoseController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Glucose Point is Required';
                         }
+                        return null;
                       },
                     ),
-                  )
-                ],
+                    SizedBox(height: 32.h),
+
+                    _isLoading ? const CustomChasingDots()
+                        :Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16.w, vertical: 0.h),
+                      child: CustomButton(
+                        text: 'Submit',
+                        onPressed: () async {
+                          if (_formKey.currentState?.validate() ?? false) {
+
+                            FocusManager.instance.primaryFocus?.unfocus();
+
+                            setState(() {
+                              _isLoading = true;
+                            });
+
+                            final response = await _repository.storeDiabetes(
+                                double.parse(_bloodGlucoseController.text));
+                            response.fold(
+                              (failure) {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                                context.flushBarErrorMessage(
+                                    message: failure.message);
+
+                              },
+                              (success) {
+                                _bloodGlucoseController.clear();
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                                context.flushBarSuccessMessage(message: success);
+                              },
+                            );
+                          }
+                        },
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),

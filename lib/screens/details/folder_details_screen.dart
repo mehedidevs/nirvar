@@ -15,6 +15,7 @@ import 'package:nirvar/screens/utils/file_type.dart';
 import 'package:nirvar/screens/widgets/upload_dialog.dart';
 import '../../core/resources/api_exception.dart';
 import '../../injection_container.dart';
+import '../../routes/routes_name.dart';
 import '../notification/notification_screen.dart';
 import '../utils/app_colors.dart';
 import '../utils/assets_path.dart';
@@ -85,33 +86,36 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
             print("Folders updated successfully");
           }
         },
-        child : DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        backgroundColor: AppColors.white,
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  _appBarSection(context),
-                  SizedBox(height: 16.h),
-                  _headerSection(context,widget.folder.name ?? ''),
-                  SizedBox(height: 16.h),
-                  _tabBarSection(),
-                  SizedBox(height: 16.h),
-                  _tabBarViewSectionAlternative(),
-                  SizedBox(height: ScreenUtil().screenHeight * .1.h),
-                ],
+        child : PopScope(
+          canPop: false,
+          child: DefaultTabController(
+                length: 2,
+                child: Scaffold(
+          backgroundColor: AppColors.white,
+          body: SafeArea(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    _appBarSection(context),
+                    SizedBox(height: 16.h),
+                    _headerSection(context,widget.folder.name ?? ''),
+                    SizedBox(height: 16.h),
+                    _tabBarSection(),
+                    SizedBox(height: 16.h),
+                    _tabBarViewSectionAlternative(),
+                    SizedBox(height: ScreenUtil().screenHeight * .1.h),
+                  ],
+                ),
               ),
             ),
           ),
+                ),
+              ),
         ),
-      ),
-    ),
     );
 
     // return DefaultTabController(
@@ -190,13 +194,8 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
 
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                            const NotificationScreen(isComingFromNotification: true),
-                          ),
-                        );
+
+                        context.pushNamed(routeName: RoutesName.notificationScreen);
 
                         print('Notification icon tapped');
                       },

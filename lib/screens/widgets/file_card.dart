@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nirvar/models/patient_folder/patient_folder.dart';
+import 'package:nirvar/routes/routes_name.dart';
 import 'package:nirvar/screens/details/folder_details_screen.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
@@ -35,11 +36,7 @@ class _FileCardState extends State<FileCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) =>
-                    FolderDetailsScreen(folder: widget.patientFolder)));
+        final result = await Navigator.pushNamed(context,RoutesName.folderDetailsScreen,arguments: widget.patientFolder);
         if (result != null && result == true) {
           widget.onComingBack();
         }

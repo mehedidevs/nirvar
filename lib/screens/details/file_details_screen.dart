@@ -114,92 +114,95 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      appBar: AppBar(
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
         backgroundColor: AppColors.white,
-        leading: GestureDetector(
-          onTap: () => context.pop(),
-          child: const Icon(Icons.arrow_back_ios, color: Colors.black),
-        ),
-        title: Text(
-          widget.file.name ?? '',
-          style: TextStyle(
-            fontSize: 20.sp,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
+        appBar: AppBar(
+          backgroundColor: AppColors.white,
+          leading: GestureDetector(
+            onTap: () => context.pop(),
+            child: const Icon(Icons.arrow_back_ios, color: Colors.black),
           ),
+          title: Text(
+            widget.file.name ?? '',
+            style: TextStyle(
+              fontSize: 20.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding:  EdgeInsets.symmetric(horizontal: 8.w),
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                FittedBox(
-                  fit: BoxFit.cover,
-                  child: widget.file.path == null
-                      ? Image.asset(
-                          AssetsPath.prescriptionDetailsPng,
-                          width: ScreenUtil().screenWidth * 0.8,
-                          height: ScreenUtil().screenHeight * 0.7.h,
-                        )
-                      : Image.network(widget.file.path ?? ""),
-                ),
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding:  EdgeInsets.symmetric(horizontal: 8.w),
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  FittedBox(
+                    fit: BoxFit.cover,
+                    child: widget.file.path == null
+                        ? Image.asset(
+                            AssetsPath.prescriptionDetailsPng,
+                            width: ScreenUtil().screenWidth * 0.8,
+                            height: ScreenUtil().screenHeight * 0.7.h,
+                          )
+                        : Image.network(widget.file.path ?? ""),
+                  ),
 
-                SizedBox(height: ScreenUtil().screenHeight * 0.05.h),
+                  SizedBox(height: ScreenUtil().screenHeight * 0.05.h),
 
-                _isDownloading ? Stack(
-                  alignment: Alignment.center, // Align the text to the center
-                  children: [
-                    // Linear Progress Indicator with rounded corners
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8.r), // Rounded corners
-                      child: LinearProgressIndicator(
-                        value: _downloadProgress.toDouble(),
-                        minHeight: 12.h, // Adjust height for better visibility
-                        backgroundColor: AppColors.softCoral.withOpacity(0.5), // Lighter background
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          _getProgressColor(_downloadProgress.toDouble()), // Dynamic color based on progress
+                  _isDownloading ? Stack(
+                    alignment: Alignment.center, // Align the text to the center
+                    children: [
+                      // Linear Progress Indicator with rounded corners
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8.r), // Rounded corners
+                        child: LinearProgressIndicator(
+                          value: _downloadProgress.toDouble(),
+                          minHeight: 12.h, // Adjust height for better visibility
+                          backgroundColor: AppColors.softCoral.withOpacity(0.5), // Lighter background
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            _getProgressColor(_downloadProgress.toDouble()), // Dynamic color based on progress
+                          ),
                         ),
                       ),
-                    ),
-                    // Progress percentage text in the center
-                    Text(
-                      "${(_downloadProgress * 100).toStringAsFixed(0)}%", // Display percentage
-                      style: TextStyle(
-                        fontSize: 14.sp, // Adjust size based on your design
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black, // Color for contrast (or dynamic if needed)
+                      // Progress percentage text in the center
+                      Text(
+                        "${(_downloadProgress).toStringAsFixed(0)}%", // Display percentage
+                        style: TextStyle(
+                          fontSize: 14.sp, // Adjust size based on your design
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black, // Color for contrast (or dynamic if needed)
+                        ),
                       ),
-                    ),
-                  ],
-                ) : SizedBox(),
-
-                SizedBox(height: ScreenUtil().screenHeight * 0.1.h),
-
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: _loading
-                      ? const CustomChasingDots()
-                      : _isDownloading ? const DisabledButton(buttonText: 'Download')
-                      : _buildCustomButton(context, 'Download', Icons.download, const LinearGradient(
-                    colors: [
-                      AppColors.boxGradiantStart,
-                      AppColors.boxGradiantEnd,
                     ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ), Colors.white) ,
-                ),
+                  ) : SizedBox(),
+
+                  SizedBox(height: ScreenUtil().screenHeight * 0.1.h),
+
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    child: _loading
+                        ? const CustomChasingDots()
+                        : _isDownloading ? const DisabledButton(buttonText: 'Download')
+                        : _buildCustomButton(context, 'Download', Icons.download, const LinearGradient(
+                      colors: [
+                        AppColors.boxGradiantStart,
+                        AppColors.boxGradiantEnd,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ), Colors.white) ,
+                  ),
 
 
-                SizedBox(height: ScreenUtil().screenHeight * 0.05.h),
+                  SizedBox(height: ScreenUtil().screenHeight * 0.05.h),
 
-              ],
+                ],
+              ),
             ),
           ),
         ),

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 
+import '../../routes/routes_name.dart';
 import '../notification/notification_screen.dart';
 import '../utils/assets_path.dart';
 
@@ -27,12 +29,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           children: [
             IconButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const NotificationScreen(isComingFromNotification: true),
-                    ),
-                  );
+                  context.pushNamed(routeName: RoutesName.notificationScreen);
                 },
                 icon: SvgPicture.asset(AssetsPath.notificationWithBadgeSvg)
             ),

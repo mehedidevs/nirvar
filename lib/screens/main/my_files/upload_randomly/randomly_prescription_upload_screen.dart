@@ -7,6 +7,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nirvar/repository/patient_folder/patient_folder_repository.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
 import 'package:nirvar/screens/utils/helper.dart';
 import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 import 'package:path/path.dart' as path;
@@ -14,6 +15,7 @@ import 'package:path/path.dart' as path;
 import '../../../../injection_container.dart';
 import '../../../../models/selected_folder/selected_folder.dart';
 import '../../../../repository/patient_file/patient_file_repository.dart';
+import '../../../../routes/routes_name.dart';
 import '../../../notification/notification_screen.dart';
 import '../../../utils/app_colors.dart';
 import '../../../utils/assets_path.dart';
@@ -354,94 +356,91 @@ class _RandomlyPrescriptionUploadScreenState
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      appBar: AppBar(
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
         backgroundColor: AppColors.white,
-        title: Text(
-          'Upload',
-          style: TextStyle(
-            fontSize: 24.sp,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
+        appBar: AppBar(
+          backgroundColor: AppColors.white,
+          title: Text(
+            'Upload',
+            style: TextStyle(
+              fontSize: 24.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
           ),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+            onPressed: () => Navigator.of(context).pop(true),
+          ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  context.pushNamed(routeName: RoutesName.notificationScreen);
+                },
+                icon: SvgPicture.asset(AssetsPath.notificationWithBadgeSvg))
+          ],
         ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(true),
-        ),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        const NotificationScreen(isComingFromNotification: true),
-                  ),
-                );
-              },
-              icon: SvgPicture.asset(AssetsPath.notificationWithBadgeSvg))
-        ],
-      ),
-      body: _initialLoading
-          ? CustomChasingDots(size: 50.sp)
-          : SafeArea(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildCameraWidget(context),
-                      SizedBox(height: 10.h),
-                      OrSeparator(),
-                      SizedBox(height: 10.h),
-                      _buildGalleryWidget(context),
+        body: _initialLoading
+            ? CustomChasingDots(size: 50.sp)
+            : SafeArea(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildCameraWidget(context),
+                        SizedBox(height: 10.h),
+                        OrSeparator(),
+                        SizedBox(height: 10.h),
+                        _buildGalleryWidget(context),
 
-                      _buildCustomSpacer(),
+                        _buildCustomSpacer(),
 
-                      _extractTextView(),
+                        _extractTextView(),
 
-                      (_selectedFile != null && folderId != null)
-                          ? _getUploadFile(context)
-                          : const SizedBox(),
-                      // _selectedFile != null
-                      //     ? _getUploadFile(context)
-                      //     : const SizedBox(),
+                        (_selectedFile != null && folderId != null)
+                            ? _getUploadFile(context)
+                            : const SizedBox(),
+                        // _selectedFile != null
+                        //     ? _getUploadFile(context)
+                        //     : const SizedBox(),
 
-                      _buildCustomSpacer(),
-                      // Upload button
+                        _buildCustomSpacer(),
+                        // Upload button
 
-                      (_selectedFile != null && folderId != null)
-                          ? Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 32.w, vertical: 16.h),
-                              child: Center(
-                                child: _loading
-                                    ? const CustomChasingDots()
-                                    : _buildUploadButton(context),
-                              ),
-                            )
-                          : _getDisabledButton(),
-                      // _selectedFile != null
-                      //     ? Padding(
-                      //         padding: EdgeInsets.symmetric(
-                      //             horizontal: 32.w, vertical: 16.h),
-                      //         child: Center(
-                      //           child: _loading
-                      //               ? const CustomChasingDots()
-                      //               : _buildUploadButton(context),
-                      //         ),
-                      //       )
-                      //     : _getDisabledButton(),
-                    ],
+                        (_selectedFile != null && folderId != null)
+                            ? Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 32.w, vertical: 16.h),
+                                child: Center(
+                                  child: _loading
+                                      ? const CustomChasingDots()
+                                      : _buildUploadButton(context),
+                                ),
+                              )
+                            : _getDisabledButton(),
+                        // _selectedFile != null
+                        //     ? Padding(
+                        //         padding: EdgeInsets.symmetric(
+                        //             horizontal: 32.w, vertical: 16.h),
+                        //         child: Center(
+                        //           child: _loading
+                        //               ? const CustomChasingDots()
+                        //               : _buildUploadButton(context),
+                        //         ),
+                        //       )
+                        //     : _getDisabledButton(),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
+      ),
     );
   }
 

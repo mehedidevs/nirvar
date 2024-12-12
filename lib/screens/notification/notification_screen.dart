@@ -14,8 +14,7 @@ import 'package:nirvar/screens/widgets/loading_state_display.dart';
 import '../utils/app_colors.dart';
 
 class NotificationScreen extends StatefulWidget {
-  final bool? isComingFromNotification;
-  const NotificationScreen({super.key, this.isComingFromNotification = false});
+  const NotificationScreen({super.key});
   @override
   State<NotificationScreen> createState() => _NotificationScreenState();
 }
@@ -43,29 +42,33 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   Widget _buildUI(BuildContext context, List<HealthNotification> notificationList) {
-    return Scaffold(
-    backgroundColor: AppColors.white,
-    appBar: AppBar(
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
       backgroundColor: AppColors.white,
-      title: Text(
-        'Notifications',
-        style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold),
-      ),
-      centerTitle: true,
-      elevation: 0,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios),
-        onPressed: () {
-          if(widget.isComingFromNotification == true){
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreen()));
-          }else{
+      appBar: AppBar(
+        backgroundColor: AppColors.white,
+        title: Text(
+          'Notifications',
+          style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () {
             Navigator.of(context).pop();
-          }
-        },
+            // if(widget.isComingFromNotification == true){
+            //   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainScreen()));
+            // }else{
+            //   Navigator.of(context).pop();
+            // }
+          },
+        ),
       ),
-    ),
-    body: SafeArea(child: notificationList.isNotEmpty ? NotificationListView(notificationList: notificationList) : _buildNoNotificationView()),
-  );
+      body: SafeArea(child: notificationList.isNotEmpty ? NotificationListView(notificationList: notificationList) : _buildNoNotificationView()),
+        ),
+    );
   }
 
   Widget _buildNotificationList(List<HealthNotification> notificationList) {
