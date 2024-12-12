@@ -8,6 +8,7 @@ import 'package:nirvar/data/local/entity/account_holder.dart';
 import 'package:nirvar/data/preference/user_id_storage.dart';
 import 'package:nirvar/models/user_profile/user_profile.dart';
 import 'package:nirvar/screens/auth/sign_in_screen.dart';
+import 'package:nirvar/screens/main/profile/delete_information_screen.dart';
 import 'package:nirvar/screens/main/profile/edit_profile_screen.dart';
 import 'package:nirvar/screens/switch_account/account_holders_screen.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
@@ -37,90 +38,90 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return PopScope(
       canPop: false,
       child: Scaffold(
-        body: SafeArea(
-          child: Stack(
-            children: [
-              // Top background and profile info
-              Container(
-                height: ScreenUtil().screenHeight,
-                color: AppColors.primary,
-                child: Stack(
-                  children: [
-                    Positioned(
-                      top: 0,
-                      right: 0,
-                      child: SvgPicture.asset(AssetsPath.profileDesignSvg),
+        body: Stack(
+          children: [
+            // Top background and profile info
+            Container(
+              height: ScreenUtil().screenHeight,
+              color: AppColors.primary,
+              child: Stack(
+                children: [
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: SvgPicture.asset(AssetsPath.profileDesignSvg),
+                  ),
+                  // Positioned(
+                  //   top: 20.h,
+                  //   left: 16.w,
+                  //   child: IconButton(
+                  //     icon: SvgPicture.asset(AssetsPath.backArrowSvg),
+                  //     onPressed: () {
+                  //       // Navigator.of(context).pop();
+                  //     },
+                  //   ),
+                  // ),
+                  Positioned(
+                    top: 20.h,
+                    right: 16.w,
+                    child: IconButton(
+                      icon:
+                          SvgPicture.asset(AssetsPath.notificationWithBadgeSvg),
+                      onPressed: () {
+                        // Handle notification click
+                      },
                     ),
-                    // Positioned(
-                    //   top: 20.h,
-                    //   left: 16.w,
-                    //   child: IconButton(
-                    //     icon: SvgPicture.asset(AssetsPath.backArrowSvg),
-                    //     onPressed: () {
-                    //       // Navigator.of(context).pop();
-                    //     },
-                    //   ),
-                    // ),
-                    Positioned(
-                      top: 20.h,
-                      right: 16.w,
-                      child: IconButton(
-                        icon:
-                            SvgPicture.asset(AssetsPath.notificationWithBadgeSvg),
-                        onPressed: () {
-                          // Handle notification click
-                        },
-                      ),
-                    ),
-                    Positioned(
-                      top: 25.h,
-                      left: 0,
-                      right: 0,
-                      child: Center(
-                        child: Text(
-                          'Settings',
-                          style: TextStyle(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
+                  ),
+                  Positioned(
+                    top: 25.h,
+                    left: 0,
+                    right: 0,
+                    child: Center(
+                      child: Text(
+                        'Settings',
+                        style: TextStyle(
+                          fontSize: 18.sp,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
                         ),
                       ),
                     ),
-                    Positioned(
-                      top: ScreenUtil().screenHeight * .1.h,
-                      left: 0,
-                      right: 0,
-                      child: _getUserInformation(),
+                  ),
+                  Positioned(
+                    top: ScreenUtil().screenHeight * .1.h,
+                    left: 0,
+                    right: 0,
+                    child: _getUserInformation(),
+                  ),
+                ],
+              ),
+            ),
+
+            // White rounded container with list items
+            Positioned(
+              top: ScreenUtil().screenHeight * 0.35.h,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.w,vertical: 16.h),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(40.r),
+                    topRight: Radius.circular(40.r),
+                  ),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 10,
+                      spreadRadius: 5,
                     ),
                   ],
                 ),
-              ),
-
-              // White rounded container with list items
-              Positioned(
-                top: ScreenUtil().screenHeight * 0.35.h,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(40.r),
-                      topRight: Radius.circular(40.r),
-                    ),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 10,
-                        spreadRadius: 5,
-                      ),
-                    ],
-                  ),
+                child: SingleChildScrollView(
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                  mainAxisSize: MainAxisSize.min,
                     children: [
                       ListTile(
                         leading: const Icon(Icons.person_outline,
@@ -171,6 +172,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       const Divider(),
                       ListTile(
+                        leading: const Icon(Icons.privacy_tip_outlined, color: AppColors.red),
+                        title: Text(
+                          'Clear Personal Data',
+                          style: TextStyle(fontSize: 16.sp),
+                        ),
+                        trailing: Icon(Icons.arrow_forward_ios, size: 16.sp),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DeleteInformationScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                      const Divider(),
+                      ListTile(
                         leading: SvgPicture.asset(AssetsPath.logoutSvg,
                             colorFilter: const ColorFilter.mode(
                                 AppColors.red, BlendMode.srcIn)),
@@ -198,12 +216,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           });
                         },
                       ),
+                      SizedBox(height: ScreenUtil().screenHeight * .1.h),
                     ],
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
