@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nirvar/bloc/health_status_notification/health_status_notification_bloc.dart';
 import 'package:nirvar/models/health_notification/health_notification.dart';
 import 'package:nirvar/screens/main/main_screen.dart';
+import 'package:nirvar/screens/notification/components/notification_list_view.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/widgets/error_message_display.dart';
 import 'package:nirvar/screens/widgets/initial_state_display.dart';
@@ -13,10 +14,8 @@ import 'package:nirvar/screens/widgets/loading_state_display.dart';
 import '../utils/app_colors.dart';
 
 class NotificationScreen extends StatefulWidget {
-  final bool isComingFromNotification;
-
-  const NotificationScreen({super.key, required this.isComingFromNotification});
-
+  final bool? isComingFromNotification;
+  const NotificationScreen({super.key, this.isComingFromNotification = false});
   @override
   State<NotificationScreen> createState() => _NotificationScreenState();
 }
@@ -43,7 +42,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
-  Scaffold _buildUI(BuildContext context, List<HealthNotification> notificationList) {
+  Widget _buildUI(BuildContext context, List<HealthNotification> notificationList) {
     return Scaffold(
     backgroundColor: AppColors.white,
     appBar: AppBar(
@@ -65,7 +64,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         },
       ),
     ),
-    body: SafeArea(child: notificationList.isNotEmpty ? _buildNotificationList(notificationList) : _buildNoNotificationView()),
+    body: SafeArea(child: notificationList.isNotEmpty ? NotificationListView(notificationList: notificationList) : _buildNoNotificationView()),
   );
   }
 
