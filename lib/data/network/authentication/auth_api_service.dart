@@ -239,8 +239,8 @@ class AuthApiService {
           "date_of_birth": credentials.dateOfBirth,
           "blood_group": credentials.bloodGroup,
           "weight": credentials.weight,
-          "height_ft": credentials.heightFt,
-          "height_in": credentials.heightIn,
+          "height_ft": credentials.heightFt != null ? '${credentials.heightFt} FT' : null,
+          "height_in": credentials.heightIn  != null ? '${credentials.heightIn} IN' : null,
           "address": credentials.address,
         },
       );

@@ -39,12 +39,13 @@ class _AccountHoldersScreenState extends State<AccountHoldersScreen> {
           context.read<AccountHolderBloc>().add(FetchAllAccountHolders());
         }
       },
-      child: Scaffold(
-        backgroundColor: AppColors.white,
-        resizeToAvoidBottomInset: false,
-        appBar: CustomAppBar(title: 'Choose An Account'),
-        body: SafeArea(
-          child: SingleChildScrollView(
+      child: PopScope(
+        canPop: false,
+        child: Scaffold(
+          backgroundColor: AppColors.white,
+          resizeToAvoidBottomInset: false,
+          appBar: CustomAppBar(title: 'Choose An Account'),
+          body: SingleChildScrollView(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
               child: _buildUI(context),

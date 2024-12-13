@@ -6,6 +6,7 @@ import 'package:nirvar/bloc/register_user_credentials/register_user_credentials_
 import 'package:nirvar/models/user_credentials/user_credentials.dart';
 import 'package:nirvar/screens/main/main_screen.dart';
 import 'package:nirvar/screens/utils/helper.dart';
+import 'package:nirvar/screens/utils/validation_utils.dart';
 
 import '../../data/preference/user_id_storage.dart';
 import '../../injection_container.dart';
@@ -35,9 +36,7 @@ class _RegisterUserCredentialsScreenState
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  final TextEditingController _genderController = TextEditingController();
   final TextEditingController _dateOfBirthController = TextEditingController();
-  final TextEditingController _bloodGroupController = TextEditingController();
 
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
@@ -71,8 +70,6 @@ class _RegisterUserCredentialsScreenState
     _feetController.dispose();
     _inchesController.dispose();
     _dateOfBirthController.dispose();
-    _bloodGroupController.dispose();
-    _genderController.dispose();
   }
 
   void clearAllFields() {
@@ -80,9 +77,7 @@ class _RegisterUserCredentialsScreenState
     _emailController.clear();
     _newPasswordController.clear();
     _confirmPasswordController.clear();
-    _genderController.clear();
     _dateOfBirthController.clear();
-    _bloodGroupController.clear();
     _weightController.clear();
     _addressController.clear();
     _feetController.clear();
@@ -117,7 +112,7 @@ class _RegisterUserCredentialsScreenState
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>  MainScreen()));
+                              builder: (context) => MainScreen()));
                     }
                   });
                 } else if (state.status ==
@@ -155,20 +150,7 @@ class _RegisterUserCredentialsScreenState
                           controller: _emailController,
                           obscureText: false,
                           hasToggle: false,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              // Email is optional, so if it's empty, return null (no error)
-                              return null;
-                            }
-                            // Define a basic email pattern
-                            String emailPattern = r'^[^@]+@[^@]+\.[^@]+';
-                            // Use RegExp to match the email pattern
-                            RegExp regExp = RegExp(emailPattern);
-                            if (!regExp.hasMatch(value)) {
-                              return 'Please enter a valid email address';
-                            }
-                            return null; // Return null if the email is valid
-                          },
+                          validator: (value) => ValidationUtils.optionalEmailValidation(value),
                         ),
                         SizedBox(height: 8.h),
                         LabeledTextFormField(
@@ -217,16 +199,17 @@ class _RegisterUserCredentialsScreenState
                         ),
                         _generalInformationText(),
                         LabeledDropdown(
-                      label: 'Gender*',
-                      hint: 'ex. Male, Female',
-                      value: _selectedGender,
-                      items: genders,
-                      onChanged: (value) {
-                        _selectedGender = value;
-                      },
-                      validator: (value) =>
-                      value == null ? 'Please select your gender' : null,
-                    ),
+                          label: 'Gender*',
+                          hint: 'ex. Male, Female',
+                          value: _selectedGender,
+                          items: genders,
+                          onChanged: (value) {
+                            _selectedGender = value;
+                          },
+                          validator: (value) =>
+                              ValidationUtils.validateRequiredField(value,
+                                  fieldName: 'gender'),
+                        ),
                         SizedBox(height: 8.h),
                         LabeledTextFormField(
                           label: 'Date of Birth*',
@@ -235,33 +218,30 @@ class _RegisterUserCredentialsScreenState
                           controller: _dateOfBirthController,
                           obscureText: false,
                           hasToggle: false,
-                            suffixIcon: IconButton(
-                              icon: Icon(Icons.calendar_today,color: AppColors.primary),
-                              onPressed: () async {
-                                final selectedDate = await pickDate(context);
-                                if (!selectedDate.contains('No Date Is Found')) {
-                                  _dateOfBirthController.text = selectedDate;
-                                }
-                              },
-                            ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your Date Of Birth';
-                            }
-                            return null;
-                          }
+                          suffixIcon: IconButton(
+                            icon: Icon(Icons.calendar_today,
+                                color: AppColors.primary),
+                            onPressed: () async {
+                              final selectedDate = await pickDate(context);
+                              if (!selectedDate.contains('No Date Is Found')) {
+                                _dateOfBirthController.text = selectedDate;
+                              }
+                            },
+                          ),
+                          validator: (value) =>
+                              ValidationUtils.validateRequiredField(value,
+                                  fieldName: 'Date Of Birth'),
                         ),
                         SizedBox(height: 8.h),
                         LabeledDropdown(
                           label: 'Blood Group*',
-                          hint:  'A+',
+                          hint: 'A+',
                           value: _selectedBloodGroup,
                           items: bloodGroups,
                           onChanged: (value) {
                             _selectedBloodGroup = value;
                           },
-                          validator: (value) =>
-                          value == null ? 'Please select your blood group' : null,
+                          validator: (value) => ValidationUtils.validateRequiredField(value, fieldName: 'blood group'),
                         ),
                         SizedBox(height: 8.h),
                         LabeledTextFormField(
@@ -271,12 +251,7 @@ class _RegisterUserCredentialsScreenState
                           keyboardType: TextInputType.number,
                           obscureText: false,
                           hasToggle: false,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return null;
-                            }
-                            return null;
-                          },
+                          validator: (value) => ValidationUtils.optionalWeightValidation(value),
                         ),
                         SizedBox(height: 8.h),
                         Row(
@@ -287,16 +262,11 @@ class _RegisterUserCredentialsScreenState
                               flex: 1,
                               child: LabeledTextFormField(
                                 label: 'Height',
-                                hint: '5FT',
+                                hint: 'FT',
                                 controller: _feetController,
                                 obscureText: false,
                                 hasToggle: false,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return null;
-                                  }
-                                  return null;
-                                },
+                                validator: (value) => ValidationUtils.optionalHeightInchesValidation(value),
                               ),
                             ),
                             SizedBox(width: 8.w),
@@ -304,16 +274,11 @@ class _RegisterUserCredentialsScreenState
                               flex: 1,
                               child: LabeledTextFormField(
                                 label: '',
-                                hint: '7IN',
+                                hint: 'IN',
                                 controller: _inchesController,
                                 obscureText: false,
                                 hasToggle: false,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return null;
-                                  }
-                                  return null;
-                                },
+                                validator: (value) => ValidationUtils.optionalHeightInchesValidation(value),
                               ),
                             ),
                           ],
@@ -333,33 +298,33 @@ class _RegisterUserCredentialsScreenState
                           },
                         ),
                         SizedBox(height: 16.h),
-                      Row(
-                        children: [
-                          Flexible(
-                            flex: 1,
-                            child: Checkbox(
-                              value: _isChecked,
-                              onChanged: (_) => _toggleCheckbox(),
-                              activeColor: AppColors.primary,
-                            ),
-                          ),
-                          Flexible(
-                            flex: 2,
-                            child: GestureDetector(
-                              onTap: _toggleCheckbox,
-                              child: Text(
-                                'Accept Terms of Service and Data Policy.',
-                                style: TextStyle(
-                                  fontSize: 10.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.primary,
-                                ),
-                                maxLines: 2,
+                        Row(
+                          children: [
+                            Flexible(
+                              flex: 1,
+                              child: Checkbox(
+                                value: _isChecked,
+                                onChanged: (_) => _toggleCheckbox(),
+                                activeColor: AppColors.primary,
                               ),
                             ),
-                          ),
-                        ],
-                      ),
+                            Flexible(
+                              flex: 2,
+                              child: GestureDetector(
+                                onTap: _toggleCheckbox,
+                                child: Text(
+                                  'Accept Terms of Service and Data Policy.',
+                                  style: TextStyle(
+                                    fontSize: 10.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.primary,
+                                  ),
+                                  maxLines: 2,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                         SizedBox(height: 32.h),
                         (state.status == RegisterUserCredentialsStatus.loading)
                             ? SpinKitChasingDots(
@@ -381,7 +346,8 @@ class _RegisterUserCredentialsScreenState
                                     }
 
                                     if (userId != null) {
-                                      if (context.mounted && _isChecked == true) {
+                                      if (context.mounted &&
+                                          _isChecked == true) {
                                         context
                                             .read<RegisterUseCredentialsBloc>()
                                             .add(
@@ -389,14 +355,12 @@ class _RegisterUserCredentialsScreenState
                                                 credentials: UserCredentials(
                                                   userId: userId,
                                                   name: _nameController.text,
-                                                  gender:
-                                                      _genderController.text,
+                                                  gender: _selectedGender ?? '',
                                                   dateOfBirth:
                                                       _dateOfBirthController
                                                           .text,
                                                   bloodGroup:
-                                                      _bloodGroupController
-                                                          .text,
+                                                      _selectedBloodGroup ?? '',
                                                   heightIn:
                                                       _inchesController.text,
                                                   heightFt:
@@ -416,10 +380,11 @@ class _RegisterUserCredentialsScreenState
                                             .read<RegisterUseCredentialsBloc>()
                                             .add(
                                                 RegisterUserCredentialsApiCall());
-                                      }
-                                      else if(context.mounted && _isChecked == false){
+                                      } else if (context.mounted &&
+                                          _isChecked == false) {
                                         context.flushBarErrorMessage(
-                                            message: 'Accept Terms and Conditions');
+                                            message:
+                                                'Accept Terms and Conditions');
                                       }
                                     }
                                   }

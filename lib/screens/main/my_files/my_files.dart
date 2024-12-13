@@ -319,8 +319,8 @@ class _MyFilesState extends State<MyFiles> {
                     final isKeyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
                     return SizedBox(
                       height: isKeyboardVisible
-                          ? ScreenUtil().screenHeight * 0.45.h // Adjust height when keyboard is visible
-                          : ScreenUtil().screenHeight * 0.45.h, // Default height
+                          ? ScreenUtil().screenHeight * 0.35.h // Adjust height when keyboard is visible
+                          : ScreenUtil().screenHeight * 0.35.h, // Default height
 
                       child: Padding(
                         padding: EdgeInsets.all(16.w),

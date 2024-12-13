@@ -25,44 +25,47 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      appBar: AppBar(
-        title: Text(
-          'Scan QR Code',
-          style: TextStyle(
-            fontSize: 20.sp,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: AppColors.white,
+        appBar: AppBar(
+          title: Text(
+            'Scan QR Code',
+            style: TextStyle(
+              fontSize: 20.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+            onPressed: () => Navigator.of(context).pop(),
           ),
         ),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
+        body: FutureBuilder(
+          future: _repository.shareFolder(widget.folderId),
+          builder: (context, snapshot) {
+            if(snapshot.connectionState == ConnectionState.waiting){
+              return Center(child: SpinKitChasingDots(color: AppColors.primary, size: 50.sp));
+            }
+
+            if (!snapshot.hasData) {
+              return const SizedBox();
+            }
+
+            return snapshot.data!.fold((failure){
+              context.flushBarErrorMessage(message: failure.message);
+              return const SizedBox();
+            }, (success){
+              return _buildUI(success);
+            });
+
+          },
         ),
-      ),
-      body: FutureBuilder(
-        future: _repository.shareFolder(widget.folderId),
-        builder: (context, snapshot) {
-          if(snapshot.connectionState == ConnectionState.waiting){
-            return Center(child: SpinKitChasingDots(color: AppColors.primary, size: 50.sp));
-          }
-
-          if (!snapshot.hasData) {
-            return const SizedBox();
-          }
-
-          return snapshot.data!.fold((failure){
-            context.flushBarErrorMessage(message: failure.message);
-            return const SizedBox();
-          }, (success){
-            return _buildUI(success);
-          });
-
-        },
       ),
     );
   }
