@@ -238,7 +238,10 @@ class _RegisterUserCredentialsScreenState
                             suffixIcon: IconButton(
                               icon: Icon(Icons.calendar_today,color: AppColors.primary),
                               onPressed: () async {
-                                _dateOfBirthController.text = await pickDate(context);
+                                final selectedDate = await pickDate(context);
+                                if (!selectedDate.contains('No Date Is Found')) {
+                                  _dateOfBirthController.text = selectedDate;
+                                }
                               },
                             ),
                           validator: (value) {

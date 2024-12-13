@@ -30,6 +30,7 @@ class RoutesName {
   static const String accountSettingsScreen = '/account-settings-screen';
   static const String editProfileScreen = '/edit-profile-screen';
   static const String profileScreen = '/profile-screen';
+  static const String deleteInformationScreen = '/delete-information-screen';
 
   // Status Screens
   static const String statsScreen = '/stats-screen';

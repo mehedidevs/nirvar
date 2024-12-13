@@ -14,7 +14,9 @@ import 'package:nirvar/screens/utils/helper.dart';
 import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 import '../../../injection_container.dart';
 import '../../utils/assets_path.dart';
+import '../../utils/validation_utils.dart';
 import '../../widgets/custom_button.dart';
+import '../../widgets/labeled_dropdown.dart';
 import '../../widgets/labeled_text_form_field.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -37,7 +39,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   final TextEditingController _nameController = TextEditingController();
 
-  final TextEditingController _bloodGroupController = TextEditingController();
 
   final TextEditingController _dateOfBirthController = TextEditingController();
 
@@ -46,11 +47,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController _ageController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
 
-  final TextEditingController _genderController = TextEditingController();
-
   final TextEditingController _feetController = TextEditingController();
 
   final TextEditingController _inchesController = TextEditingController();
+
+  String? _selectedGender;
+  String? _selectedBloodGroup;
 
   Future<void> _captureAndExtractText(ImageSource source) async {
     final XFile? pickedFile = await _picker.pickImage(source: source);
@@ -149,12 +151,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               _nameController.text = state.userProfile.name ?? '';
               _emailController.text = state.userProfile.email ?? '';
               _phoneController.text = state.userProfile.number ?? '';
-              _bloodGroupController.text = state.userProfile.bloodGroup ?? '';
               _dateOfBirthController.text = state.userProfile.dateOfBirth ?? '';
-              _genderController.text = state.userProfile.gender ?? '';
               _ageController.text = state.userProfile.age.toString();
               _addressController.text = state.userProfile.address ?? '';
               _weightController.text = state.userProfile.weight.toString();
+
+              _selectedGender = getMatchedValue(state.userProfile.gender ?? '', genders);
+              _selectedBloodGroup = getMatchedValue(state.userProfile.bloodGroup ?? '', bloodGroups);
+
 
               print("Blood Group ${state.userProfile.bloodGroup}");
               print("Blood Group ${state.userProfile.dateOfBirth}");
@@ -213,16 +217,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     },
                   ),
                 ),
-                Positioned(
-                  top: 20.h,
-                  right: 16.w,
-                  child: IconButton(
-                    icon: SvgPicture.asset(AssetsPath.notificationWithBadgeSvg),
-                    onPressed: () {
-                      // Handle notification click
-                    },
-                  ),
-                ),
+                // Positioned(
+                //   top: 20.h,
+                //   right: 16.w,
+                //   child: IconButton(
+                //     icon: SvgPicture.asset(AssetsPath.notificationWithBadgeSvg),
+                //     onPressed: () {
+                //       // Handle notification click
+                //     },
+                //   ),
+                // ),
                 Positioned(
                   top: 25.h,
                   left: 0,
@@ -230,10 +234,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   child: Center(
                     child: Text(
                       'Settings',
-                      style: TextStyle(
-                        fontSize: 18.sp,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: AppColors.black,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
                       ),
                     ),
                   ),
@@ -291,7 +294,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 // Profile Card with Form
                 Positioned(
-                  top: ScreenUtil().screenHeight * 0.3.h,
+                  top: ScreenUtil().screenHeight * 0.25.h,
                   left: 0,
                   right: 0,
                   bottom: 0,
@@ -311,26 +314,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            _credentialText('Personal Informations'),
+                            _credentialText('Personal Information'),
                             SizedBox(height: 16.h),
                             LabeledTextFormField(
-                              label: 'Email Address',
+                              label: 'Email Address*',
                               hint: 'esmailkhalifa010@gmail.com',
                               controller: _emailController,
                               obscureText: false,
                               hasToggle: false,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your email address';
-                                } // Define a basic email pattern
-                                String emailPattern = r'^[^@]+@[^@]+\.[^@]+';
-                                // Use RegExp to match the email pattern
-                                RegExp regExp = RegExp(emailPattern);
-                                if (!regExp.hasMatch(value)) {
-                                  return 'Please enter a valid email address';
-                                }
-                                return null;
-                              },
+                              validator: (value) => ValidationUtils.requiredEmailValidation(value),
                             ),
                             SizedBox(height: 16.h),
                             LabeledTextFormField(
@@ -340,54 +332,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               obscureText: false,
                               hasToggle: false,
                               readOnly: true,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your phone number';
-                                }
-                                return null;
-                              },
                             ),
                             SizedBox(height: 16.h),
                             LabeledTextFormField(
-                              label: 'Full Name',
+                              label: 'Full Name*',
                               hint: 'Esmail Khalifa',
                               controller: _nameController,
                               obscureText: false,
                               hasToggle: false,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your full name';
-                                }
-                                return null;
-                              },
+                              validator: (value) => ValidationUtils.validateRequiredField(value, fieldName: 'full name') ,
                             ),
                             SizedBox(height: 16.h),
-                            LabeledTextFormField(
-                              label: 'Blood Group',
-                              hint: ' ',
-                              controller: _bloodGroupController,
-                              obscureText: false,
-                              hasToggle: false,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your blood group';
-                                }
-                                return null;
+                            LabeledDropdown(
+                              label: 'Blood Group*',
+                              hint:  'A+',
+                              value: _selectedBloodGroup,
+                              items: bloodGroups,
+                              onChanged: (value) {
+                                _selectedBloodGroup = value;
                               },
+                              validator: (value) =>ValidationUtils.validateRequiredField(value, fieldName: 'blood group'),
                             ),
                             SizedBox(height: 16.h),
                             LabeledTextFormField(
                               label: 'Weight',
                               hint: 'Kgs',
                               controller: _weightController,
+                              keyboardType: TextInputType.number,
                               obscureText: false,
                               hasToggle: false,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your weight';
-                                }
-                                return null;
-                              },
+                              validator: (value) => ValidationUtils.optionalWeightValidation(value),
                             ),
                             SizedBox(height: 16.h),
                             Row(
@@ -400,14 +374,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     label: 'Height',
                                     hint: 'FT',
                                     controller: _feetController,
+                                    keyboardType: TextInputType.number,
                                     obscureText: false,
                                     hasToggle: false,
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Enter you Height in Feet';
-                                      }
-                                      return null;
-                                    },
+                                    validator: (value) => ValidationUtils.optionalHeightFeetValidation(value),
                                   ),
                                 ),
                                 SizedBox(width: 8.w),
@@ -416,74 +386,62 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   child: LabeledTextFormField(
                                     label: '',
                                     hint: 'IN',
+                                    keyboardType: TextInputType.number,
                                     controller: _inchesController,
                                     obscureText: false,
                                     hasToggle: false,
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Enter you Height in Inches';
-                                      }
-                                      return null;
-                                    },
+                                    validator: (value) => ValidationUtils.optionalHeightInchesValidation(value),
                                   ),
                                 ),
                               ],
                             ),
                             SizedBox(height: 16.h),
                             LabeledTextFormField(
-                              label: 'Date Of Birth',
-                              hint: '',
-                              controller: _dateOfBirthController,
-                              obscureText: false,
-                              hasToggle: false,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return null;
-                                }
-                                return null;
-                              },
+                                label: 'Date of Birth*',
+                                hint: '2000-01-31',
+                                readOnly: true,
+                                controller: _dateOfBirthController,
+                                obscureText: false,
+                                hasToggle: false,
+                                suffixIcon: IconButton(
+                                  icon: Icon(Icons.calendar_today,color: AppColors.primary),
+                                  onPressed: () async {
+                                    final selectedDate = await pickDate(context);
+                                    if (!selectedDate.contains('No Date Is Found')) {
+                                      _dateOfBirthController.text = selectedDate;
+                                    }
+                                  },
+                                ),
+                                validator: (value) => ValidationUtils.validateRequiredField(value, fieldName: 'Date Of Birth'),
                             ),
                             SizedBox(height: 16.h),
                             LabeledTextFormField(
                               label: 'Age',
                               hint: '',
                               controller: _ageController,
+                              readOnly: true,
                               obscureText: false,
                               hasToggle: false,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return null;
-                                }
-                                return null;
+                            ),
+                            SizedBox(height: 16.h),
+                            LabeledDropdown(
+                              label: 'Gender*',
+                              hint: 'ex. Male, Female',
+                              value: _selectedGender,
+                              items: genders,
+                              onChanged: (value) {
+                                _selectedGender = value;
                               },
+                              validator: (value) =>  ValidationUtils.validateRequiredField(value, fieldName: 'gender'),
                             ),
                             SizedBox(height: 16.h),
                             LabeledTextFormField(
-                              label: 'Gender',
-                              hint: 'ex. Male,Female',
-                              controller: _genderController,
-                              obscureText: false,
-                              hasToggle: false,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your gender';
-                                }
-                                return null;
-                              },
-                            ),
-                            SizedBox(height: 16.h),
-                            LabeledTextFormField(
-                              label: 'Address',
-                              hint: ' ',
+                              label: 'Address*',
+                              hint: 'Enter your full address',
                               controller: _addressController,
                               obscureText: false,
                               hasToggle: false,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your address';
-                                }
-                                return null;
-                              },
+                              validator: (value) => ValidationUtils.validateRequiredField(value, fieldName: 'address'),
                             ),
                             SizedBox(height: 32.h),
                             BlocConsumer<UserProfileUpdateBloc,
@@ -519,9 +477,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                                 UserProfileUpdate(
                                                   name: _nameController.text,
                                                   email: _emailController.text,
-                                                  gender: _genderController.text,
+                                                  gender: _selectedGender,
                                                   dateOfBirth: _dateOfBirthController.text,
-                                                  bloodGroup: _bloodGroupController.text,
+                                                  bloodGroup: _selectedBloodGroup,
                                                   weight: _weightController.text,
                                                   heightFt: _feetController.text,
                                                   heightIn: _inchesController.text,
@@ -535,7 +493,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                             context.read<UserProfileUpdateBloc>().add(OnPickedImage(imagePicked: selectedMedia!));
                                             context.read<UserProfileUpdateBloc>().add(UserProfileUpdateApiCall());
                                           }else{
-                                            context.flushBarErrorMessage(message: 'Pick An Image');
+                                            context.read<UserProfileUpdateBloc>().add(UserProfileUpdateApiCall());
                                           }
 
                                         },

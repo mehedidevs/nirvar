@@ -72,16 +72,16 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               },
             ),
           ),
-          Positioned(
-            top: 20.h,
-            right: 16.w,
-            child: IconButton(
-              icon: SvgPicture.asset(AssetsPath.notificationWithBadgeSvg),
-              onPressed: () {
-                // Handle notification click
-              },
-            ),
-          ),
+          // Positioned(
+          //   top: 20.h,
+          //   right: 16.w,
+          //   child: IconButton(
+          //     icon: SvgPicture.asset(AssetsPath.notificationWithBadgeSvg),
+          //     onPressed: () {
+          //       // Handle notification click
+          //     },
+          //   ),
+          // ),
           Positioned(
             top: 25.h,
             left: 0,
@@ -89,10 +89,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             child: Center(
               child: Text(
                 'Settings',
-                style: TextStyle(
-                  fontSize: 18.sp,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: AppColors.black,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
                 ),
               ),
             ),
@@ -129,7 +128,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             },
             builder: (context, state) {
               return Positioned(
-                top: ScreenUtil().screenHeight * 0.3.h,
+                top: ScreenUtil().screenHeight * 0.25.h,
                 left: 0,
                 right: 0,
                 bottom: 0,
@@ -287,7 +286,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
       builder: (context,snapshot){
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: SpinKitChasingDots(
-              color: AppColors.primary, size: 50.sp)); // Show a loading indicator while waiting for data
+              color: AppColors.white, size: 50.sp)); // Show a loading indicator while waiting for data
         }
 
         if (!snapshot.hasData) {
@@ -301,15 +300,15 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                     child: Icon(Icons.person, size: 60.sp),
                   ),
                   // Positioned Camera Icon Button
-                  Positioned(
-                    bottom: 2,
-                    right: 0,
-                    child: SvgPicture.asset(
-                      AssetsPath.cameraSvg,
-                      height: 25.h,
-                      width: 25.w,
-                    ),
-                  ),
+                  // Positioned(
+                  //   bottom: 2,
+                  //   right: 0,
+                  //   child: SvgPicture.asset(
+                  //     AssetsPath.cameraSvg,
+                  //     height: 25.h,
+                  //     width: 25.w,
+                  //   ),
+                  // ),
                 ],
               ),
             ],
@@ -328,15 +327,15 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                     child: Icon(Icons.person, size: 60.sp),
                   ),
                   // Positioned Camera Icon Button
-                  Positioned(
-                    bottom: 2,
-                    right: 0,
-                    child: SvgPicture.asset(
-                      AssetsPath.cameraSvg,
-                      height: 25.h,
-                      width: 25.w,
-                    ),
-                  ),
+                  // Positioned(
+                  //   bottom: 2,
+                  //   right: 0,
+                  //   child: SvgPicture.asset(
+                  //     AssetsPath.cameraSvg,
+                  //     height: 25.h,
+                  //     width: 25.w,
+                  //   ),
+                  // ),
                 ],
               ),
             ],
@@ -353,15 +352,15 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                       child: Icon(Icons.person, size: 60.sp),
                     ),
                     // Positioned Camera Icon Button
-                    Positioned(
-                      bottom: 2,
-                      right: 0,
-                      child: SvgPicture.asset(
-                        AssetsPath.cameraSvg,
-                        height: 25.h,
-                        width: 25.w,
-                      ),
-                    ),
+                    // Positioned(
+                    //   bottom: 2,
+                    //   right: 0,
+                    //   child: SvgPicture.asset(
+                    //     AssetsPath.cameraSvg,
+                    //     height: 25.h,
+                    //     width: 25.w,
+                    //   ),
+                    // ),
                   ],
                 ),
               ],
@@ -374,20 +373,26 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                     CircleAvatar(
                       radius: 50.r,
                       backgroundColor: AppColors.white,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(50.r),
-                          child: Image.network(success.photo ?? "",fit: BoxFit.cover)),
-                    ),
-                    // Positioned Camera Icon Button
-                    Positioned(
-                      bottom: 2,
-                      right: 0,
-                      child: SvgPicture.asset(
-                        AssetsPath.cameraSvg,
-                        height: 25.h,
-                        width: 25.w,
+                      child: CircleAvatar(
+                        radius: 50.r,
+                        backgroundColor: AppColors.white,
+                        child: Image.network(
+                          success.photo ?? "",
+                          height: 60.sp,
+                          width: 60.sp,
+                        ),
                       ),
                     ),
+                    // Positioned Camera Icon Button
+                    // Positioned(
+                    //   bottom: 2,
+                    //   right: 0,
+                    //   child: SvgPicture.asset(
+                    //     AssetsPath.cameraSvg,
+                    //     height: 25.h,
+                    //     width: 25.w,
+                    //   ),
+                    // ),
                   ],
                 ),
               ],

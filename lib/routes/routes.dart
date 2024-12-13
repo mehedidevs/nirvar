@@ -81,6 +81,8 @@ class RouteGenerator {
       case RoutesName.switchAccountScreen:
         final accountHolder = settings.arguments as AccountHolder;
         return MaterialPageRoute(builder: (_) => SwitchAccountScreen(accountHolder: accountHolder));
+      case RoutesName.deleteInformationScreen:
+        return MaterialPageRoute(builder: (_) => DeleteInformationScreen());
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

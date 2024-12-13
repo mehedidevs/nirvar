@@ -520,8 +520,8 @@ class AuthApiService {
       'date_of_birth': profile.dateOfBirth,
       'blood_group': profile.bloodGroup,
       'weight': profile.weight,
-      'height_ft': profile.heightFt,
-      'height_in': profile.heightIn,
+      'height_ft': profile.heightFt != null ? '${profile.heightFt} FT' : null,
+      'height_in': profile.heightIn != null ? '${profile.heightIn} IN' : null,
       'address': profile.address,
       if (imageFile != null)
         'photo': await MultipartFile.fromFile(

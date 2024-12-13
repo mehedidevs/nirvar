@@ -488,9 +488,7 @@ Widget _getUserProfilePicture() {
             child: CircleAvatar(
               radius: 25.r,
               backgroundColor: AppColors.white,
-              child: ClipRRect(
-                  borderRadius: BorderRadius.circular(25.r),
-                  child: Image.network(success.photo ?? "", fit: BoxFit.cover)),
+              child: Image.network(success.photo ?? "", fit: BoxFit.cover,height: 30.sp,width: 30.sp),
             ),
           );
         }

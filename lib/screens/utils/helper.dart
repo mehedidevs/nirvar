@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/local/entity/account_holder.dart';
 import '../../models/created_folder_for_prescription/created_folder_for_prescription.dart';
@@ -128,6 +129,62 @@ final List<String> healthMessages = [
 
 String getRandomHealthMessage() {
   return healthMessages[DateTime.now().millisecondsSinceEpoch % healthMessages.length];
+}
+
+// Email function to launch the default email app
+void sendEmail(BuildContext context) async {
+  String? encodeQueryParameters(Map<String, String> params) {
+    return params.entries
+        .map((MapEntry<String, String> e) =>
+    '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+        .join('&');
+  }
+
+  final Uri emailLaunchUri = Uri(
+    scheme: 'mailto',
+    path: 'teamnirvar@gmail.com',
+    query: encodeQueryParameters(<String, String>{
+      'subject': 'Delete My Information',
+      'body': 'Dear Nirvar Team,\n\n'
+          'I would like to request the deletion of all my personal data associated with my account on Nirvar. '
+          'Please find my account details below:\n\n'
+          'Name: [Your Name]\n'
+          'Email: [Your Email Address]\n'
+          'Phone Number: [Your Phone Number]\n\n'
+          'If you need any further information to process this request, please let me know. '
+          'I would appreciate a confirmation once the deletion process is completed.\n\n'
+          'Thank you for your assistance.\n\n'
+          'Best regards,\n[Your Name]',
+    }),
+  );
+
+
+  try {
+    if (await canLaunchUrl(emailLaunchUri)) {
+      await launchUrl(
+        emailLaunchUri,
+        mode: LaunchMode.externalApplication,
+      );
+    } else {
+      throw 'Could not launch email client.';
+    }
+  } catch (e) {
+    if(context.mounted){
+      context.flushBarErrorMessage(message: 'Could not open the email client. Please ensure you have an email app installed and try again.');
+    }
+    debugPrint('Error launching email: $e');
+  }
+}
+
+
+String? getMatchedValue(String? value, List<String> list) {
+  if (value == null || value.isEmpty) return null;
+
+  // Find the first matching value (case-insensitive)
+  return list.firstWhere(
+        (item) => item.toLowerCase() == value.toLowerCase(),
+    orElse: () =>  ' ',
+  );
 }
 
 

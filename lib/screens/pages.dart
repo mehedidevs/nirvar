@@ -25,6 +25,7 @@ export 'package:nirvar/screens/main/my_files/upload_randomly/randomly_prescripti
 export 'package:nirvar/screens/main/profile/account_settings_screen.dart';
 export 'package:nirvar/screens/main/profile/edit_profile_screen.dart';
 export 'package:nirvar/screens/main/profile/profile_screen.dart';
+export 'package:nirvar/screens/main/profile/delete_information_screen.dart';
 
 export 'package:nirvar/screens/main/status/stats_screen.dart';
 

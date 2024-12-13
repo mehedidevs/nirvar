@@ -1,62 +1,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:nirvar/data/network/authentication/auth_api_service.dart';
-import 'package:nirvar/screens/utils/helper.dart';
-import 'package:path/path.dart';
-import 'package:url_launcher/url_launcher.dart';
-
 import '../../utils/app_colors.dart';
+import '../../utils/helper.dart';
 
 
 class DeleteInformationScreen extends StatelessWidget {
   const DeleteInformationScreen({super.key});
-
-  // Email function to launch the default email app
-  void _sendEmail(BuildContext context) async {
-    String? encodeQueryParameters(Map<String, String> params) {
-      return params.entries
-          .map((MapEntry<String, String> e) =>
-      '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
-          .join('&');
-    }
-
-    final Uri emailLaunchUri = Uri(
-      scheme: 'mailto',
-      path: 'teamnirvar@gmail.com',
-      query: encodeQueryParameters(<String, String>{
-        'subject': 'Delete My Information',
-        'body': 'Dear Nirvar Team,\n\n'
-            'I would like to request the deletion of all my personal data associated with my account on Nirvar. '
-            'Please find my account details below:\n\n'
-            'Name: [Your Name]\n'
-            'Email: [Your Email Address]\n'
-            'Phone Number: [Your Phone Number]\n\n'
-            'If you need any further information to process this request, please let me know. '
-            'I would appreciate a confirmation once the deletion process is completed.\n\n'
-            'Thank you for your assistance.\n\n'
-            'Best regards,\n[Your Name]',
-      }),
-    );
-
-
-    try {
-      if (await canLaunchUrl(emailLaunchUri)) {
-        await launchUrl(
-          emailLaunchUri,
-          mode: LaunchMode.externalApplication,
-        );
-      } else {
-        throw 'Could not launch email client.';
-      }
-    } catch (e) {
-      if(context.mounted){
-        context.flushBarErrorMessage(message: 'Could not open the email client. Please ensure you have an email app installed and try again.');
-      }
-      debugPrint('Error launching email: $e');
-    }
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +52,7 @@ class DeleteInformationScreen extends StatelessWidget {
                         decoration: TextDecoration.underline,
                       ),
                       recognizer: TapGestureRecognizer()
-                        ..onTap = () async { _sendEmail(context); },
+                        ..onTap = () async { sendEmail(context); },
                     ),
                     const TextSpan(
                       text: ' with the subject line "Delete My Information," along with your account details. '
@@ -116,7 +66,7 @@ class DeleteInformationScreen extends StatelessWidget {
               Center(
                 child: ElevatedButton.icon(
                   onPressed: () async {
-                    _sendEmail(context);
+                    sendEmail(context);
                   },
                   icon: const Icon(Icons.mail_outline),
                   label: const Text('Send Email'),
