@@ -232,7 +232,7 @@ class BloodGlucoseBottomSheet extends StatelessWidget {
               (error){
             return Padding(
               padding: EdgeInsets.symmetric(vertical: 16.h,horizontal: 8.w),
-              child: Center(child: Text(snapshot.error.toString(),style: const TextStyle(color: AppColors.primary),)),
+              child: Center(child: Text(error.message,style: const TextStyle(color: AppColors.primary),)),
             );
           },
               (success){
