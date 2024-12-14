@@ -5,12 +5,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:nirvar/bloc/user_profile_details/user_profile_details_bloc.dart';
 import 'package:nirvar/models/blood_pressure_last_seven_days/blood_pressure_history_for_last_7_days.dart';
 import 'package:nirvar/repository/authentication/auth_repository.dart';
 import 'package:nirvar/repository/blood_pressure/blood_pressure_repository.dart';
 import 'package:nirvar/repository/diabetes/diabetes_repository.dart';
 import 'package:nirvar/routes/navigation_helper.dart';
 import 'package:nirvar/routes/routes_name.dart';
+import 'package:nirvar/screens/main/home/components/user_profile_picture.dart';
 import 'package:nirvar/screens/notification/firebase/firebase_api.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
@@ -96,7 +98,6 @@ class _HomeScreenState extends State<HomeScreen> {
     if(sl<PatientFolderBloc>().state.status == PatientFolderStatus.initial){
       context.read<PatientFolderBloc>().add(GetPatientFolderFromApi());
     }
-    sl<AuthRepository>().getUserProfile();
   }
 
   @override
@@ -388,7 +389,8 @@ class _HomeScreenState extends State<HomeScreen> {
 Widget _headerSection(BuildContext context) {
   return Row(
     children: [
-      _getUserProfilePicture(),
+      //_getUserProfilePicture(),
+      UserProfilePicture(),
       const Spacer(),
       IconButton(
           onPressed: () {

@@ -7,6 +7,7 @@ import 'package:nirvar/repository/blood_pressure/blood_pressure_repository.dart'
 import 'package:nirvar/repository/diabetes/diabetes_repository.dart';
 import 'package:nirvar/repository/patient_file/patient_file_repository.dart';
 import 'package:nirvar/routes/navigation_helper.dart';
+import 'package:nirvar/screens/main/status/components/user_weight_card.dart';
 import 'package:nirvar/screens/main/status/graph/blood_glucose/blood_glucose_bottom_sheet.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
@@ -85,7 +86,7 @@ class _StatsScreenState extends State<StatsScreen> {
                         child: _getDiabetesAvg(),
                       ),
                     ),
-                    _getUserWeight(),
+                    UserWeightCard(),
                   ],
                 ),
                 SizedBox(height: 16.h),
@@ -140,50 +141,50 @@ class _StatsScreenState extends State<StatsScreen> {
         });
   }
 
-  Widget _getUserWeight() {
-    final authRepository = sl<AuthRepository>();
-    return FutureBuilder(
-      future: authRepository.getUserProfile(),
-      builder: (context,snapshot){
-
-        String weightValue = 'N/A';
-        String weightUnit = '';
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildHealthCardOfWeight(weightValue, weightUnit);
-        }
-
-        if (!snapshot.hasData) {
-        return _buildHealthCardOfWeight(weightValue, weightUnit);
-        }
-
-        return snapshot.data!.fold((error){
-          return _buildHealthCardOfWeight(weightValue, weightUnit);
-        }, (success){
-          if(success.photo == null || success.photo!.isEmpty){
-             return _buildHealthCardOfWeight(weightValue, weightUnit);
-          }else{
-            return HealthCardWidget(
-              backgroundColor: AppColors.yellowLight,
-              title: 'Weight',
-              value: success.weight?.toString() ?? "N/A",
-              svgPath: AssetsPath.weightSvg,
-              unit: 'kg',
-            );
-          }
-        });
-      },);
-  }
-
-  Widget _buildHealthCardOfWeight(String value, String unit) {
-    return HealthCardWidget(
-      backgroundColor: AppColors.yellowLight,
-      title: 'Weight',
-      value: value,
-      svgPath: AssetsPath.weightSvg,
-      unit: unit,
-    );
-  }
+  // Widget _getUserWeight() {
+  //   final authRepository = sl<AuthRepository>();
+  //   return FutureBuilder(
+  //     future: authRepository.getUserProfile(),
+  //     builder: (context,snapshot){
+  //
+  //       String weightValue = 'N/A';
+  //       String weightUnit = '';
+  //
+  //       if (snapshot.connectionState == ConnectionState.waiting) {
+  //         return _buildHealthCardOfWeight(weightValue, weightUnit);
+  //       }
+  //
+  //       if (!snapshot.hasData) {
+  //       return _buildHealthCardOfWeight(weightValue, weightUnit);
+  //       }
+  //
+  //       return snapshot.data!.fold((error){
+  //         return _buildHealthCardOfWeight(weightValue, weightUnit);
+  //       }, (success){
+  //         if(success.photo == null || success.photo!.isEmpty){
+  //            return _buildHealthCardOfWeight(weightValue, weightUnit);
+  //         }else{
+  //           return HealthCardWidget(
+  //             backgroundColor: AppColors.yellowLight,
+  //             title: 'Weight',
+  //             value: success.weight?.toString() ?? "N/A",
+  //             svgPath: AssetsPath.weightSvg,
+  //             unit: 'kg',
+  //           );
+  //         }
+  //       });
+  //     },);
+  // }
+  //
+  // Widget _buildHealthCardOfWeight(String value, String unit) {
+  //   return HealthCardWidget(
+  //     backgroundColor: AppColors.yellowLight,
+  //     title: 'Weight',
+  //     value: value,
+  //     svgPath: AssetsPath.weightSvg,
+  //     unit: unit,
+  //   );
+  // }
 
   Widget _getDiabetesAvg() {
     final patientGlucoseRepository = sl<DiabetesRepository>();

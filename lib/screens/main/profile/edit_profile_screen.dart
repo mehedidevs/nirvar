@@ -448,6 +448,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 UserProfileUpdateState>(
                               listener: (context, state) {
                                 if(state.status == UserProfileUpdateStatus.success){
+                                  context.read<UserProfileDetailsBloc>().add(GetUserProfileDetailsFromApi());
                                   context.flushBarSuccessMessage(message: state.successMessage);
                                  Future.delayed(const Duration(seconds: 2)).then((_){
 

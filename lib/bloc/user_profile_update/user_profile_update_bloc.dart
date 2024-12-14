@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nirvar/bloc/user_profile_details/user_profile_details_bloc.dart';
+import 'package:nirvar/injection_container.dart';
 import 'package:nirvar/models/user_profile_update/user_profile_update.dart';
 import 'package:nirvar/repository/authentication/auth_repository.dart';
 
@@ -35,14 +37,14 @@ class UserProfileUpdateBloc extends Bloc<UserProfileUpdateEvent,UserProfileUpdat
       submittedCredential.fold(
             (failure) => emit(state.copyWith(
             status: UserProfileUpdateStatus.failure, errorMessage: failure.message)),
-            (response) => emit( state.copyWith(
-            status: UserProfileUpdateStatus.success, successMessage: response)),
+            (response) {
+              emit( state.copyWith(
+                  status: UserProfileUpdateStatus.success, successMessage: response));
+            },
       );
     } catch (e) {
       emit(state.copyWith(
           status: UserProfileUpdateStatus.failure, errorMessage: e.toString()));
     }
   }
-
-
 }

@@ -16,7 +16,12 @@ class UserProfileDetailsBloc extends Bloc<UserProfileDetailsEvent,UserProfileDet
 
 
   FutureOr<void> _onGettingUserProfileDetails(GetUserProfileDetailsFromApi event, Emitter<UserProfileDetailsState> emit) async {
-    emit(state.copyWith(status: UserProfileDetailsStatus.loading));
+    // Use refreshing status instead of loading if already successful
+    if (state.status == UserProfileDetailsStatus.success) {
+      emit(state.copyWith(status: UserProfileDetailsStatus.refreshing));
+    } else {
+      emit(state.copyWith(status: UserProfileDetailsStatus.loading));
+    }
 
     try {
       final submittedCredential = await _repository.getUserProfile();
