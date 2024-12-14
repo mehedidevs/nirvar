@@ -413,10 +413,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       : CircleAvatar(
                           radius: 50.r,
                           backgroundColor: AppColors.white,
-                          child: Image.network(
-                              success.photo ?? "",
-                            height: 60.sp,
-                            width: 60.sp,
+                          child: ClipOval(
+                            child: Image.network(
+                              success.photo ?? " ",
+                              fit: BoxFit.cover,
+                              height:  50.r * 2.sp,
+                              width: 50.r * 2.sp,
+                              errorBuilder: (context, error, stackTrace) {
+                                // Fallback widget when image fails to load
+                                return Icon(
+                                  Icons.person,
+                                  size:  50.r,
+                                  color: AppColors.grey,
+                                );
+                              },
+                            ),
                           ),
                         ),
                   // Positioned Camera Icon Button

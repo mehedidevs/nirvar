@@ -279,129 +279,99 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   }
 
   Widget _getUserProfilePicture() {
-
     final authRepository = sl<AuthRepository>();
+
     return FutureBuilder(
       future: authRepository.getUserProfile(),
-      builder: (context,snapshot){
+      builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: SpinKitChasingDots(
-              color: AppColors.white, size: 50.sp)); // Show a loading indicator while waiting for data
+          return _buildLoadingIndicator();
         }
 
         if (!snapshot.hasData) {
-          return Column(
-            children: [
-              Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 50.r,
-                    backgroundColor: AppColors.white,
-                    child: Icon(Icons.person, size: 60.sp),
-                  ),
-                  // Positioned Camera Icon Button
-                  // Positioned(
-                  //   bottom: 2,
-                  //   right: 0,
-                  //   child: SvgPicture.asset(
-                  //     AssetsPath.cameraSvg,
-                  //     height: 25.h,
-                  //     width: 25.w,
-                  //   ),
-                  // ),
-                ],
-              ),
-            ],
-          );
+          return _buildDefaultAvatar();
         }
 
-
-        return snapshot.data!.fold((error){
-          return Column(
-            children: [
-              Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 50.r,
-                    backgroundColor: AppColors.white,
-                    child: Icon(Icons.person, size: 60.sp),
-                  ),
-                  // Positioned Camera Icon Button
-                  // Positioned(
-                  //   bottom: 2,
-                  //   right: 0,
-                  //   child: SvgPicture.asset(
-                  //     AssetsPath.cameraSvg,
-                  //     height: 25.h,
-                  //     width: 25.w,
-                  //   ),
-                  // ),
-                ],
-              ),
-            ],
-          );
-        }, (success){
-          if(success.photo == null || success.photo!.isEmpty){
-            return Column(
-              children: [
-                Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 50.r,
-                      backgroundColor: AppColors.white,
-                      child: Icon(Icons.person, size: 60.sp),
-                    ),
-                    // Positioned Camera Icon Button
-                    // Positioned(
-                    //   bottom: 2,
-                    //   right: 0,
-                    //   child: SvgPicture.asset(
-                    //     AssetsPath.cameraSvg,
-                    //     height: 25.h,
-                    //     width: 25.w,
-                    //   ),
-                    // ),
-                  ],
-                ),
-              ],
-            );
-          }else{
-            return Column(
-              children: [
-                Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 50.r,
-                      backgroundColor: AppColors.white,
-                      child: CircleAvatar(
-                        radius: 50.r,
-                        backgroundColor: AppColors.white,
-                        child: Image.network(
-                          success.photo ?? "",
-                          height: 60.sp,
-                          width: 60.sp,
-                        ),
-                      ),
-                    ),
-                    // Positioned Camera Icon Button
-                    // Positioned(
-                    //   bottom: 2,
-                    //   right: 0,
-                    //   child: SvgPicture.asset(
-                    //     AssetsPath.cameraSvg,
-                    //     height: 25.h,
-                    //     width: 25.w,
-                    //   ),
-                    // ),
-                  ],
-                ),
-              ],
-            );
-          }
-        });
-      },);
-
+        return snapshot.data!.fold(
+              (error) => _buildDefaultAvatar(),
+              (success) => _buildProfileAvatar(success.photo),
+        );
+      },
+    );
   }
+
+  /// Builds the loading indicator
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: SpinKitChasingDots(
+        color: AppColors.white,
+        size: 50.sp,
+      ),
+    );
+  }
+
+  /// Builds the default avatar UI
+  Widget _buildDefaultAvatar() {
+    return _buildAvatarWithIcon(
+      icon: Icons.person,
+      backgroundColor: AppColors.white,
+      iconSize: 60.sp,
+    );
+  }
+
+  /// Builds the profile avatar with a photo or a fallback if the photo is null/empty
+  Widget _buildProfileAvatar(String? photoUrl) {
+    if (photoUrl == null || photoUrl.isEmpty) {
+      return _buildDefaultAvatar();
+    }
+
+    return _buildAvatarWithPhoto(photoUrl);
+  }
+
+  /// Builds an avatar with an icon
+  Widget _buildAvatarWithIcon({
+    required IconData icon,
+    required Color backgroundColor,
+    required double iconSize,
+  }) {
+    return Column(
+      children: [
+        CircleAvatar(
+          radius: 50.r,
+          backgroundColor: backgroundColor,
+          child: Icon(icon, size: iconSize),
+        ),
+      ],
+    );
+  }
+
+  /// Builds an avatar with a photo
+  Widget _buildAvatarWithPhoto(String photoUrl) {
+    return Column(
+      children: [
+        CircleAvatar(
+          radius: 50.r,
+          backgroundColor: AppColors.white,
+          child: ClipOval(
+            child: Image.network(
+              photoUrl,
+              fit: BoxFit.cover,
+              height: 50.r * 2,
+              width: 50.r * 2,
+              errorBuilder: (context, error, stackTrace) {
+                return Icon(
+                  Icons.person,
+                  size: 50.r,
+                  color: AppColors.grey,
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
 
   Future<void> _updateTheAccountHolder(String newPassword) async {
     try {

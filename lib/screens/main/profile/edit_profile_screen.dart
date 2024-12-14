@@ -217,16 +217,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     },
                   ),
                 ),
-                // Positioned(
-                //   top: 20.h,
-                //   right: 16.w,
-                //   child: IconButton(
-                //     icon: SvgPicture.asset(AssetsPath.notificationWithBadgeSvg),
-                //     onPressed: () {
-                //       // Handle notification click
-                //     },
-                //   ),
-                // ),
+
                 Positioned(
                   top: 25.h,
                   left: 0,
@@ -252,24 +243,46 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         children: [
                           (selectedMedia != null)
                               ? CircleAvatar(
-                                  radius: 50.r,
-                                  backgroundColor: AppColors.white,
-                                  child: Image.file(
-                                    selectedMedia!,
-                                    width: 60.sp,
-                                    height: 60.sp,
-                                  ),
-                                )
+                    radius: 50.r,
+                    backgroundColor: AppColors.white,
+                    child: ClipOval(
+                      child: Image.file(
+                         selectedMedia!,
+                        fit: BoxFit.cover,
+                        height:  50.r * 2.sp,
+                        width: 50.r * 2.sp,
+                        errorBuilder: (context, error, stackTrace) {
+                          // Fallback widget when image fails to load
+                          return Icon(
+                            Icons.person,
+                            size:  50.r,
+                            color: AppColors.grey,
+                          );
+                        },
+                      ),
+                    ),
+                  )
                               : (photoUrl != null)
                                   ? CircleAvatar(
-                                      radius: 50.r,
-                                      backgroundColor: AppColors.white,
-                                      child: Image.network(
-                                        photoUrl!,
-                                        height: 60.sp,
-                                        width: 60.sp,
-                                      ),
-                                    )
+                            radius: 50.r,
+                            backgroundColor: AppColors.white,
+                            child: ClipOval(
+                              child: Image.network(
+                                photoUrl ?? '',
+                                fit: BoxFit.cover,
+                                height:  50.r * 2.sp,
+                                width: 50.r * 2.sp,
+                                errorBuilder: (context, error, stackTrace) {
+                                  // Fallback widget when image fails to load
+                                  return Icon(
+                                    Icons.person,
+                                    size:  50.r,
+                                    color: AppColors.grey,
+                                  );
+                                },
+                              ),
+                            ),
+                          )
                                   : CircleAvatar(
                                       radius: 50.r,
                                       backgroundColor: AppColors.white,
