@@ -10,7 +10,8 @@ class HealthCard extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
 
-  const HealthCard({super.key, 
+  const HealthCard({
+    super.key,
     required this.value,
     required this.average,
     required this.label,
@@ -19,66 +20,65 @@ class HealthCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      constraints: BoxConstraints(
-        minHeight: 0.18.sh,
-        maxHeight: 0.18.sh,
-      ),
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
+    const double kCardPadding = 16.0;
+    const double kCardRadius = 12.0;
+
+    return SizedBox(
+      height: 0.18.sh,
+      child: Container(
+        padding: EdgeInsets.all(kCardPadding.w),
+        decoration: BoxDecoration(
           color: AppColors.primary,
-          borderRadius: BorderRadius.circular(12.r),
-          shape: BoxShape.rectangle),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          value,
-                          style: TextStyle(
-                              fontSize: 24.sp,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
-                        SizedBox(width: 8.w),
-                        InkWell(
-                          onTap: onPressed,
-                          child: SvgPicture.asset(
-                            AssetsPath.gotoSvg,
-                            height: 30.h,
-                            width: 30.w,
-                          ),
-                        ),
-                      ],
+          borderRadius: BorderRadius.circular(kCardRadius.r),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Flexible(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: Text(
+                      value,
+                      style: TextStyle(
+                        fontSize: 24.sp,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      average,
-                      style: TextStyle(fontSize: 14.sp, color: Colors.white),
+                  ),
+                  SizedBox(width: 8.w),
+                  InkWell(
+                    onTap: onPressed,
+                    child: SvgPicture.asset(
+                      AssetsPath.gotoSvg,
+                      height: 30.h,
+                      width: 30.w,
+                      placeholderBuilder: (context) => Icon(
+                        Icons.error,
+                        size: 30.w,
+                        color: Colors.red,
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
-          const Spacer(),
-          Text(
-            label,
-            style: TextStyle(fontSize: 16.sp, color: Colors.white),
-          ),
-        ],
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              average,
+              style: TextStyle(fontSize: 14.sp, color: Colors.white),
+            ),
+            SizedBox(height: 16.h),
+            Text(
+              label,
+              style: TextStyle(fontSize: 16.sp, color: Colors.white),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -57,6 +57,8 @@ class _StatsScreenState extends State<StatsScreen> {
                 SizedBox(height: 8.h),
                 _headerSection(context),
                 SizedBox(height: 16.h),
+
+                //BloodPressure Average of Today
                 Material(
                   child: InkWell(
                       onTap: _showBpGraph,
@@ -64,9 +66,12 @@ class _StatsScreenState extends State<StatsScreen> {
                   ),
                 ),
                 SizedBox(height: 16.h),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+
+                    //Diabetes Average of Today
                     Material(
                       color: Colors.transparent,
                       child: InkWell(

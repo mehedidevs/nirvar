@@ -3,9 +3,11 @@ import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get_it/get_it.dart';
 import 'package:nirvar/bloc/account_holder/account_holder_bloc.dart';
+import 'package:nirvar/bloc/blood_pressure_average_last_seven_days/blood_pressure_average_last_seven_days_bloc.dart';
 import 'package:nirvar/bloc/forgot_password/forgot_password_bloc.dart';
 import 'package:nirvar/bloc/forgot_password_otp_send/forgot_password_otp_send_bloc.dart';
 import 'package:nirvar/bloc/forgot_password_reset/forgot_password_reset_bloc.dart';
+import 'package:nirvar/bloc/glucose_average_last_seven_days/glucose_average_last_seven_days_bloc.dart';
 import 'package:nirvar/bloc/health_status_notification/health_status_notification_bloc.dart';
 import 'package:nirvar/bloc/login/login_bloc.dart';
 import 'package:nirvar/bloc/logout/logout_bloc.dart';
@@ -190,4 +192,10 @@ void _registerBlocs() {
           () => AccountHolderBloc(sl<AccountHolderRepository>(), sl<AuthRepository>()));
 
   sl.registerFactory<HealthStatusNotificationBloc>(() => HealthStatusNotificationBloc(repository: sl<NotificationRepository>()));
+
+  //Blood Glucose
+  sl.registerFactory<GlucoseAverageLastSevenDaysBloc>(() => GlucoseAverageLastSevenDaysBloc(repository: sl<DiabetesRepository>()));
+
+  //Blood Pressure
+  sl.registerFactory<BloodPressureAverageLastSevenDaysBloc>(() => BloodPressureAverageLastSevenDaysBloc(repository: sl<BloodPressureRepository>()));
 }

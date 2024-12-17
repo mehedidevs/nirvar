@@ -12,6 +12,8 @@ import 'package:nirvar/repository/blood_pressure/blood_pressure_repository.dart'
 import 'package:nirvar/repository/diabetes/diabetes_repository.dart';
 import 'package:nirvar/routes/navigation_helper.dart';
 import 'package:nirvar/routes/routes_name.dart';
+import 'package:nirvar/screens/main/home/components/blood_glucose_card.dart';
+import 'package:nirvar/screens/main/home/components/blood_pressure_card.dart';
 import 'package:nirvar/screens/main/home/components/user_profile_picture.dart';
 import 'package:nirvar/screens/notification/firebase/firebase_api.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
@@ -389,7 +391,6 @@ class _HomeScreenState extends State<HomeScreen> {
 Widget _headerSection(BuildContext context) {
   return Row(
     children: [
-      //_getUserProfilePicture(),
       UserProfilePicture(),
       const Spacer(),
       IconButton(
@@ -398,104 +399,6 @@ Widget _headerSection(BuildContext context) {
           },
           icon: SvgPicture.asset(AssetsPath.notificationWithBadgeSvg))
     ],
-  );
-}
-
-Widget _getUserProfilePicture() {
-  //Future<Either<ApiException, UserProfile>> getUserProfile();
-
-  final authRepository = sl<AuthRepository>();
-
-  return FutureBuilder(
-    future: authRepository.getUserProfile(),
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return Center(
-            child: SpinKitChasingDots(
-                color: AppColors.primary,
-                size:
-                    50.sp)); // Show a loading indicator while waiting for data
-      }
-
-      if (!snapshot.hasData) {
-        return Container(
-          padding: EdgeInsets.all(4.w), // Border width
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: AppColors.primary, // Border color
-              width: 4.w, // Border thickness
-            ),
-          ),
-          child: CircleAvatar(
-            radius: 25.r, // Adjust the radius as needed
-            backgroundColor: Colors.transparent,
-            child: Icon(
-              Icons.person,
-              size: 25.r,
-            ),
-          ),
-        );
-      }
-
-      return snapshot.data!.fold((error) {
-        return Container(
-          padding: EdgeInsets.all(4.w), // Border width
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: AppColors.primary, // Border color
-              width: 4.w, // Border thickness
-            ),
-          ),
-          child: CircleAvatar(
-            radius: 25.r, // Adjust the radius as needed
-            backgroundColor: Colors.transparent,
-            child: Icon(
-              Icons.person,
-              size: 25.r,
-            ),
-          ),
-        );
-      }, (success) {
-        if (success.photo == null || success.photo!.isEmpty) {
-          return Container(
-            padding: EdgeInsets.all(4.w), // Border width
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: AppColors.primary, // Border color
-                width: 4.w, // Border thickness
-              ),
-            ),
-            child: CircleAvatar(
-              radius: 25.r, // Adjust the radius as needed
-              backgroundColor: Colors.transparent,
-              child: Icon(
-                Icons.person,
-                size: 25.r,
-              ),
-            ),
-          );
-        } else {
-          return Container(
-            padding: EdgeInsets.all(4.w), // Border width
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: AppColors.primary, // Border color
-                width: 4.w, // Border thickness
-              ),
-            ),
-            child: CircleAvatar(
-              radius: 25.r,
-              backgroundColor: AppColors.white,
-              child: Image.network(success.photo ?? "", fit: BoxFit.cover,height: 30.sp,width: 30.sp),
-            ),
-          );
-        }
-      });
-    },
   );
 }
 
@@ -527,12 +430,12 @@ Widget _healthStatus() {
       children: [
         Expanded(
           flex: 1,
-          child: _getBloodPressureAverage(),
+          child: BloodPressureCard(),
         ),
         SizedBox(width: 8.w),
         Expanded(
           flex: 1,
-          child: _getBloodGlucoseAverage(),
+          child: BloodGlucoseCard(),
         ),
       ],
     ),

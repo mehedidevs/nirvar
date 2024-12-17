@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:nirvar/app.dart';
+import 'package:nirvar/bloc/blood_pressure_average_last_seven_days/blood_pressure_average_last_seven_days_bloc.dart';
 import 'package:nirvar/repository/blood_pressure/blood_pressure_repository.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
@@ -137,6 +140,7 @@ class _BloodPressureInputState extends State<BloodPressureInput> {
                               setState(() {
                                 _isLoading = false;
                               });
+                              context.read<BloodPressureAverageLastSevenDaysBloc>().add(RefreshBloodPressureAverageLastSevenDays());
                               context.flushBarSuccessMessage(message: success);
                             },);
                           }

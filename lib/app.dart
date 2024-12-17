@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nirvar/bloc/account_holder/account_holder_bloc.dart';
+import 'package:nirvar/bloc/blood_pressure_average_last_seven_days/blood_pressure_average_last_seven_days_bloc.dart';
+import 'package:nirvar/bloc/glucose_average_last_seven_days/glucose_average_last_seven_days_bloc.dart';
 import 'package:nirvar/bloc/health_status_notification/health_status_notification_bloc.dart';
 import 'package:nirvar/bloc/logout/logout_bloc.dart';
 import 'package:nirvar/bloc/patient_files/patient_files_bloc.dart';
@@ -34,6 +36,8 @@ class NirvarApp extends StatelessWidget {
             BlocProvider(create: (context) => sl<PatientFileBloc>()),
             BlocProvider(create: (context) => sl<AccountHolderBloc>()),
             BlocProvider(create: (context) => sl<HealthStatusNotificationBloc>()),
+            BlocProvider(create: (context) => sl<GlucoseAverageLastSevenDaysBloc>()),
+            BlocProvider(create: (context) => sl<BloodPressureAverageLastSevenDaysBloc>()),
           ],
           child: MaterialApp(
             debugShowCheckedModeBanner: false,

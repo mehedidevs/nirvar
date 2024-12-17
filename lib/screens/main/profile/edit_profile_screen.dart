@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:nirvar/bloc/user_profile_details/user_profile_details_bloc.dart';
 import 'package:nirvar/bloc/user_profile_update/user_profile_update_bloc.dart';
 import 'package:nirvar/models/user_profile_update/user_profile_update.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/helper.dart';
 import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
@@ -461,15 +462,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 UserProfileUpdateState>(
                               listener: (context, state) {
                                 if(state.status == UserProfileUpdateStatus.success){
-                                  context.read<UserProfileDetailsBloc>().add(GetUserProfileDetailsFromApi());
+                                  context.read<UserProfileDetailsBloc>().add(RefreshUserProfileDetails());
                                   context.flushBarSuccessMessage(message: state.successMessage);
                                  Future.delayed(const Duration(seconds: 2)).then((_){
-
                                    if(context.mounted){
-                                     Navigator.of(context).pop(true);
+                                     context.pop(true);
                                    }
-
-
                                  });
                                 }else if(state.status == UserProfileUpdateStatus.failure){
                                   context.flushBarErrorMessage(message: state.errorMessage);
