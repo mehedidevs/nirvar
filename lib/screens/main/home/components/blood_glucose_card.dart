@@ -52,7 +52,7 @@ class _BloodGlucoseCardState extends State<BloodGlucoseCard> {
     String glucoseLevel =
     (glucoseLevelForPastSevenDays.avgLevel != null) ? glucoseLevelForPastSevenDays.avgLevel.toString() : 'N/A';
     return HealthCard(
-      value: '$glucoseLevel/10',
+      value: glucoseLevel,
       average: 'Last 7 days Avg',
       label: 'Blood Glucose',
       onPressed: () {},

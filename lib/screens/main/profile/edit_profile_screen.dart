@@ -308,7 +308,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
                 // Profile Card with Form
                 Positioned(
-                  top: ScreenUtil().screenHeight * 0.25.h,
+                  top: ScreenUtil().screenHeight * 0.3.h,
                   left: 0,
                   right: 0,
                   bottom: 0,

@@ -7,7 +7,10 @@ import 'package:nirvar/bloc/account_holder/account_holder_bloc.dart';
 import 'package:nirvar/data/local/entity/account_holder.dart';
 import 'package:nirvar/data/preference/user_id_storage.dart';
 import 'package:nirvar/models/user_profile/user_profile.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
+import 'package:nirvar/routes/routes_name.dart';
 import 'package:nirvar/screens/auth/sign_in_screen.dart';
+import 'package:nirvar/screens/main/profile/components/user_profile_details.dart';
 import 'package:nirvar/screens/main/profile/delete_information_screen.dart';
 import 'package:nirvar/screens/main/profile/edit_profile_screen.dart';
 import 'package:nirvar/screens/switch_account/account_holders_screen.dart';
@@ -90,7 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     top: ScreenUtil().screenHeight * .1.h,
                     left: 0,
                     right: 0,
-                    child: _getUserInformation(),
+                    child: UserProfileDetails(),
                   ),
                 ],
               ),
@@ -98,7 +101,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             // White rounded container with list items
             Positioned(
-              top: ScreenUtil().screenHeight * 0.3.h,
+              top: ScreenUtil().screenHeight * 0.35.h,
               left: 0,
               right: 0,
               bottom: 0,
@@ -206,10 +209,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 // Somewhere in your logout button's onPressed or logout logic
                                 BlocProvider.of<PatientFolderBloc>(context).add(LogoutEvent());
                                 BlocProvider.of<AccountHolderBloc>(context).add(LogOutAccountEvent());
-                                Navigator.of(context, rootNavigator: true)
-                                    .pushReplacement(MaterialPageRoute(
-                                        builder: (context) =>
-                                            const SignInScreen()));
+
+                                context.pushNamedAndRemoveUntil(routeName: RoutesName.signInScreen);
+
+                                // Navigator.of(context, rootNavigator: true)
+                                //     .pushReplacement(MaterialPageRoute(
+                                //         builder: (context) =>
+                                //             const SignInScreen()));
                               }
                             }
                           });
@@ -316,153 +322,153 @@ class _ProfileScreenState extends State<ProfileScreen> {
         false; // If the dialog is dismissed without a return value, return false
   }
 
-  Widget _getUserInformation() {
-    final authRepository = sl<AuthRepository>();
-    return FutureBuilder(
-      future: authRepository.getUserProfile(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-              child: SpinKitChasingDots(
-                  color: AppColors.white,
-                  size: 50.sp));
-        }
-
-        if (!snapshot.hasData) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 50.r,
-                    backgroundColor: AppColors.white,
-                    child: Icon(Icons.person, size: 60.sp),
-                  ),
-                  // Positioned Camera Icon Button
-                  // Positioned(
-                  //   bottom: 2,
-                  //   right: 0,
-                  //   child: SvgPicture.asset(
-                  //     AssetsPath.cameraSvg,
-                  //     height: 25.h,
-                  //     width: 25.w,
-                  //   ),
-                  // ),
-                ],
-              ),
-              SizedBox(height: 12.h),
-              // Text(
-              //   'N/A',
-              //   style: TextStyle(
-              //     fontSize: 20.sp,
-              //     fontWeight: FontWeight.bold,
-              //   ),
-              // ),
-            ],
-          );
-        }
-
-        return snapshot.data!.fold((error) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 50.r,
-                    backgroundColor: AppColors.white,
-                    child: Icon(Icons.person, size: 60.sp),
-                  ),
-                  // Positioned Camera Icon Button
-                  // Positioned(
-                  //   bottom: 2,
-                  //   right: 0,
-                  //   child: SvgPicture.asset(
-                  //     AssetsPath.cameraSvg,
-                  //     height: 25.h,
-                  //     width: 25.w,
-                  //   ),
-                  // ),
-                ],
-              ),
-              SizedBox(height: 12.h),
-              // Text(
-              //   error.message,
-              //   style: TextStyle(
-              //     fontSize: 20.sp,
-              //     fontWeight: FontWeight.bold,
-              //   ),
-              // ),
-            ],
-          );
-        }, (success) {
-          _updateTheAccountHolder(success);
-
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Stack(
-                children: [
-                  (success.photo == null || success.photo!.isEmpty)
-                      ? CircleAvatar(
-                          radius: 50.r,
-                          backgroundColor: AppColors.white,
-                          child: Icon(Icons.person, size: 60.sp),
-                        )
-                      : CircleAvatar(
-                          radius: 50.r,
-                          backgroundColor: AppColors.white,
-                          child: ClipOval(
-                            child: Image.network(
-                              success.photo ?? " ",
-                              fit: BoxFit.cover,
-                              height:  50.r * 2.sp,
-                              width: 50.r * 2.sp,
-                              errorBuilder: (context, error, stackTrace) {
-                                // Fallback widget when image fails to load
-                                return Icon(
-                                  Icons.person,
-                                  size:  50.r,
-                                  color: AppColors.grey,
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                  // Positioned Camera Icon Button
-                  // Positioned(
-                  //   bottom: 2,
-                  //   right: 0,
-                  //   child: SvgPicture.asset(
-                  //     AssetsPath.cameraSvg,
-                  //     height: 25.h,
-                  //     width: 25.w,
-                  //   ),
-                  // ),
-                ],
-              ),
-              SizedBox(height: 12.h),
-              Text(
-                success.name ?? "N/A",
-                style: TextStyle(
-                  fontSize: 20.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                success.email ?? 'N/A',
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: Colors.white.withOpacity(0.7),
-                ),
-              ),
-            ],
-          );
-        });
-      },
-    );
-  }
+  // Widget _getUserInformation() {
+  //   final authRepository = sl<AuthRepository>();
+  //   return FutureBuilder(
+  //     future: authRepository.getUserProfile(),
+  //     builder: (context, snapshot) {
+  //       if (snapshot.connectionState == ConnectionState.waiting) {
+  //         return Center(
+  //             child: SpinKitChasingDots(
+  //                 color: AppColors.white,
+  //                 size: 50.sp));
+  //       }
+  //
+  //       if (!snapshot.hasData) {
+  //         return Column(
+  //           mainAxisAlignment: MainAxisAlignment.center,
+  //           children: [
+  //             Stack(
+  //               children: [
+  //                 CircleAvatar(
+  //                   radius: 50.r,
+  //                   backgroundColor: AppColors.white,
+  //                   child: Icon(Icons.person, size: 60.sp),
+  //                 ),
+  //                 // Positioned Camera Icon Button
+  //                 // Positioned(
+  //                 //   bottom: 2,
+  //                 //   right: 0,
+  //                 //   child: SvgPicture.asset(
+  //                 //     AssetsPath.cameraSvg,
+  //                 //     height: 25.h,
+  //                 //     width: 25.w,
+  //                 //   ),
+  //                 // ),
+  //               ],
+  //             ),
+  //             SizedBox(height: 12.h),
+  //             // Text(
+  //             //   'N/A',
+  //             //   style: TextStyle(
+  //             //     fontSize: 20.sp,
+  //             //     fontWeight: FontWeight.bold,
+  //             //   ),
+  //             // ),
+  //           ],
+  //         );
+  //       }
+  //
+  //       return snapshot.data!.fold((error) {
+  //         return Column(
+  //           mainAxisAlignment: MainAxisAlignment.center,
+  //           children: [
+  //             Stack(
+  //               children: [
+  //                 CircleAvatar(
+  //                   radius: 50.r,
+  //                   backgroundColor: AppColors.white,
+  //                   child: Icon(Icons.person, size: 60.sp),
+  //                 ),
+  //                 // Positioned Camera Icon Button
+  //                 // Positioned(
+  //                 //   bottom: 2,
+  //                 //   right: 0,
+  //                 //   child: SvgPicture.asset(
+  //                 //     AssetsPath.cameraSvg,
+  //                 //     height: 25.h,
+  //                 //     width: 25.w,
+  //                 //   ),
+  //                 // ),
+  //               ],
+  //             ),
+  //             SizedBox(height: 12.h),
+  //             // Text(
+  //             //   error.message,
+  //             //   style: TextStyle(
+  //             //     fontSize: 20.sp,
+  //             //     fontWeight: FontWeight.bold,
+  //             //   ),
+  //             // ),
+  //           ],
+  //         );
+  //       }, (success) {
+  //         _updateTheAccountHolder(success);
+  //
+  //         return Column(
+  //           mainAxisAlignment: MainAxisAlignment.center,
+  //           children: [
+  //             Stack(
+  //               children: [
+  //                 (success.photo == null || success.photo!.isEmpty)
+  //                     ? CircleAvatar(
+  //                         radius: 50.r,
+  //                         backgroundColor: AppColors.white,
+  //                         child: Icon(Icons.person, size: 60.sp),
+  //                       )
+  //                     : CircleAvatar(
+  //                         radius: 50.r,
+  //                         backgroundColor: AppColors.white,
+  //                         child: ClipOval(
+  //                           child: Image.network(
+  //                             success.photo ?? " ",
+  //                             fit: BoxFit.cover,
+  //                             height:  50.r * 2.sp,
+  //                             width: 50.r * 2.sp,
+  //                             errorBuilder: (context, error, stackTrace) {
+  //                               // Fallback widget when image fails to load
+  //                               return Icon(
+  //                                 Icons.person,
+  //                                 size:  50.r,
+  //                                 color: AppColors.grey,
+  //                               );
+  //                             },
+  //                           ),
+  //                         ),
+  //                       ),
+  //                 // Positioned Camera Icon Button
+  //                 // Positioned(
+  //                 //   bottom: 2,
+  //                 //   right: 0,
+  //                 //   child: SvgPicture.asset(
+  //                 //     AssetsPath.cameraSvg,
+  //                 //     height: 25.h,
+  //                 //     width: 25.w,
+  //                 //   ),
+  //                 // ),
+  //               ],
+  //             ),
+  //             SizedBox(height: 12.h),
+  //             Text(
+  //               success.name ?? "N/A",
+  //               style: TextStyle(
+  //                 fontSize: 20.sp,
+  //                 fontWeight: FontWeight.bold,
+  //               ),
+  //             ),
+  //             Text(
+  //               success.email ?? 'N/A',
+  //               style: TextStyle(
+  //                 fontSize: 14.sp,
+  //                 color: Colors.white.withOpacity(0.7),
+  //               ),
+  //             ),
+  //           ],
+  //         );
+  //       });
+  //     },
+  //   );
+  // }
 
   Future<void> _updateTheAccountHolder(UserProfile userProfile) async {
     try {

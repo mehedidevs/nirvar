@@ -128,7 +128,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
             },
             builder: (context, state) {
               return Positioned(
-                top: ScreenUtil().screenHeight * 0.25.h,
+                top: ScreenUtil().screenHeight * 0.3.h,
                 left: 0,
                 right: 0,
                 bottom: 0,
