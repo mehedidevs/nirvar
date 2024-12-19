@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/helper.dart';
 
@@ -12,6 +13,11 @@ class DeleteInformationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        if(!didPop){
+          context.pop(true);
+        }
+      },
       child: Scaffold(
         backgroundColor: AppColors.white,
         appBar: AppBar(

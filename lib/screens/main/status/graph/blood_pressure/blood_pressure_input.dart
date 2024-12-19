@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nirvar/app.dart';
 import 'package:nirvar/bloc/blood_pressure_average_last_seven_days/blood_pressure_average_last_seven_days_bloc.dart';
 import 'package:nirvar/repository/blood_pressure/blood_pressure_repository.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/utils/helper.dart';
@@ -39,6 +40,11 @@ class _BloodPressureInputState extends State<BloodPressureInput> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        if(!didPop){
+          context.pop(true);
+        }
+      },
       child: Scaffold(
         backgroundColor: AppColors.white,
         appBar: const CustomAppBar(title: 'Daily Input'),

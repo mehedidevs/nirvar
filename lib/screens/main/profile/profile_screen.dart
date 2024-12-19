@@ -38,197 +38,194 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildUI(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      child: Scaffold(
-        body: Stack(
-          children: [
-            // Top background and profile info
-            Container(
-              height: ScreenUtil().screenHeight,
-              color: AppColors.primary,
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: SvgPicture.asset(AssetsPath.profileDesignSvg),
-                  ),
-                  // Positioned(
-                  //   top: 20.h,
-                  //   left: 16.w,
-                  //   child: IconButton(
-                  //     icon: SvgPicture.asset(AssetsPath.backArrowSvg),
-                  //     onPressed: () {
-                  //       // Navigator.of(context).pop();
-                  //     },
-                  //   ),
-                  // ),
-                  // Positioned(
-                  //   top: 20.h,
-                  //   right: 16.w,
-                  //   child: IconButton(
-                  //     icon:
-                  //         SvgPicture.asset(AssetsPath.notificationWithBadgeSvg),
-                  //     onPressed: () {
-                  //       // Handle notification click
-                  //     },
-                  //   ),
-                  // ),
-                  Positioned(
-                    top: 25.h,
-                    left: 0,
-                    right: 0,
-                    child: Center(
-                      child: Text(
-                        'Settings',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: AppColors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      ),
+    return Scaffold(
+      body: Stack(
+        children: [
+          // Top background and profile info
+          Container(
+            height: ScreenUtil().screenHeight,
+            color: AppColors.primary,
+            child: Stack(
+              children: [
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: SvgPicture.asset(AssetsPath.profileDesignSvg),
+                ),
+                // Positioned(
+                //   top: 20.h,
+                //   left: 16.w,
+                //   child: IconButton(
+                //     icon: SvgPicture.asset(AssetsPath.backArrowSvg),
+                //     onPressed: () {
+                //       // Navigator.of(context).pop();
+                //     },
+                //   ),
+                // ),
+                // Positioned(
+                //   top: 20.h,
+                //   right: 16.w,
+                //   child: IconButton(
+                //     icon:
+                //         SvgPicture.asset(AssetsPath.notificationWithBadgeSvg),
+                //     onPressed: () {
+                //       // Handle notification click
+                //     },
+                //   ),
+                // ),
+                Positioned(
+                  top: 25.h,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Text(
+                      'Settings',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: AppColors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
                     ),
                   ),
-                  Positioned(
-                    top: ScreenUtil().screenHeight * .1.h,
-                    left: 0,
-                    right: 0,
-                    child: UserProfileDetails(),
+                ),
+                Positioned(
+                  top: ScreenUtil().screenHeight * .1.h,
+                  left: 0,
+                  right: 0,
+                  child: UserProfileDetails(),
+                ),
+              ],
+            ),
+          ),
+
+          // White rounded container with list items
+          Positioned(
+            top: ScreenUtil().screenHeight * 0.35.h,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.w,vertical: 16.h),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(40.r),
+                  topRight: Radius.circular(40.r),
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    spreadRadius: 5,
                   ),
                 ],
               ),
-            ),
-
-            // White rounded container with list items
-            Positioned(
-              top: ScreenUtil().screenHeight * 0.35.h,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 16.w,vertical: 16.h),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(40.r),
-                    topRight: Radius.circular(40.r),
-                  ),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Colors.black12,
-                      blurRadius: 10,
-                      spreadRadius: 5,
+              child: SingleChildScrollView(
+                child: Column(
+                mainAxisSize: MainAxisSize.min,
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.person_outline,
+                          color: AppColors.black),
+                      title: Text('Edit Profile',
+                          style: TextStyle(fontSize: 16.sp)),
+                      trailing: Icon(Icons.arrow_forward_ios, size: 16.sp),
+                      onTap: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EditProfileScreen()),
+                        );
+                        if (result) {
+                          setState(() {});
+                        }
+                      },
                     ),
-                  ],
-                ),
-                child: SingleChildScrollView(
-                  child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ListTile(
-                        leading: const Icon(Icons.person_outline,
-                            color: AppColors.black),
-                        title: Text('Edit Profile',
-                            style: TextStyle(fontSize: 16.sp)),
-                        trailing: Icon(Icons.arrow_forward_ios, size: 16.sp),
-                        onTap: () async {
-                          final result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => EditProfileScreen()),
-                          );
-                          if (result) {
-                            setState(() {});
-                          }
-                        },
+                    const Divider(),
+                    ListTile(
+                      leading: const Icon(Icons.settings_outlined,
+                          color: AppColors.black),
+                      title: Text('Account settings',
+                          style: TextStyle(fontSize: 16.sp)),
+                      trailing: Icon(Icons.arrow_forward_ios, size: 16.sp),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AccountSettingsScreen()),
+                        );
+                      },
+                    ),
+                    const Divider(),
+                    ListTile(
+                      leading: const Icon(Icons.switch_account_outlined,
+                          color: AppColors.black),
+                      title: Text('Switch Account',
+                          style: TextStyle(fontSize: 16.sp)),
+                      trailing: Icon(Icons.arrow_forward_ios, size: 16.sp),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AccountHoldersScreen()),
+                        );
+                      },
+                    ),
+                    const Divider(),
+                    ListTile(
+                      leading: const Icon(Icons.privacy_tip_outlined, color: AppColors.red),
+                      title: Text(
+                        'Clear Personal Data',
+                        style: TextStyle(fontSize: 16.sp),
                       ),
-                      const Divider(),
-                      ListTile(
-                        leading: const Icon(Icons.settings_outlined,
-                            color: AppColors.black),
-                        title: Text('Account settings',
-                            style: TextStyle(fontSize: 16.sp)),
-                        trailing: Icon(Icons.arrow_forward_ios, size: 16.sp),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => AccountSettingsScreen()),
-                          );
-                        },
+                      trailing: Icon(Icons.arrow_forward_ios, size: 16.sp),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DeleteInformationScreen(),
+                          ),
+                        );
+                      },
+                    ),
+                    const Divider(),
+                    ListTile(
+                      leading: SvgPicture.asset(AssetsPath.logoutSvg,
+                          colorFilter: const ColorFilter.mode(
+                              AppColors.red, BlendMode.srcIn)),
+                      title: Text(
+                        'Logout',
+                        style: TextStyle(color: AppColors.red, fontSize: 16.sp),
                       ),
-                      const Divider(),
-                      ListTile(
-                        leading: const Icon(Icons.switch_account_outlined,
-                            color: AppColors.black),
-                        title: Text('Switch Account',
-                            style: TextStyle(fontSize: 16.sp)),
-                        trailing: Icon(Icons.arrow_forward_ios, size: 16.sp),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => AccountHoldersScreen()),
-                          );
-                        },
-                      ),
-                      const Divider(),
-                      ListTile(
-                        leading: const Icon(Icons.privacy_tip_outlined, color: AppColors.red),
-                        title: Text(
-                          'Clear Personal Data',
-                          style: TextStyle(fontSize: 16.sp),
-                        ),
-                        trailing: Icon(Icons.arrow_forward_ios, size: 16.sp),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DeleteInformationScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      const Divider(),
-                      ListTile(
-                        leading: SvgPicture.asset(AssetsPath.logoutSvg,
-                            colorFilter: const ColorFilter.mode(
-                                AppColors.red, BlendMode.srcIn)),
-                        title: Text(
-                          'Logout',
-                          style: TextStyle(color: AppColors.red, fontSize: 16.sp),
-                        ),
-                        onTap: () {
-                          bool? result;
-                          WidgetsBinding.instance.addPostFrameCallback((_) async {
-                            result = await _showLogoutDialogAlternative(context);
-                            print("CAll Back Result : $result");
-                            if (result == true) {
-                              print("CAll Back Result For success : $result");
-                              if (context.mounted) {
-                                // Somewhere in your logout button's onPressed or logout logic
-                                BlocProvider.of<PatientFolderBloc>(context).add(LogoutEvent());
-                                BlocProvider.of<AccountHolderBloc>(context).add(LogOutAccountEvent());
+                      onTap: () {
+                        bool? result;
+                        WidgetsBinding.instance.addPostFrameCallback((_) async {
+                          result = await _showLogoutDialogAlternative(context);
+                          print("CAll Back Result : $result");
+                          if (result == true) {
+                            print("CAll Back Result For success : $result");
+                            if (context.mounted) {
+                              // Somewhere in your logout button's onPressed or logout logic
+                              BlocProvider.of<PatientFolderBloc>(context).add(LogoutEvent());
+                              BlocProvider.of<AccountHolderBloc>(context).add(LogOutAccountEvent());
 
-                                context.pushNamedAndRemoveUntil(routeName: RoutesName.signInScreen);
+                              context.pushNamedAndRemoveUntil(routeName: RoutesName.signInScreen);
 
-                                // Navigator.of(context, rootNavigator: true)
-                                //     .pushReplacement(MaterialPageRoute(
-                                //         builder: (context) =>
-                                //             const SignInScreen()));
-                              }
+                              // Navigator.of(context, rootNavigator: true)
+                              //     .pushReplacement(MaterialPageRoute(
+                              //         builder: (context) =>
+                              //             const SignInScreen()));
                             }
-                          });
-                        },
-                      ),
-                      SizedBox(height: ScreenUtil().screenHeight * .1.h),
-                    ],
-                  ),
+                          }
+                        });
+                      },
+                    ),
+                    SizedBox(height: ScreenUtil().screenHeight * .1.h),
+                  ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

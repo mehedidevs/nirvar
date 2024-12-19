@@ -145,6 +145,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget _buildUI(BuildContext context) {
     return PopScope(
       canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        if(!didPop){
+          context.pop(true);
+        }
+      },
       child: Scaffold(
         body: BlocConsumer<UserProfileDetailsBloc, UserProfileDetailsState>(
           listener: (context, state) {

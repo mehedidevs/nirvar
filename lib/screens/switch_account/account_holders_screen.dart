@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nirvar/bloc/account_holder/account_holder_bloc.dart';
 import 'package:nirvar/data/local/entity/account_holder.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
 import 'package:nirvar/screens/switch_account/account_directory/account_directory.dart';
 import 'package:nirvar/screens/widgets/custom_app_bar.dart';
 
@@ -41,6 +42,11 @@ class _AccountHoldersScreenState extends State<AccountHoldersScreen> {
       },
       child: PopScope(
         canPop: false,
+        onPopInvokedWithResult: (bool didPop, dynamic result) {
+          if(!didPop){
+            context.pop(true);
+          }
+        },
         child: Scaffold(
           backgroundColor: AppColors.white,
           resizeToAvoidBottomInset: false,

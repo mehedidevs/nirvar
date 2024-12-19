@@ -16,7 +16,6 @@ import 'package:nirvar/screens/widgets/upload_dialog.dart';
 import '../../core/resources/api_exception.dart';
 import '../../injection_container.dart';
 import '../../routes/routes_name.dart';
-import '../notification/notification_screen.dart';
 import '../utils/app_colors.dart';
 import '../utils/assets_path.dart';
 import '../widgets/custom_button.dart';
@@ -88,6 +87,11 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
         },
         child : PopScope(
           canPop: false,
+          onPopInvokedWithResult: (bool didPop, dynamic result) {
+             if(!didPop){
+               context.pop(true);
+             }
+          },
           child: DefaultTabController(
                 length: 2,
                 child: Scaffold(
@@ -100,6 +104,7 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
+                    15.verticalSpace,
                     _appBarSection(context),
                     SizedBox(height: 16.h),
                     _headerSection(context,widget.folder.name ?? ''),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:nirvar/repository/patient_folder/patient_folder_repository.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/utils/helper.dart';
@@ -27,6 +28,11 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        if(!didPop){
+          context.pop(true);
+        }
+      },
       child: Scaffold(
         backgroundColor: AppColors.white,
         appBar: AppBar(

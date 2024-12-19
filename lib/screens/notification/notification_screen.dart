@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nirvar/bloc/health_status_notification/health_status_notification_bloc.dart';
 import 'package:nirvar/models/health_notification/health_notification.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
 import 'package:nirvar/screens/main/main_screen.dart';
 import 'package:nirvar/screens/notification/components/notification_list_view.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
@@ -44,6 +45,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Widget _buildUI(BuildContext context, List<HealthNotification> notificationList) {
     return PopScope(
       canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        if(!didPop){
+          context.pop(true);
+        }
+      },
       child: Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(

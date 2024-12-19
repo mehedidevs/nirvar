@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nirvar/models/patient_folder/patient_folder.dart';
 import 'package:nirvar/repository/patient_file/patient_file_repository.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
 import 'package:nirvar/screens/utils/helper.dart';
 import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 
@@ -74,6 +75,11 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        if(!didPop){
+          context.pop(true);
+        }
+      },
       child: Scaffold(
         backgroundColor: AppColors.white,
         appBar: CustomAppBar(title: 'Search'),

@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nirvar/app.dart';
 import 'package:nirvar/bloc/glucose_average_last_seven_days/glucose_average_last_seven_days_bloc.dart';
 import 'package:nirvar/repository/diabetes/diabetes_repository.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
 import 'package:nirvar/screens/utils/helper.dart';
 import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 
@@ -37,6 +38,11 @@ class _BloodGlucoseInputState extends State<BloodGlucoseInput> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        if(!didPop){
+          context.pop(true);
+        }
+      },
       child: Scaffold(
         backgroundColor: AppColors.white,
         appBar: const CustomAppBar(title: 'Daily Input'),
