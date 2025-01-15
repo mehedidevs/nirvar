@@ -313,11 +313,11 @@ class _RegisterUserCredentialsScreenState
                               child: GestureDetector(
                                 onTap: _toggleCheckbox,
                                 child: Text(
-                                  'Accept Terms of Service and Data Policy.',
+                                  'Accept Terms and Data Policy.',
                                   style: TextStyle(
-                                    fontSize: 10.sp,
+                                    fontSize: 12.sp,
                                     fontWeight: FontWeight.bold,
-                                    color: AppColors.primary,
+                                    color: _isChecked ? AppColors.primary : AppColors.black,
                                   ),
                                   maxLines: 2,
                                 ),

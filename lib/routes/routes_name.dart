@@ -9,6 +9,7 @@ class RoutesName {
   static const String otpScreen = '/otp-screen';
   static const String forgotPassword = '/forgot-password';
   static const String forgotPasswordOtpScreen = '/forgot-password-otp-screen';
+  static const String privacyPolicyScreen = '/privacy-policy-screen';
 
   // Details Screens
   static const String fileDetailsScreen = '/file-details-screen';

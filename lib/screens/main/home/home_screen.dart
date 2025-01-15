@@ -14,6 +14,7 @@ import 'package:nirvar/routes/navigation_helper.dart';
 import 'package:nirvar/routes/routes_name.dart';
 import 'package:nirvar/screens/main/home/components/blood_glucose_card.dart';
 import 'package:nirvar/screens/main/home/components/blood_pressure_card.dart';
+import 'package:nirvar/screens/main/home/components/daily_blood_glucose_health_item.dart';
 import 'package:nirvar/screens/main/home/components/user_profile_picture.dart';
 import 'package:nirvar/screens/notification/firebase/firebase_api.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
@@ -29,6 +30,7 @@ import '../../../repository/notification/notification_repository.dart';
 import '../../../repository/patient_folder/patient_folder_repository.dart';
 import '../../notification/notification_screen.dart';
 import '../../widgets/health_card.dart';
+import 'components/daily_blood_pressure_health_item.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -317,14 +319,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _myHealthTab() {
     return ListView(
       shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
+      physics: NeverScrollableScrollPhysics(),
       children: [
-        _healthItem('Blood Pressure', '80/120'),
-        _healthItem('Blood Glucose', '11/10'),
-        _healthItem('Heart Rate', '72 bpm'),
+        DailyBloodPressureHealthItem(),
+        DailyBloodGlucoseHealthItem(),
       ],
     );
   }
+
 
   Widget _healthItem(String title, String value) {
     return Container(

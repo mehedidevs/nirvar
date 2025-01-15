@@ -17,6 +17,7 @@ import 'package:nirvar/screens/widgets/custom_textInput.dart';
 import '../../injection_container.dart';
 import '../utils/app_colors.dart';
 import '../utils/assets_path.dart';
+import '../widgets/privacy_policy_text.dart';
 import '../widgets/welcome_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -120,6 +121,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
         20.verticalSpace,
         _goToSignInScreen(context),
+        Spacer(),
+        PrivacyPolicyText(),
         20.verticalSpace
       ],
     );
@@ -128,8 +131,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Center _goToSignInScreen(BuildContext context) {
     return Center(
       child: ClickableText(
-        regularText: 'Don’t have an account?',
-        clickableText: 'SIGN IN',
+        regularText: 'Have an account?',
+        clickableText: ' SIGN IN',
         onTap: () {
           context.pushNamed(routeName: RoutesName.signInScreen);
 

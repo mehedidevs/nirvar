@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nirvar/app.dart';
+import 'package:nirvar/bloc/blood_pressure_average_daily/blood_pressure_average_daily_bloc.dart';
 import 'package:nirvar/bloc/blood_pressure_average_last_seven_days/blood_pressure_average_last_seven_days_bloc.dart';
 import 'package:nirvar/repository/blood_pressure/blood_pressure_repository.dart';
 import 'package:nirvar/routes/navigation_helper.dart';
@@ -147,6 +148,7 @@ class _BloodPressureInputState extends State<BloodPressureInput> {
                                 _isLoading = false;
                               });
                               context.read<BloodPressureAverageLastSevenDaysBloc>().add(RefreshBloodPressureAverageLastSevenDays());
+                              context.read<BloodPressureAverageDailyBloc>().add(RefreshBloodPressureAverageDaily());
                               context.flushBarSuccessMessage(message: success);
                             },);
                           }

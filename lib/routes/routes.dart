@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:nirvar/data/local/entity/account_holder.dart';
 import 'package:nirvar/models/patient_files/patient_file.dart';
@@ -11,78 +9,80 @@ class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case RoutesName.splashScreen:
-        return MaterialPageRoute(builder: (_) => const SplashScreen());
+        return MaterialPageRoute(builder: (context) => const SplashScreen());
       case RoutesName.animatedSplashScreen:
-        return MaterialPageRoute(builder: (_) => const AnimatedSplashScreen());
+        return MaterialPageRoute(builder: (context) => const AnimatedSplashScreen());
       case RoutesName.signInScreen:
-        return MaterialPageRoute(builder: (_) => const SignInScreen());
+        return MaterialPageRoute(builder: (context) => const SignInScreen());
       case RoutesName.signUpScreen:
-        return MaterialPageRoute(builder: (_) => const SignUpScreen());
+        return MaterialPageRoute(builder: (context) => const SignUpScreen());
       case RoutesName.changePassword:
-        return MaterialPageRoute(builder: (_) => const ChangePassword());
+        return MaterialPageRoute(builder: (context) => const ChangePassword());
       case RoutesName.registerUserCredentials:
-        return MaterialPageRoute(builder: (_) => const RegisterUserCredentialsScreen());
+        return MaterialPageRoute(builder: (context) => const RegisterUserCredentialsScreen());
       case RoutesName.otpScreen:
         final phoneNumber = settings.arguments as String;
-        return MaterialPageRoute(builder: (_) => OtpScreen(phoneNumber: phoneNumber));
+        return MaterialPageRoute(builder: (context) => OtpScreen(phoneNumber: phoneNumber));
       case RoutesName.forgotPassword:
-        return MaterialPageRoute(builder: (_) => const ForgotPassword());
+        return MaterialPageRoute(builder: (context) => const ForgotPassword());
       case RoutesName.forgotPasswordOtpScreen:
         final phoneNumber = settings.arguments as String;
-        return MaterialPageRoute(builder: (_) => ForgotPasswordOtpScreen(phoneNumber: phoneNumber));
+        return MaterialPageRoute(builder: (context) => ForgotPasswordOtpScreen(phoneNumber: phoneNumber));
       case RoutesName.fileDetailsScreen:
         final patientFile = settings.arguments as PatientFile;
-        return MaterialPageRoute(builder: (_) => ReportDetailsScreen(file: patientFile));
+        return MaterialPageRoute(builder: (context) => ReportDetailsScreen(file: patientFile));
       case RoutesName.folderDetailsScreen:
         final patientFolder = settings.arguments as PatientFolder;
-        return MaterialPageRoute(builder: (_) => FolderDetailsScreen(folder: patientFolder));
+        return MaterialPageRoute(builder: (context) => FolderDetailsScreen(folder: patientFolder));
       case RoutesName.mainScreen:
-        return MaterialPageRoute(builder: (_) => const MainScreen());
+        return MaterialPageRoute(builder: (context) => const MainScreen());
       case RoutesName.homeScreen:
-        return MaterialPageRoute(builder: (_) => const HomeScreen());
+        return MaterialPageRoute(builder: (context) => const HomeScreen());
       case RoutesName.myFilesScreen:
-        return MaterialPageRoute(builder: (_) => const MyFiles());
+        return MaterialPageRoute(builder: (context) => const MyFiles());
       case RoutesName.qrCodeScreen:
         final folderId = settings.arguments as int;
-        return MaterialPageRoute(builder: (_) =>  QrCodeScreen(folderId: folderId));
+        return MaterialPageRoute(builder: (context) =>  QrCodeScreen(folderId: folderId));
       case RoutesName.prescriptionUploadScreen:
         final folderId = settings.arguments as int;
-        return MaterialPageRoute(builder: (_) =>  PrescriptionUploadScreen(folderId: folderId));
+        return MaterialPageRoute(builder: (context) =>  PrescriptionUploadScreen(folderId: folderId));
       case RoutesName.testReportUploadScreen:
         final folderId = settings.arguments as int;
         final folderName = settings.arguments as String;
-        return MaterialPageRoute(builder: (_) =>  TestReportUploadScreen(folderId: folderId, folderName: folderName));
+        return MaterialPageRoute(builder: (context) =>  TestReportUploadScreen(folderId: folderId, folderName: folderName));
       case RoutesName.randomlyTestReportUploadScreen:
-        return MaterialPageRoute(builder: (_) => const RandomlyTestReportUploadScreen());
+        return MaterialPageRoute(builder: (context) => const RandomlyTestReportUploadScreen());
       case RoutesName.randomlyPrescriptionUploadScreen:
-        return MaterialPageRoute(builder: (_) => const RandomlyPrescriptionUploadScreen());
+        return MaterialPageRoute(builder: (context) => const RandomlyPrescriptionUploadScreen());
       case RoutesName.accountSettingsScreen:
-        return MaterialPageRoute(builder: (_) => AccountSettingsScreen());
+        return MaterialPageRoute(builder: (context) => AccountSettingsScreen());
       case RoutesName.editProfileScreen:
-        return MaterialPageRoute(builder: (_) => const EditProfileScreen());
+        return MaterialPageRoute(builder: (context) => const EditProfileScreen());
       case RoutesName.profileScreen:
-        return MaterialPageRoute(builder: (_) => const ProfileScreen());
+        return MaterialPageRoute(builder: (context) => const ProfileScreen());
       case RoutesName.statsScreen:
-        return MaterialPageRoute(builder: (_) => const StatsScreen());
+        return MaterialPageRoute(builder: (context) => const StatsScreen());
       case RoutesName.bloodGlucoseInput:
-        return MaterialPageRoute(builder: (_) => const BloodGlucoseInput());
+        return MaterialPageRoute(builder: (context) => const BloodGlucoseInput());
       case RoutesName.bloodGlucoseBottomSheet:
-        return MaterialPageRoute(builder: (_) => const BloodGlucoseBottomSheet());
+        return MaterialPageRoute(builder: (context) => const BloodGlucoseBottomSheet());
       case RoutesName.bloodPressureBottomSheet:
-        return MaterialPageRoute(builder: (_) => const BloodPressureBottomSheet());
+        return MaterialPageRoute(builder: (context) => const BloodPressureBottomSheet());
       case RoutesName.bloodPressureInput:
-        return MaterialPageRoute(builder: (_) => const BloodPressureInput());
+        return MaterialPageRoute(builder: (context) => const BloodPressureInput());
       case RoutesName.notificationScreen:
-        return MaterialPageRoute(builder: (_) => NotificationScreen());
+        return MaterialPageRoute(builder: (context) => NotificationScreen());
       case RoutesName.searchScreen:
-        return MaterialPageRoute(builder: (_) => const SearchScreen());
+        return MaterialPageRoute(builder: (context) => const SearchScreen());
       case RoutesName.accountHoldersScreen:
-        return MaterialPageRoute(builder: (_) => const AccountHoldersScreen());
+        return MaterialPageRoute(builder: (context) => const AccountHoldersScreen());
       case RoutesName.switchAccountScreen:
         final accountHolder = settings.arguments as AccountHolder;
-        return MaterialPageRoute(builder: (_) => SwitchAccountScreen(accountHolder: accountHolder));
+        return MaterialPageRoute(builder: (context) => SwitchAccountScreen(accountHolder: accountHolder));
       case RoutesName.deleteInformationScreen:
-        return MaterialPageRoute(builder: (_) => DeleteInformationScreen());
+        return MaterialPageRoute(builder: (context) => DeleteInformationScreen());
+      case RoutesName.privacyPolicyScreen:
+        return MaterialPageRoute(builder: (context) => PrivacyPolicyScreen());
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

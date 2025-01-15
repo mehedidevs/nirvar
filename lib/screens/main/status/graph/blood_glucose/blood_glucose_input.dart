@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nirvar/app.dart';
+import 'package:nirvar/bloc/glucose_average_daily/glucose_average_daily_bloc.dart';
 import 'package:nirvar/bloc/glucose_average_last_seven_days/glucose_average_last_seven_days_bloc.dart';
 import 'package:nirvar/repository/diabetes/diabetes_repository.dart';
 import 'package:nirvar/routes/navigation_helper.dart';
@@ -127,6 +128,7 @@ class _BloodGlucoseInputState extends State<BloodGlucoseInput> {
                                   _isLoading = false;
                                 });
                                 context.read<GlucoseAverageLastSevenDaysBloc>().add(RefreshGlucoseAverageLastSevenDays());
+                                context.read<GlucoseAverageDailyBloc>().add(RefreshGlucoseAverageDaily());
                                 context.flushBarSuccessMessage(message: success);
                               },
                             );

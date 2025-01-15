@@ -4,8 +4,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nirvar/bloc/login/login_bloc.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
+import 'package:nirvar/routes/routes_name.dart';
 import 'package:nirvar/screens/auth/register_user_credentials_screen.dart';
 import 'package:nirvar/screens/auth/sign_up_screen.dart';
+import 'package:nirvar/screens/notification/components/notification_list_view.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/utils/helper.dart';
 import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
@@ -17,6 +20,7 @@ import '../utils/app_colors.dart';
 import '../widgets/clickable_text.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_textInput.dart';
+import '../widgets/privacy_policy_text.dart';
 import 'forgot_password.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -153,6 +157,8 @@ class _SignInScreenState extends State<SignInScreen> {
         ),
         20.verticalSpace,
         _goToSignUp(context),
+        Spacer(),
+        PrivacyPolicyText(),
         20.verticalSpace,
       ],
     );
@@ -162,7 +168,7 @@ class _SignInScreenState extends State<SignInScreen> {
     return Center(
       child: ClickableText(
         regularText: 'Don’t have an account?',
-        clickableText: 'Sign Up',
+        clickableText: ' SIGN UP',
         onTap: () {
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => SignUpScreen()));
@@ -170,6 +176,7 @@ class _SignInScreenState extends State<SignInScreen> {
       ),
     );
   }
+
 }
 
 class ForgotPasswordWidget extends StatelessWidget {

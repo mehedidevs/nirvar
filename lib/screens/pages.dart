@@ -7,6 +7,7 @@ export 'package:nirvar/screens/auth/register_user_credentials_screen.dart';
 export 'package:nirvar/screens/auth/otp_screen.dart';
 export 'package:nirvar/screens/auth/forgot_password.dart';
 export 'package:nirvar/screens/auth/forgot_password_otp_screen.dart';
+export 'package:nirvar/screens/auth/privacy_policy_screen.dart';
 
 export 'package:nirvar/screens/details/file_details_screen.dart';
 export 'package:nirvar/screens/details/folder_details_screen.dart';
