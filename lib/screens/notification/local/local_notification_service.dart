@@ -29,7 +29,7 @@ class LocalNotificationService {
 
     if (_isInitialized) {
       //Morning Reminder Notification
-      await _scheduleDailyNotification(hour: 11, minute: 15);
+      await _scheduleDailyNotification(hour: 10, minute: 0);
       //Evening Reminder Notification
       await _scheduleDailyNotification(hour: 22, minute: 0);
     } else {
@@ -87,9 +87,11 @@ class LocalNotificationService {
   //Sequence Notification
   static Future<void> _scheduleDailyNotification(
       {required int hour, required int minute}) async {
+    int notificationId = hour * 100 + minute; // Unique ID based on time
+
     await AwesomeNotifications().createNotification(
       content: NotificationContent(
-        id: 12,
+        id: notificationId,
         channelKey: 'basic_channel',
         title: 'Reminder',
         body: getRandomHealthMessage(),

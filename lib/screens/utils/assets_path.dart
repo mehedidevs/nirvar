@@ -54,4 +54,5 @@ class AssetsPath {
   static String nativeSplashPng = '$_imageBasePath/native_splash.png';
   static String appIconPng = '$_imageBasePath/app_icon.png';
   static String noResultPng = '$_imageBasePath/no_result.png';
+  static String pdfImageJpg = '$_imageBasePath/pdf_image.jpg';
 }

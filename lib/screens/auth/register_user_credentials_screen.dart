@@ -7,7 +7,6 @@ import 'package:nirvar/models/user_credentials/user_credentials.dart';
 import 'package:nirvar/screens/main/main_screen.dart';
 import 'package:nirvar/screens/utils/helper.dart';
 import 'package:nirvar/screens/utils/validation_utils.dart';
-
 import '../../data/preference/user_id_storage.dart';
 import '../../injection_container.dart';
 import '../utils/app_colors.dart';
@@ -23,8 +22,7 @@ class RegisterUserCredentialsScreen extends StatefulWidget {
       _RegisterUserCredentialsScreenState();
 }
 
-class _RegisterUserCredentialsScreenState
-    extends State<RegisterUserCredentialsScreen> {
+class _RegisterUserCredentialsScreenState extends State<RegisterUserCredentialsScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final UserIdStorage userIdStorage = sl<UserIdStorage>();
@@ -33,8 +31,7 @@ class _RegisterUserCredentialsScreenState
   final TextEditingController _emailController = TextEditingController();
 
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
 
   final TextEditingController _dateOfBirthController = TextEditingController();
 
@@ -132,7 +129,7 @@ class _RegisterUserCredentialsScreenState
                         SizedBox(height: 16.h),
                         LabeledTextFormField(
                           label: 'Name*',
-                          hint: 'Esmail khalifa',
+                          hint: 'Enter your full name',
                           controller: _nameController,
                           obscureText: false,
                           hasToggle: false,
@@ -146,7 +143,7 @@ class _RegisterUserCredentialsScreenState
                         SizedBox(height: 8.h),
                         LabeledTextFormField(
                           label: 'Email Address',
-                          hint: 'esmailkhalifa010@gmail.com',
+                          hint: 'Enter your email address',
                           controller: _emailController,
                           obscureText: false,
                           hasToggle: false,
@@ -200,7 +197,7 @@ class _RegisterUserCredentialsScreenState
                         _generalInformationText(),
                         LabeledDropdown(
                           label: 'Gender*',
-                          hint: 'ex. Male, Female',
+                          hint: 'Select your gender',
                           value: _selectedGender,
                           items: genders,
                           onChanged: (value) {
@@ -213,7 +210,7 @@ class _RegisterUserCredentialsScreenState
                         SizedBox(height: 8.h),
                         LabeledTextFormField(
                           label: 'Date of Birth*',
-                          hint: '2000-01-31',
+                          hint: 'Enter your date of birth (YYYY-MM-DD)',
                           readOnly: true,
                           controller: _dateOfBirthController,
                           obscureText: false,
@@ -235,7 +232,7 @@ class _RegisterUserCredentialsScreenState
                         SizedBox(height: 8.h),
                         LabeledDropdown(
                           label: 'Blood Group*',
-                          hint: 'A+',
+                          hint: 'Select your blood group',
                           value: _selectedBloodGroup,
                           items: bloodGroups,
                           onChanged: (value) {
@@ -246,7 +243,7 @@ class _RegisterUserCredentialsScreenState
                         SizedBox(height: 8.h),
                         LabeledTextFormField(
                           label: 'Weight',
-                          hint: '72Kgs',
+                          hint: 'Enter your weight in kg',
                           controller: _weightController,
                           keyboardType: TextInputType.number,
                           obscureText: false,
@@ -286,7 +283,7 @@ class _RegisterUserCredentialsScreenState
                         SizedBox(height: 8.h),
                         LabeledTextFormField(
                           label: 'Address',
-                          hint: 'ex. House-442, Road-15, Bashundhara R/A',
+                          hint: 'Enter your address',
                           controller: _addressController,
                           obscureText: false,
                           hasToggle: false,

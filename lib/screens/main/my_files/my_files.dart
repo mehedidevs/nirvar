@@ -127,19 +127,26 @@ class _MyFilesState extends State<MyFiles> {
     return BlocBuilder<PatientFolderBloc,PatientFolderState>(
       builder: (context,state){
         if (state.status == PatientFolderStatus.loading) {
-          return Center(child: CustomChasingDots(size: 50.sp));
+          return SizedBox(
+              height: ScreenUtil().screenHeight * 0.5,
+              child: Center(child: CustomChasingDots(size: 50.sp)));
         }else if (state.status == PatientFolderStatus.failure) {
           // Show an error message if data fetching fails
-          return Center(child: Text('Error: ${state.errorMessage}', style: const TextStyle(color: AppColors.primary)));
+          return SizedBox(
+              height: ScreenUtil().screenHeight * 0.5,
+              child: Center(child: Text('Error: ${state.errorMessage}', style: const TextStyle(color: AppColors.primary))));
         }else if(state.status == PatientFolderStatus.success){
 
           print( "Folder Details: ${state.folderList}");
 
-          return state.folderList.isEmpty ? const Center(
-              child: Text(
-                'No folders available',
-                style: TextStyle(color: AppColors.primary),
-              ))
+          return state.folderList.isEmpty ? SizedBox(
+            height: ScreenUtil().screenHeight * 0.5,
+            child: const Center(
+                child: Text(
+                  'No folders available',
+                  style: TextStyle(color: AppColors.primary),
+                )),
+          )
               : GridView.count(
             shrinkWrap: true,
             crossAxisCount: 2,

@@ -109,7 +109,9 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                   SizedBox(height: 16.h),
                   if (_isLoading)
-                    Center(child: CustomChasingDots(size: 50.sp)) // A custom loading widget
+                    SizedBox(
+                        height: ScreenUtil().screenHeight * 0.5,
+                        child: Center(child: CustomChasingDots(size: 50.sp))) // A custom loading widget
                   else if (_errorMessage != null)
                     Text(
                       _errorMessage!,

@@ -188,6 +188,9 @@ String? getMatchedValue(String? value, List<String> list) {
 }
 
 
-
+bool isPdf(String url) {
+  // Convert the string to lowercase and check if it contains '.pdf'
+  return url.toLowerCase().contains('.pdf');
+}
 
 

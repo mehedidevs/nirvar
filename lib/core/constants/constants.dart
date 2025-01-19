@@ -1,7 +1,7 @@
 
 //Base URL
-const String appBaseURL = 'https://admin.nirvar.synexdigital.com/api';
-//const String appBaseURL = 'https://nirvartech.com/api';
+//const String appBaseURL = 'https://admin.nirvar.synexdigital.com/api';
+const String appBaseURL = 'https://admin.nirvartech.com/api';
 
 
 //End Points

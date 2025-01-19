@@ -50,7 +50,7 @@ class _BloodGlucoseCardState extends State<BloodGlucoseCard> {
 
   Widget _successHealthCard(GlucoseLevelForPastSevenDays glucoseLevelForPastSevenDays){
     String glucoseLevel =
-    (glucoseLevelForPastSevenDays.avgLevel != null) ? glucoseLevelForPastSevenDays.avgLevel.toString() : 'N/A';
+    (glucoseLevelForPastSevenDays.avgLevel != null) ? '${glucoseLevelForPastSevenDays.avgLevel}/10' : 'N/A';
     return HealthCard(
       value: glucoseLevel,
       average: 'Last 7 days Avg',

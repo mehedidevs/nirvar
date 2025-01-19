@@ -12,6 +12,7 @@ import 'package:nirvar/routes/navigation_helper.dart';
 import 'package:nirvar/screens/details/file_details_screen.dart';
 import 'package:nirvar/screens/search/search_screen.dart';
 import 'package:nirvar/screens/utils/file_type.dart';
+import 'package:nirvar/screens/utils/helper.dart';
 import 'package:nirvar/screens/widgets/upload_dialog.dart';
 import '../../core/resources/api_exception.dart';
 import '../../injection_container.dart';
@@ -274,27 +275,28 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
       buildWhen: (previous,current) => previous.status != current.status,
         builder: (context,state){
           if (state.status == PatientFilesStatus.loading) {
-            return Center(child: SpinKitChasingDots(color: AppColors.primary, size: 50.sp));
+            return SizedBox(height: ScreenUtil().screenHeight * 0.5,child: Center(child: SpinKitChasingDots(color: AppColors.primary, size: 50.sp)));
           }else if (state.status == PatientFilesStatus.failure) {
-            return Center(child: Text('Error: ${state.errorMessage}',style: const TextStyle(color: AppColors.primary),));
+            return SizedBox(height: ScreenUtil().screenHeight * 0.5,child: Center(child: Text('Error: ${state.errorMessage}',style: const TextStyle(color: AppColors.primary),)));
           }else if(state.status == PatientFilesStatus.success){
             return IndexedStack(
               index: _selectedIndex,
               children: [
-                _buildFileList(state.prescriptionData.testReports),
-                _buildFileList(state.prescriptionData.prescriptions),
+                _buildFileList(state.prescriptionData.testReports,'Test Report'),
+                _buildFileList(state.prescriptionData.prescriptions,'Prescription'),
               ],
             );
           } else {
-            return const Center(child: Text('No files available.'));
+            return SizedBox(height: ScreenUtil().screenHeight * 0.5,child: const Center(child: Text('No files available.')));
           }
     });
  }
 
-  Widget _buildFileList(List<PatientFile>? fileList) {
+  Widget _buildFileList(List<PatientFile>? fileList, String fileType) {
 
     return  (fileList == null || fileList.isEmpty)
-        ? const Center(child: Text('No Test Report is available',style: TextStyle(color: AppColors.primary),))
+        ? SizedBox(height: ScreenUtil().screenHeight * 0.5,
+        child: Center(child: Text("No $fileType is available",style: TextStyle(color: AppColors.primary),)))
          : ListView(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -445,15 +447,7 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
         ),
         child: ListTile(
           contentPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-          leading: ClipRRect(
-            borderRadius: BorderRadius.circular(12.r),
-            child: Image.network(
-              file.path!,
-              height: 50.h,
-              width: 50.w,
-              fit: BoxFit.cover,
-            ),
-          ),
+          leading: buildFileWidget(file.path),
           title: Text(
             file.name ?? '',
             style: TextStyle(
@@ -707,6 +701,54 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
           ),
         ),
       ],
+    );
+  }
+
+
+  // Helper function to check if the file is a PDF
+  bool isPdf(String path) {
+    return path.toLowerCase().contains('.pdf');
+  }
+
+
+  Widget buildFileWidget(String? filePath) {
+     double imageHeight = 50.h;
+     double imageWidth = 50.w;
+    const BoxFit imageFit = BoxFit.cover;
+
+    if (filePath == null || filePath.isEmpty) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12.r),
+        child: Container(
+          height: imageHeight,
+          width: imageWidth,
+          color: Colors.grey[300],
+          child: Icon(Icons.error, color: Colors.red),
+        ),
+      );
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12.r),
+      child: isPdf(filePath)
+          ? Image.asset(
+        AssetsPath.pdfImageJpg,
+        height: imageHeight,
+        width: imageWidth,
+        fit: imageFit,
+      )
+          : Image.network(
+        filePath,
+        height: imageHeight,
+        width: imageWidth,
+        fit: imageFit,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            color: Colors.grey[200],
+            child: Icon(Icons.broken_image, color: Colors.grey),
+          );
+        },
+      ),
     );
   }
 
