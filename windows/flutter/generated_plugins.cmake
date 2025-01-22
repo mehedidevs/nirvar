@@ -7,6 +7,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   file_selector_windows
   firebase_core
   fl_downloader
+  pdfx
   share_plus
   url_launcher_windows
 )

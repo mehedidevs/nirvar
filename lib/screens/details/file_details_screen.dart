@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nirvar/models/patient_files/patient_file.dart';
 import 'package:nirvar/repository/patient_file/patient_file_repository.dart';
 import 'package:nirvar/routes/navigation_helper.dart';
+import 'package:nirvar/screens/details/pdf_viewer.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/utils/helper.dart';
@@ -146,16 +147,21 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
               child: ListView(
                 shrinkWrap: true,
                 children: [
-                  FittedBox(
+
+                  (widget.file.path == null || widget.file.path!.isEmpty) ? FittedBox(
+                fit: BoxFit.cover,
+                child:
+                 Image.asset(
+                AssetsPath.prescriptionDetailsPng,
+                width: ScreenUtil().screenWidth * 0.8,
+                height: ScreenUtil().screenHeight * 0.7.h,
+              )
+
+            ) :
+                  isPdf(widget.file.path ?? " ") ? PdfViewer(pdfUrl: widget.file.path!,) : FittedBox(
                     fit: BoxFit.cover,
-                    child: widget.file.path == null
-                        ? Image.asset(
-                            AssetsPath.prescriptionDetailsPng,
-                            width: ScreenUtil().screenWidth * 0.8,
-                            height: ScreenUtil().screenHeight * 0.7.h,
-                          )
-                        : Image.network(widget.file.path ?? ""),
-                  ),
+                    child: Image.network(widget.file.path ?? ""),
+          ),
 
                   SizedBox(height: ScreenUtil().screenHeight * 0.05.h),
 
