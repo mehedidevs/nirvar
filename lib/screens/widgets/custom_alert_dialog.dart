@@ -5,7 +5,10 @@ import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/widgets/custom_button.dart';
 import 'package:nirvar/screens/widgets/disabled_button.dart';
 
+
 class CustomAlertDialog extends StatefulWidget {
+  const CustomAlertDialog({super.key});
+
   @override
   _CustomAlertDialogState createState() => _CustomAlertDialogState();
 }
@@ -113,12 +116,22 @@ class _CustomAlertDialogState extends State<CustomAlertDialog> {
     return selectedOption!=null
         ? CustomButton(
         text: 'Proceed',
-        onPressed: (){
+        onPressed: () async{
+          bool? result;
           if( selectedOption == 'Test Reports'){
-             Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>  const RandomlyTestReportUploadScreen()));
+            result = await Navigator.push(context, MaterialPageRoute(builder: (context) =>  const RandomlyTestReportUploadScreen()));
           } else if( selectedOption == 'Prescription'){
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>  const RandomlyPrescriptionUploadScreen()));
+            result = await Navigator.push(context, MaterialPageRoute(builder: (context) =>  const RandomlyPrescriptionUploadScreen()));
           }
+
+          print(result.toString());
+
+          if(result == true){
+            if(context.mounted){
+              Navigator.of(context).pop(true);
+            }
+          }
+
         },)
         : const DisabledButton(buttonText: 'Proceed');
   }

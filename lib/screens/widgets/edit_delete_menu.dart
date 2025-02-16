@@ -7,10 +7,10 @@ class EditDeleteMenu extends StatelessWidget {
   final VoidCallback onDelete;
 
   const EditDeleteMenu({
-    Key? key,
+    super.key,
     required this.onEdit,
     required this.onDelete,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,13 @@ class EditDeleteMenu extends StatelessWidget {
         size: 25.sp,
         color: Colors.grey,
       ),
-      color: AppColors.paleLight,
+      color: AppColors.menuItemColor,
+      constraints: BoxConstraints(minWidth: 20.w),
+      position: PopupMenuPosition.over,
+      offset: const Offset(0, 6),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.r),
+      ),
       onSelected: (value) {
         if (value == 1) {
           onEdit();
@@ -31,24 +37,18 @@ class EditDeleteMenu extends StatelessWidget {
       itemBuilder: (context) => [
         PopupMenuItem(
           value: 1,
-          child: Row(
-            children: [
-              Text('Edit', style: TextStyle(fontSize: 16.sp)),
-              Spacer(),
-              const Icon(Icons.edit, color: Colors.black),
-            ],
+          child: ListTile(
+            title: Text('Edit', style: TextStyle(fontSize: 12.sp)),
+            trailing:   Icon(Icons.edit, color: Colors.black,size: 20.sp,),
           ),
         ),
-        PopupMenuDivider(),
+        PopupMenuDivider(height: 8.h),
         PopupMenuItem(
           value: 2,
-          child: Row(
-            children: [
-              Text('Delete', style: TextStyle(fontSize: 16.sp, color: Color(0xFFE39087))),
-              Spacer(),
-              Icon(Icons.delete, color: Color(0xFFE39087)),
-            ],
-          ),
+          child: ListTile(
+            title: Text('Delete', style: TextStyle(fontSize: 12.sp, color: const Color(0xFFE39087))),
+            trailing:   Icon(Icons.delete_forever, color: Color(0xFFE39087),size: 20.sp,),
+          )
         ),
       ],
     );

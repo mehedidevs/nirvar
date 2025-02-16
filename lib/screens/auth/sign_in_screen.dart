@@ -4,9 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nirvar/bloc/login/login_bloc.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
+import 'package:nirvar/routes/routes_name.dart';
+import 'package:nirvar/screens/auth/register_user_credentials_screen.dart';
 import 'package:nirvar/screens/auth/sign_up_screen.dart';
+import 'package:nirvar/screens/notification/components/notification_list_view.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/utils/helper.dart';
+import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 import 'package:nirvar/screens/widgets/welcome_screen.dart';
 
 import '../../injection_container.dart';
@@ -15,6 +20,7 @@ import '../utils/app_colors.dart';
 import '../widgets/clickable_text.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_textInput.dart';
+import '../widgets/privacy_policy_text.dart';
 import 'forgot_password.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -42,6 +48,11 @@ class _SignInScreenState extends State<SignInScreen> {
     super.dispose();
   }
 
+  void clear(){
+    _phoneNumberController.clear();
+    _passwordController.clear();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -60,11 +71,12 @@ class _SignInScreenState extends State<SignInScreen> {
         BlocConsumer<LoginBloc, LoginState>(
           listener: (context, state) {
             if (state.status == LoginStatus.success) {
+              clear();
               context.flushBarSuccessMessage(message: "Login successful");
               Future.delayed(const Duration(seconds: 2), () {
                 if(context.mounted){
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => MainScreen()));
+                  Navigator.pushAndRemoveUntil(context,
+                      MaterialPageRoute(builder: (context) => const MainScreen()),(route) => false);
                 }
               });
             } else if (state.status == LoginStatus.failure) {
@@ -126,7 +138,7 @@ class _SignInScreenState extends State<SignInScreen> {
                   ForgotPasswordWidget(),
                   5.verticalSpace,
                   state.status == LoginStatus.loading
-                      ? SpinKitChasingDots(color: AppColors.primary, size: 25.sp)
+                      ? CustomChasingDots()
                       : CustomButton(
                           text: 'SIGN IN',
                           onPressed: () {
@@ -145,6 +157,8 @@ class _SignInScreenState extends State<SignInScreen> {
         ),
         20.verticalSpace,
         _goToSignUp(context),
+        Spacer(),
+        PrivacyPolicyText(),
         20.verticalSpace,
       ],
     );
@@ -154,7 +168,7 @@ class _SignInScreenState extends State<SignInScreen> {
     return Center(
       child: ClickableText(
         regularText: 'Don’t have an account?',
-        clickableText: 'Sign Up',
+        clickableText: ' SIGN UP',
         onTap: () {
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => SignUpScreen()));
@@ -162,6 +176,7 @@ class _SignInScreenState extends State<SignInScreen> {
       ),
     );
   }
+
 }
 
 class ForgotPasswordWidget extends StatelessWidget {

@@ -10,12 +10,12 @@ class WelcomeScreen extends StatelessWidget {
   final List<Widget> children;
 
   const WelcomeScreen({
-    Key? key,
+    super.key,
     required this.logoPath,
     required this.welcomeText,
     required this.descriptionText,
     this.children = const [],
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

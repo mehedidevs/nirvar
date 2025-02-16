@@ -51,3 +51,147 @@ double calculateSimilarity(String s1, String s2) {
   int distance = levenshteinDistance(s1, s2);
   return 1.0 - (distance / maxLength);  // Return similarity as a percentage
 }
+
+
+
+
+
+
+//Work on the OCR
+// Future<List<String>?> _extractText(String file) async {
+//   final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
+//   final InputImage inputImage = InputImage.fromFilePath(file);
+//   final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
+//
+//   List<String> words = [];
+//   String doctorName = '';
+//   for (TextBlock block in recognizedText.blocks) {
+//     for (TextLine line in block.lines) {
+//      // words.addAll(line.text.split(RegExp(r'\s+')));
+//       //need to find out the doctor name
+//
+//       List<String> lineWords = line.text.split(RegExp(r'\s+'));
+//       words.addAll(lineWords);
+//
+//       // Check for potential doctor name in the line
+//       for (int i = 0; i < lineWords.length; i++) {
+//         String word = lineWords[i];
+//
+//         // Check for title "Dr." or "Doctor"
+//         if (word.contains(RegExp(r'(Dr\.|Doctor)', caseSensitive: false))) {
+//           List<String> potentialName = [];
+//
+//           // Collect name-like words following the title
+//           for (int j = i + 1; j < lineWords.length; j++) {
+//             String nextWord = lineWords[j];
+//
+//             // Stop if the next word matches a department or is non-alphabetic
+//             if (doctorSpeciality.contains(nextWord) || nextWord.length < 2 || nextWord.contains(RegExp(r'[^a-zA-Z]'))) {
+//               break;
+//             }
+//             potentialName.add(nextWord);
+//           }
+//
+//           // Concatenate to form the full name
+//           if (potentialName.isNotEmpty) {
+//             doctorName = 'Dr. ' + potentialName.join(' ');
+//             print('Doctor Name: $doctorName');
+//           }
+//         }
+//       }
+//     }
+//   }
+//   print(words);
+//   return words;
+// }
+
+
+// List<String> medicalDepartments = [
+//   "Anesthesiology",
+//   "Cardiology",
+//   "Dermatology",
+//   "Emergency Medicine",
+//   "Endocrinology",
+//   "Gastroenterology",
+//   "General Surgery",
+//   "Hematology",
+//   "Infectious Disease",
+//   "Internal Medicine",
+//   "Neonatology",
+//   "Nephrology",
+//   "Neurology",
+//   "Neurosurgery",
+//   "Gynecology",
+//   "Obstetrics",
+//   "Oncology",
+//   "Ophthalmology",
+//   "Orthopedics",
+//   "Otolaryngology (ENT)",
+//   "Pediatrics",
+//   "Plastic Surgery",
+//   "Psychiatry",
+//   "Pulmonology",
+//   "Radiology",
+//   "Rheumatology",
+//   "Urology",
+//   "Vascular Surgery",
+//   "Pathology",
+//   "Immunology",
+//   "Geriatrics",
+//   "Pain Management",
+//   "Rehabilitation Medicine",
+//   "Palliative Care",
+//   "Dentistry",
+//   "Sports Medicine",
+//   "Allergy and Immunology",
+//   "Family Medicine",
+//   "Nuclear Medicine",
+//   "Occupational Medicine",
+//   "Orthodontics",
+//   "Prosthodontics",
+//   "Oral and Maxillofacial Surgery",
+//   "Public Health",
+//   "Traumatology",
+//   "Thoracic Surgery",
+//   "Hepatology",
+//   "Audiology",
+//   "Sleep Medicine",
+//   "Medical Genetics",
+//   "Transplant Surgery",
+//   "Gynecology", // Explicitly mentioned separately
+//   "Andrology",
+//   "Bariatric Surgery",
+//   "Colorectal Surgery",
+//   "Critical Care Medicine",
+//   "Endodontics",
+//   "Gastrointestinal Surgery",
+//   "Hand Surgery",
+//   "Maxillofacial Surgery",
+//   "Nephrology",
+//   "Orthopedic Oncology",
+//   "Phlebology",
+//   "Proctology",
+//   "Psychosomatic Medicine",
+//   "Sexology",
+//   "Spine Surgery",
+//   "Trauma Surgery",
+//   "Vascular Medicine",
+//   "Clinical Immunology",
+//   "Addiction Medicine",
+//   "Hyperbaric Medicine",
+//   "Medical Toxicology",
+//   "Perinatology",
+//   "Forensic Medicine",
+//   "Genomic Medicine",
+//   "Laboratory Medicine",
+//   "Preventive Medicine",
+//   "Telemedicine",
+//   "Neurocritical Care",
+//   "Sleep Disorders Medicine",
+//   "Dermatopathology",
+//   "Pediatric Surgery",
+//   "Neonatal Surgery",
+//   "Hematologic Oncology",
+//   "Infectious Disease and Immunology",
+//   "Interventional Radiology"
+// ];

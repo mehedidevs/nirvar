@@ -13,86 +13,83 @@ class WeeklyBpChart extends StatelessWidget {
   Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: 1,
-      child: Padding(
-        padding:  EdgeInsets.symmetric(horizontal: 16.w,vertical: 32.h),
-        child: BarChart(
-          BarChartData(
-            alignment: BarChartAlignment.spaceAround,
-            maxY: 180,
-            minY: 0,
-            barTouchData: BarTouchData(
-              touchTooltipData: BarTouchTooltipData(
-                getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                  String week = data.keys.toList()[group.x.toInt()];
-                  var systolic = data[week]?.avgSystolic ?? 'N/A';
-                  var diastolic = data[week]?.avgDiastolic ?? 'N/A';
-                  var category = data[week]?.category ?? 'N/A';
+      child: BarChart(
+        BarChartData(
+          alignment: BarChartAlignment.spaceAround,
+          maxY: 200,
+          minY: 0,
+          barTouchData: BarTouchData(
+            touchTooltipData: BarTouchTooltipData(
+              getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                String week = data.keys.toList()[group.x.toInt()];
+                var systolic = data[week]?.avgSystolic ?? 'N/A';
+                var diastolic = data[week]?.avgDiastolic ?? 'N/A';
+                var category = data[week]?.category ?? 'N/A';
 
-                 return BarTooltipItem(
-                    '$week\n',
-                    const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
+               return BarTooltipItem(
+                  '$week\n',
+                  const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: 'Systolic: $systolic\n',
+                      style: const TextStyle(
+                        color: Colors.yellow,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        decoration: TextDecoration.none,
+                      ),
                     ),
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: 'Systolic: $systolic\n',
-                        style: const TextStyle(
-                          color: Colors.yellow,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          decoration: TextDecoration.none,
-                        ),
+                    TextSpan(
+                      text: 'Diastolic: $diastolic\n',
+                      style: const TextStyle(
+                        color: Colors.yellow,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        decoration: TextDecoration.none,
                       ),
-                      TextSpan(
-                        text: 'Diastolic: $diastolic\n',
-                        style: const TextStyle(
-                          color: Colors.yellow,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          decoration: TextDecoration.none,
-                        ),
+                    ),
+                    TextSpan(
+                      text: 'Status: $category',
+                      style: const TextStyle(
+                        color: Colors.orange,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        decoration: TextDecoration.none,
                       ),
-                      TextSpan(
-                        text: 'Status: $category',
-                        style: const TextStyle(
-                          color: Colors.orange,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          decoration: TextDecoration.none,
-                        ),
-                      ),
-                    ],
-                  );
+                    ),
+                  ],
+                );
 
-                },
-              ),
+              },
             ),
-            titlesData: FlTitlesData(
-              show: true,
-              rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              leftTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  reservedSize: 42,
-                  interval: 20,
-                  getTitlesWidget: leftTitles,
-                ),
-              ),
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  reservedSize: 42,
-                  getTitlesWidget: bottomTitles,
-                ),
-              ),
-            ),
-            borderData: FlBorderData(show: false),
-            barGroups: _generateBarGroups(),
-            gridData: const FlGridData(show: false),
           ),
+          titlesData: FlTitlesData(
+            show: true,
+            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            leftTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                reservedSize: 42,
+                interval: 40,
+                getTitlesWidget: leftTitles,
+              ),
+            ),
+            bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                reservedSize: 42,
+                getTitlesWidget: bottomTitles,
+              ),
+            ),
+          ),
+          borderData: FlBorderData(show: false),
+          barGroups: _generateBarGroups(),
+          gridData: const FlGridData(show: false),
         ),
       ),
     );

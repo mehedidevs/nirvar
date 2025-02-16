@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:nirvar/screens/utils/app_colors.dart';
 
 class AppTheme {
   static final TextTheme lightTextTheme = TextTheme(
@@ -14,6 +15,15 @@ class AppTheme {
   );
 
   static final ThemeData lightTheme = ThemeData(
+    colorScheme: ColorScheme.light(
+      surface: AppColors.white,
+      primary: AppColors.primary,
+      secondary: AppColors.white,
+      tertiary: AppColors.white,
+      inversePrimary: AppColors.white,
+    ),
+    scaffoldBackgroundColor: AppColors.white,
+    brightness: Brightness.light,
     fontFamily: 'Roboto',
     textTheme: lightTextTheme,
   );

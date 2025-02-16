@@ -3,8 +3,11 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:nirvar/core/resources/api_exception.dart';
 import 'package:nirvar/models/patient_blood_pressure/patient_blood_pressure.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../../../core/constants/constants.dart';
+import '../../../core/resources/custom_interceptor.dart';
+import '../../../injection_container.dart';
 import '../../../models/blood_pressure_last_seven_days/blood_pressure_history_for_last_7_days.dart';
 import '../../../models/blood_pressure_monthly/blood_pressure_summary_monthly.dart';
 import '../../../models/blood_pressure_weekly/blood_pressure_summary_weekly.dart';
@@ -17,7 +20,7 @@ class BloodPressureApiService {
   final UserIdStorage _userIdStorage;
 
   BloodPressureApiService(this._dio, this._tokenStorage, this._userIdStorage) {
-    _dio.interceptors.add(
+    _dio.interceptors.addAll([
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           options.headers['Accept'] = 'accept/json';
@@ -40,7 +43,16 @@ class BloodPressureApiService {
           return handler.next(e);
         },
       ),
-    );
+      PrettyDioLogger(
+        requestHeader: true,
+        requestBody: true,
+        responseBody: true,
+        responseHeader: false,
+        compact: true,
+        maxWidth: 90,
+      ),
+      sl<CustomInterceptor>(),
+    ]);
   }
 
   Future<Either<ApiException,String>> storeBloodPressure(int systolic,int diastolic) async{

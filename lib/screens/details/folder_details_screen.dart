@@ -1,17 +1,22 @@
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:nirvar/bloc/patient_files/patient_files_bloc.dart';
 import 'package:nirvar/models/patient_files/patient_file.dart';
 import 'package:nirvar/models/patient_folder/patient_folder.dart';
 import 'package:nirvar/repository/patient_file/patient_file_repository.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
 import 'package:nirvar/screens/details/file_details_screen.dart';
+import 'package:nirvar/screens/search/search_screen.dart';
 import 'package:nirvar/screens/utils/file_type.dart';
+import 'package:nirvar/screens/utils/helper.dart';
 import 'package:nirvar/screens/widgets/upload_dialog.dart';
 import '../../core/resources/api_exception.dart';
 import '../../injection_container.dart';
-import '../notification/notification_screen.dart';
+import '../../routes/routes_name.dart';
 import '../utils/app_colors.dart';
 import '../utils/assets_path.dart';
 import '../widgets/custom_button.dart';
@@ -31,6 +36,7 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
 
   int _selectedIndex = 0;
   final PatientFileRepository _repository = sl<PatientFileRepository>();
+  final GlobalKey<_FolderDetailsScreenState> myWidgetKey = GlobalKey();
 
   void _onTabSelected(int index) {
     setState(() {
@@ -40,34 +46,111 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
 
 
   @override
+  void initState() {
+    super.initState();
+
+    context.read<PatientFileBloc>().add(GetPatientFilesFromApi(widget.folder.folderId));
+    // _repository.getAllTestReports(widget.folder.folderId);
+    // _repository.getAllPrescriptions(widget.folder.folderId);
+
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   sl<PatientFileBloc>().add(GetPatientFilesFromApi(widget.folder.folderId));
+    // });
+  }
+
+
+  @override
+  void didUpdateWidget(covariant FolderDetailsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if(sl<PatientFileBloc>().state.prescriptionData.prescriptions != null){
+      context.read<PatientFileBloc>().add(GetPatientFilesFromApi(widget.folder.folderId));
+    }
+
+    if(sl<PatientFileBloc>().state.prescriptionData.testReports != null){
+      context.read<PatientFileBloc>().add(GetPatientFilesFromApi(widget.folder.folderId));
+    }
+
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        backgroundColor: AppColors.white,
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  _appBarSection(context),
-                  SizedBox(height: 16.h),
-                  _headerSection(context,widget.folder.name ?? ''),
-                  SizedBox(height: 16.h),
-                  _tabBarSection(),
-                  SizedBox(height: 16.h),
-                  _tabBarViewSection(),
-                  SizedBox(height: ScreenUtil().screenHeight * .1.h),
-                ],
+
+    return BlocListener<PatientFileBloc,PatientFilesState>(
+        listener: (context, state) {
+          if (state.status == PatientFilesStatus.success) {
+            print("Folders updated successfully");
+          }
+          if (state.status == PatientFilesStatus.initial) {
+            context.read<PatientFileBloc>().add(GetPatientFilesFromApi(widget.folder.folderId));
+            print("Folders updated successfully");
+          }
+        },
+        child : PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (bool didPop, dynamic result) {
+             if(!didPop){
+               context.pop(true);
+             }
+          },
+          child: DefaultTabController(
+                length: 2,
+                child: Scaffold(
+          backgroundColor: AppColors.white,
+          body: SafeArea(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    15.verticalSpace,
+                    _appBarSection(context),
+                    SizedBox(height: 16.h),
+                    _headerSection(context,widget.folder.name ?? ''),
+                    SizedBox(height: 16.h),
+                    _tabBarSection(),
+                    SizedBox(height: 16.h),
+                    _tabBarViewSectionAlternative(),
+                    SizedBox(height: ScreenUtil().screenHeight * .1.h),
+                  ],
+                ),
               ),
             ),
           ),
+                ),
+              ),
         ),
-      ),
     );
+
+    // return DefaultTabController(
+    //   length: 2,
+    //   child: Scaffold(
+    //     backgroundColor: AppColors.white,
+    //     body: SafeArea(
+    //       child: SingleChildScrollView(
+    //         child: Padding(
+    //           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+    //           child: Column(
+    //             crossAxisAlignment: CrossAxisAlignment.start,
+    //             mainAxisAlignment: MainAxisAlignment.start,
+    //             children: [
+    //               _appBarSection(context),
+    //               SizedBox(height: 16.h),
+    //               _headerSection(context,widget.folder.name ?? ''),
+    //               SizedBox(height: 16.h),
+    //               _tabBarSection(),
+    //               SizedBox(height: 16.h),
+    //               _tabBarViewSection(),
+    //               SizedBox(height: ScreenUtil().screenHeight * .1.h),
+    //             ],
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //   ),
+    // );
   }
 
   Widget _appBarSection(BuildContext context) {
@@ -75,7 +158,7 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     GestureDetector(
-                      onTap: () => Navigator.of(context).pop(true), // Pop with a boolean true
+                      onTap: () => context.pop(true), // Pop with a boolean true
                       child: const Icon(
                         Icons.arrow_back_ios,
                         color: Colors.black,
@@ -85,8 +168,25 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
                     Spacer(),
 
                     GestureDetector(
-                      onTap: () {
+                      onTap: () async {
+
+                        bool? result;
                         print('Search icon tapped');
+                       result = await  Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                            const SearchScreen(),
+                          ),
+                        );
+
+                       print(result);
+
+                        if(result == true){
+                            if(context.mounted){
+                              context.read<PatientFileBloc>().add(GetPatientFilesFromApi(widget.folder.folderId));
+                            }
+                        }
                       },
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 8.w),
@@ -100,13 +200,8 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
 
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                            const NotificationScreen(hasNotification: true),
-                          ),
-                        );
+
+                        context.pushNamed(routeName: RoutesName.notificationScreen);
 
                         print('Notification icon tapped');
                       },
@@ -174,15 +269,63 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
     );
   }
 
-  Widget _tabBarViewSection() {
-    return IndexedStack(
-      index: _selectedIndex,
-      children: [
-       _myTestReportTab(),
-       _myPrescriptionTab(),
-      ],
+
+ Widget _tabBarViewSectionAlternative(){
+    return BlocBuilder<PatientFileBloc,PatientFilesState>(
+      buildWhen: (previous,current) => previous.status != current.status,
+        builder: (context,state){
+          if (state.status == PatientFilesStatus.loading) {
+            return SizedBox(height: ScreenUtil().screenHeight * 0.5,child: Center(child: SpinKitChasingDots(color: AppColors.primary, size: 50.sp)));
+          }else if (state.status == PatientFilesStatus.failure) {
+            return SizedBox(height: ScreenUtil().screenHeight * 0.5,child: Center(child: Text('Error: ${state.errorMessage}',style: const TextStyle(color: AppColors.primary),)));
+          }else if(state.status == PatientFilesStatus.success){
+            return IndexedStack(
+              index: _selectedIndex,
+              children: [
+                _buildFileList(state.prescriptionData.testReports,'Test Report'),
+                _buildFileList(state.prescriptionData.prescriptions,'Prescription'),
+              ],
+            );
+          } else {
+            return SizedBox(height: ScreenUtil().screenHeight * 0.5,child: const Center(child: Text('No files available.')));
+          }
+    });
+ }
+
+  Widget _buildFileList(List<PatientFile>? fileList, String fileType) {
+
+    return  (fileList == null || fileList.isEmpty)
+        ? SizedBox(height: ScreenUtil().screenHeight * 0.5,
+        child: Center(child: Text("No $fileType is available",style: TextStyle(color: AppColors.primary),)))
+         : ListView(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      children: fileList.map((file) {
+        return _healthItem(context,file,
+            onDeleteSuccess:(String message)async{
+              context.read<PatientFileBloc>().add(GetPatientFilesFromApi(widget.folder.folderId));
+            },
+            onRenameSuccess:(String message)async{
+              context.read<PatientFileBloc>().add(GetPatientFilesFromApi(widget.folder.folderId));
+            },
+            fileType: file.type ?? '',
+        );
+      }).toList(),
     );
+
   }
+
+
+
+  // Widget _tabBarViewSection() {
+  //   return IndexedStack(
+  //     index: _selectedIndex,
+  //     children: [
+  //      _myTestReportTab(),
+  //      _myPrescriptionTab(),
+  //     ],
+  //   );
+  // }
 
 
 
@@ -304,15 +447,7 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
         ),
         child: ListTile(
           contentPadding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-          leading: ClipRRect(
-            borderRadius: BorderRadius.circular(12.r),
-            child: Image.network(
-              file.path!,
-              height: 50.h,
-              width: 50.w,
-              fit: BoxFit.cover,
-            ),
-          ),
+          leading: buildFileWidget(file.path),
           title: Text(
             file.name ?? '',
             style: TextStyle(
@@ -324,8 +459,8 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
             maxLines: 1,
             overflow: TextOverflow.fade,
           ),
-          subtitle:Row(
-            mainAxisSize: MainAxisSize.min,
+          subtitle:Wrap(
+            crossAxisAlignment: WrapCrossAlignment.start,
             children: [
               Text(
                 file.folderName ?? "",
@@ -337,7 +472,7 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
                 overflow: TextOverflow.fade,
               ),
               Padding(
-                padding:  EdgeInsets.symmetric(horizontal: 8.w),
+                padding:  EdgeInsets.symmetric(horizontal: 8.w,vertical: 8.h),
                 child: Container(
                   height: 5.sp,
                   width: 5.sp,
@@ -430,19 +565,20 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
               showDialog(
                 context: context,
                 builder: (context){
-                  final _formKey = GlobalKey<FormState>();
-                  TextEditingController _fileReNameController = TextEditingController();
-                  _fileReNameController.text = file.rename ?? '';
+                  final formKey = GlobalKey<FormState>();
+                  TextEditingController fileReNameController = TextEditingController();
+                  fileReNameController.text = file.rename ?? '';
                   return Dialog(
+                    backgroundColor: AppColors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16.r),
                     ),
                     child: Padding(
                       padding: EdgeInsets.all(16.w),
                       child: Form(
-                        key: _formKey,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
+                        key: formKey,
+                        child: ListView(
+                          shrinkWrap: true,
                           children: [
                             Text(
                               file.name ?? '',
@@ -452,12 +588,14 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
                                 color: Colors.black,
                               ),
                               textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.fade,
                             ),
                             SizedBox(height: 32.h),
                             LabeledTextFormField(
                               label: 'Edit Folder Name',
                               hint: '',
-                              controller: _fileReNameController,
+                              controller: fileReNameController,
                               validator: (value){
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter Folder Name';
@@ -472,8 +610,8 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
                               child: CustomButton(
                                 text: 'Save',
                                 onPressed: () async {
-                                  if(_formKey.currentState?.validate() ?? false){
-                                    final response = await _repository.renameFile(widget.folder.folderId, file.fileId, fileType, _fileReNameController.text);
+                                  if(formKey.currentState?.validate() ?? false){
+                                    final response = await _repository.renameFile(widget.folder.folderId, file.fileId, fileType, fileReNameController.text);
                                     response.fold((failure){
                                       if(context.mounted){
                                         Navigator.of(context).pop();
@@ -510,7 +648,8 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
                       ),
                     ),
                   );
-                },);
+                },
+              );
             },
           ),
           // trailing: Icon(
@@ -537,10 +676,16 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
           ),
         ),
         ElevatedButton.icon(
-          onPressed: () {
-            showDialog(context: context, builder: (context){
+          onPressed: () async {
+         final result = await   showDialog(context: context, builder: (context){
               return UploadDialog(folder: widget.folder);
             });
+
+         if(result == true){
+           if(context.mounted){
+             context.read<PatientFileBloc>().add(GetPatientFilesFromApi(widget.folder.folderId));
+           }
+         }
           },
           icon: Icon(Icons.add, size: 16.sp, color: Colors.white),
           label: Text(
@@ -558,6 +703,56 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
       ],
     );
   }
+
+
+  // Helper function to check if the file is a PDF
+  bool isPdf(String path) {
+    return path.toLowerCase().contains('.pdf');
+  }
+
+
+  Widget buildFileWidget(String? filePath) {
+     double imageHeight = 50.h;
+     double imageWidth = 50.w;
+    const BoxFit imageFit = BoxFit.cover;
+
+    if (filePath == null || filePath.isEmpty) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12.r),
+        child: Container(
+          height: imageHeight,
+          width: imageWidth,
+          color: Colors.grey[300],
+          child: Icon(Icons.error, color: Colors.red),
+        ),
+      );
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12.r),
+      child: isPdf(filePath)
+          ? Image.asset(
+        AssetsPath.pdfImageJpg,
+        height: imageHeight,
+        width: imageWidth,
+        fit: imageFit,
+      )
+          : Image.network(
+        filePath,
+        height: imageHeight,
+        width: imageWidth,
+        fit: imageFit,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            color: Colors.grey[200],
+            child: Icon(Icons.broken_image, color: Colors.grey),
+          );
+        },
+      ),
+    );
+  }
+
+
 
 
 

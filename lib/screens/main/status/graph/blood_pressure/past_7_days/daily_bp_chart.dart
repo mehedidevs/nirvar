@@ -67,7 +67,7 @@ class _DailyBpChartState extends State<DailyBpChart> {
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 1.5,
+      aspectRatio: 1,
       child: BarChart(
         BarChartData(
           maxY: 200, // Adjust maxY for Systolic values
@@ -81,13 +81,33 @@ class _DailyBpChartState extends State<DailyBpChart> {
                 double diastolic = group.barRods[1].toY; // Second rod represents Diastolic
 
                 return BarTooltipItem(
-                  'Date: $day\nSystolic: $systolic\nDiastolic: $diastolic',
+                  'Date: $day\n',
                   const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                     decoration: TextDecoration.none,
                   ),
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: 'Systolic: $systolic\n',
+                      style: const TextStyle(
+                        color: Colors.yellow,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                    TextSpan(
+                      text: 'Diastolic: $diastolic',
+                      style: const TextStyle(
+                        color: Colors.yellow,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ],
                 );
               },
             ),

@@ -1,15 +1,18 @@
-import 'dart:convert';
 import 'dart:io';
+import 'package:nirvar/bloc/account_holder/account_holder_bloc.dart';
+import 'package:nirvar/data/local/entity/account_holder.dart';
+import 'package:nirvar/screens/utils/helper.dart';
 import 'package:path/path.dart' as path;
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:http_parser/http_parser.dart';
 import 'package:nirvar/models/user_credentials/user_credentials.dart';
 import 'package:nirvar/models/user_profile/user_profile.dart';
 import 'package:nirvar/models/user_profile_update/user_profile_update.dart';
-
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import '../../../core/constants/constants.dart';
 import '../../../core/resources/api_exception.dart';
+import '../../../core/resources/custom_interceptor.dart';
+import '../../../injection_container.dart';
 import '../../../models/register_otp/register_otp.dart';
 import '../../../models/user/user.dart';
 import '../../preference/token_storage.dart';
@@ -21,7 +24,7 @@ class AuthApiService {
   final UserIdStorage _userIdStorage;
 
   AuthApiService(this._dio, this._tokenStorage, this._userIdStorage) {
-    _dio.interceptors.add(
+    _dio.interceptors.addAll([
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           options.headers['Accept'] = 'accept/json';
@@ -44,7 +47,16 @@ class AuthApiService {
           return handler.next(e);
         },
       ),
-    );
+      PrettyDioLogger(
+        requestHeader: true,
+        requestBody: true,
+        responseBody: true,
+        responseHeader: false,
+        compact: true,
+        maxWidth: 90,
+      ),
+      sl<CustomInterceptor>(),
+    ]);
   }
 
   Future<Either<ApiException, User>> loginUser(
@@ -68,6 +80,11 @@ class AuthApiService {
 
         if (responseData['status'] == 1) {
           User data = User.fromJson(responseData['data']);
+          //Going to work on here for Account Holder Local Database
+          //this is mainly used for the Account Switching
+          final accountHolder = data.toAccountHolder(password);
+          sl<AccountHolderBloc>().add(UpsertAccountHolder(accountHolder: accountHolder));
+
           _tokenStorage.saveToken(responseData['token']);
           _userIdStorage.saveUserID(data.id);
           print(await _tokenStorage.getToken());
@@ -96,7 +113,7 @@ class AuthApiService {
       print('ResponseData : ${response.data}');
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = jsonDecode(response.data);
+        final Map<String, dynamic> responseData = response.data;
         if (responseData['status'] == 1) {
           _tokenStorage.clearToken();
           _userIdStorage.clearUserID();
@@ -222,8 +239,8 @@ class AuthApiService {
           "date_of_birth": credentials.dateOfBirth,
           "blood_group": credentials.bloodGroup,
           "weight": credentials.weight,
-          "height_ft": credentials.heightFt,
-          "height_in": credentials.heightIn,
+          "height_ft": credentials.heightFt != null ? '${credentials.heightFt} FT' : null,
+          "height_in": credentials.heightIn  != null ? '${credentials.heightIn} IN' : null,
           "address": credentials.address,
         },
       );
@@ -235,9 +252,26 @@ class AuthApiService {
         final Map<String, dynamic> responseData = response.data;
         if (responseData['status'] == 1) {
           String data = responseData['message'];
+          String phoneNumber = responseData['number'];
+
+          //handling the local database for account switching
+          final accountHolder = AccountHolder(id: userId,
+              name: credentials.name,
+              photo: credentials.photo,
+              number: phoneNumber,
+              email: credentials.email,
+              password: credentials.password,
+          );
+          sl<AccountHolderBloc>().add(InsertAccountHolder(accountHolder: accountHolder));
           return Right(data);
         } else if (responseData['status'] == 0) {
-          return Left(ApiException(responseData['message']));
+          // Get error message (like the email already taken)
+          final Map<String, dynamic> message = responseData['message'];
+          if (message.containsKey('email')) {
+            String emailError = message['email'][0];
+            return Left(ApiException(emailError)); // Handle the error here
+          }
+          return Left(ApiException('Unknown Error'));
         } else {
           return Left(ApiException('Something Went Wrong'));
         }
@@ -486,8 +520,8 @@ class AuthApiService {
       'date_of_birth': profile.dateOfBirth,
       'blood_group': profile.bloodGroup,
       'weight': profile.weight,
-      'height_ft': profile.heightFt,
-      'height_in': profile.heightIn,
+      'height_ft': profile.heightFt != null ? '${profile.heightFt} FT' : null,
+      'height_in': profile.heightIn != null ? '${profile.heightIn} IN' : null,
       'address': profile.address,
       if (imageFile != null)
         'photo': await MultipartFile.fromFile(

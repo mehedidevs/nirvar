@@ -11,14 +11,14 @@ class CustomButtonWithIcon extends StatelessWidget {
   final IconData icon;
 
   const CustomButtonWithIcon({
-    Key? key,
+    super.key,
     required this.text,
     required this.onPressed,
     required this.icon,
     this.widthFactor = 0.9, // Default to 90% of screen width
     this.heightFactor = 0.08, // Default to 8% of screen height
     this.gradientColors = const [Color(0xFF6BB5BE), Color(0xFF74B192)],
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

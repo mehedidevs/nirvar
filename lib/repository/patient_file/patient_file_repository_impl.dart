@@ -5,6 +5,7 @@ import 'package:nirvar/core/resources/api_exception.dart';
 import 'package:nirvar/data/network/file/file_api_service.dart';
 import 'package:nirvar/models/latest_uploaded_files/latest_uploaded_file.dart';
 import 'package:nirvar/models/patient_files/patient_file.dart';
+import 'package:nirvar/models/preccription_data/prescription_data.dart';
 import 'package:nirvar/repository/patient_file/patient_file_repository.dart';
 
 class PatientFileRepositoryImpl extends PatientFileRepository{
@@ -41,6 +42,16 @@ class PatientFileRepositoryImpl extends PatientFileRepository{
   @override
   Future<Either<ApiException, List<LatestUploadedFile>>> getLatestUploadedFiles() {
     return _fileApiService.getLatestUploadedFiles();
+  }
+
+  @override
+  Future<Either<ApiException, String>> downloadFiles(String fileId) {
+   return _fileApiService.downloadFiles(fileId);
+  }
+
+  @override
+  Stream<Either<ApiException, PrescriptionData>> getAllPatientFiles(int folderID) {
+    return _fileApiService.getAllPatientFiles(folderID);
   }
 
 }

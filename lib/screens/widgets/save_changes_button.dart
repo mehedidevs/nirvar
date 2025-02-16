@@ -5,7 +5,7 @@ import 'package:nirvar/screens/utils/app_colors.dart';
 class SaveChangesButton extends StatelessWidget {
   final VoidCallback onPressed;
 
-  const SaveChangesButton({Key? key, required this.onPressed}) : super(key: key);
+  const SaveChangesButton({super.key, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {

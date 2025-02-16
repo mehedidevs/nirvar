@@ -5,8 +5,12 @@ import 'package:dio/dio.dart';
 import 'package:nirvar/core/resources/api_exception.dart';
 import 'package:nirvar/models/latest_uploaded_files/latest_uploaded_file.dart';
 import 'package:nirvar/models/patient_files/patient_file.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../../../core/constants/constants.dart';
+import '../../../core/resources/custom_interceptor.dart';
+import '../../../injection_container.dart';
+import '../../../models/preccription_data/prescription_data.dart';
 import '../../preference/token_storage.dart';
 import '../../preference/user_id_storage.dart';
 
@@ -19,7 +23,7 @@ class FileApiService{
   final UserIdStorage _userIdStorage;
 
   FileApiService(this._dio, this._tokenStorage, this._userIdStorage) {
-    _dio.interceptors.add(
+    _dio.interceptors.addAll([
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           options.headers['Accept'] = 'accept/json';
@@ -42,7 +46,16 @@ class FileApiService{
           return handler.next(e);
         },
       ),
-    );
+      PrettyDioLogger(
+        requestHeader: true,
+        requestBody: true,
+        responseBody: true,
+        responseHeader: false,
+        compact: true,
+        maxWidth: 90,
+      ),
+      sl<CustomInterceptor>(),
+    ]);
   }
 
 
@@ -225,7 +238,7 @@ class FileApiService{
             return Left(ApiException("No File is uploaded recently"));
           }
         }else{
-          return Left(ApiException(responseData['message']));
+          return Left(ApiException(responseData['message'] ?? 'Unknown Problem'));
         }
       }else{
         return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
@@ -238,6 +251,75 @@ class FileApiService{
   }
 
 
+  Future<Either<ApiException,String>> downloadFiles(String fileId) async{
+    try{
+      final response = await _dio.get('$patientFileDownload$fileId');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = response.data;
+        if(responseData['status'] == 1 && responseData['message'] == "success"){
+          final data = responseData['data'];
+          return Right(data);
+        }else{
+          return Left(ApiException(responseData['message'] ?? 'Unknown Problem'));
+        }
+      }else{
+        return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
+      }
+    }on DioException catch (e) {
+      return Left(ApiException.fromDioError(e));
+    } catch (e) {
+      return Left(ApiException(e.toString()));
+    }
+  }
+
+
+
+  //The Most Updated version of combine api call
+  Stream<Either<ApiException, PrescriptionData>> getAllPatientFiles(int folderID) async* {
+
+    List<PatientFile> prescriptions = [];
+    List<PatientFile> testReports = [];
+
+    try {
+      final response = await _dio.get('$patientFiles$folderID');
+      print('Response: $response');
+      print('ResponseData: ${response.data}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = response.data;
+        if (responseData['status'] == 1 && responseData['message'] == 'success') {
+          final List<dynamic> prescriptionsJson = responseData['data']['prescription'] ?? [];
+          final List<dynamic> testReportsJson = responseData['data']['test_report'] ?? [];
+
+          if(prescriptionsJson.isNotEmpty){
+            prescriptions = prescriptionsJson
+                .map((fileJson) => PatientFile.fromJson(fileJson as Map<String, dynamic>))
+                .toList();
+          }
+
+          if(testReportsJson.isNotEmpty){
+           testReports = testReportsJson
+                .map((fileJson) => PatientFile.fromJson(fileJson as Map<String, dynamic>))
+                .toList();
+          }
+
+          yield Right(PrescriptionData(
+            prescriptions: prescriptions,
+            testReports: testReports,
+          ));
+        } else {
+          yield Left(ApiException(responseData['message']));
+        }
+      } else {
+        yield Left(ApiException.fromStatusCode(response.statusCode ?? 0));
+      }
+    } on DioException catch (e) {
+      yield Left(ApiException.fromDioError(e));
+    } catch (e) {
+      yield Left(ApiException(e.toString()));
+    }
+  }
 
 
 }

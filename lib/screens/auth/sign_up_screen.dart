@@ -4,6 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nirvar/bloc/sign_up/signup_bloc.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
+import 'package:nirvar/routes/routes_name.dart';
+import 'package:nirvar/screens/auth/animated_splash_screen.dart';
 import 'package:nirvar/screens/auth/otp_screen.dart';
 import 'package:nirvar/screens/auth/sign_in_screen.dart';
 import 'package:nirvar/screens/utils/helper.dart';
@@ -14,6 +17,7 @@ import 'package:nirvar/screens/widgets/custom_textInput.dart';
 import '../../injection_container.dart';
 import '../utils/app_colors.dart';
 import '../utils/assets_path.dart';
+import '../widgets/privacy_policy_text.dart';
 import '../widgets/welcome_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -59,10 +63,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
               context.flushBarSuccessMessage(message: "OTP Send Successfully.Expires in 3 minutes");
               Future.delayed(const Duration(seconds: 2), () {
                if(context.mounted){
-                 Navigator.pushReplacement(
-                   context,
-                   MaterialPageRoute(builder: (context) => OtpScreen(phoneNumber: state.phoneNumber.toString())),
-                 );
+                 context.pushReplacementNamed(routeName: RoutesName.otpScreen,arguments: state.phoneNumber.toString());
+
+                 // Navigator.pushReplacement(
+                 //   context,
+                 //   MaterialPageRoute(builder: (context) => OtpScreen(phoneNumber: state.phoneNumber.toString())),
+                 // );
                }
               });
             } else if (state.status == SignUpStatus.failure) {
@@ -115,6 +121,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
         20.verticalSpace,
         _goToSignInScreen(context),
+        Spacer(),
+        PrivacyPolicyText(),
         20.verticalSpace
       ],
     );
@@ -123,11 +131,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Center _goToSignInScreen(BuildContext context) {
     return Center(
       child: ClickableText(
-        regularText: 'Don’t have an account?',
-        clickableText: 'SIGN IN',
+        regularText: 'Have an account?',
+        clickableText: ' SIGN IN',
         onTap: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const SignInScreen()));
+          context.pushNamed(routeName: RoutesName.signInScreen);
+
+          // Navigator.push(context,
+          //     MaterialPageRoute(builder: (context) => const SignInScreen()));
         },
       ),
     );

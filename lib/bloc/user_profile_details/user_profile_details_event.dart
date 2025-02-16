@@ -6,3 +6,4 @@ sealed class UserProfileDetailsEvent extends Equatable{
 }
 
 final class GetUserProfileDetailsFromApi extends UserProfileDetailsEvent{}
+final class RefreshUserProfileDetails extends UserProfileDetailsEvent{}

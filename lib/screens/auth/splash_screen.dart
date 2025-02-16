@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nirvar/data/preference/token_storage.dart';
-import 'package:nirvar/screens/auth/animated_splash_screen.dart';
-import 'package:nirvar/screens/main/main_screen.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
+import 'package:nirvar/routes/routes_name.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 
 import '../../injection_container.dart';
@@ -24,30 +24,25 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _moveToNextScreen() async {
-    await Future.delayed(const Duration(seconds: 3));
-
-    final token = await sl<TokenStorage>().getToken();
-
-    print(token);
-
-    if (mounted) {
-      if (token == null || token.isEmpty) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const AnimatedSplashScreen(),
-          ),
+    await Future.delayed(const Duration(seconds: 2));
+    try {
+      final token = await sl<TokenStorage>().getToken();
+      if (mounted) {
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          token == null || token.isEmpty ? RoutesName.animatedSplashScreen : RoutesName.mainScreen,
+              (route) => false,
         );
-      } else {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const MainScreen(),
-          ),
+      }
+    } catch (error) {
+      if (mounted) {
+        print("Error during navigation: $error");
+        Navigator.of(context).pushNamedAndRemoveUntil(RoutesName.animatedSplashScreen,
+              (route) => false,
         );
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

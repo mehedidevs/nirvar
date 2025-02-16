@@ -8,8 +8,7 @@ import '../../../utils/app_colors.dart';
 class BloodPressureWidget extends StatelessWidget {
   final String bloodPressure;
 
-  const BloodPressureWidget({Key? key, required this.bloodPressure})
-      : super(key: key);
+  const BloodPressureWidget({super.key, required this.bloodPressure});
 
   @override
   Widget build(BuildContext context) {

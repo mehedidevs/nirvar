@@ -16,7 +16,7 @@ class ReportListView extends StatefulWidget {
   final Future<void> Function() onRenameSuccess;
   final Future<void> Function() onDeleteSuccess;
 
-  const ReportListView({Key? key, required this.reports, required this.onRenameSuccess, required this.onDeleteSuccess}) : super(key: key);
+  const ReportListView({super.key, required this.reports, required this.onRenameSuccess, required this.onDeleteSuccess});
 
   @override
   State<ReportListView> createState() => _ReportListViewState();
@@ -81,19 +81,20 @@ class _ReportListViewState extends State<ReportListView> {
                     showDialog(
                       context: context,
                       builder: (context){
-                        final _formKey = GlobalKey<FormState>();
-                        TextEditingController _fileReNameController = TextEditingController();
-                        _fileReNameController.text = report.rename ?? '';
+                        final formKey = GlobalKey<FormState>();
+                        TextEditingController fileReNameController = TextEditingController();
+                        fileReNameController.text = report.rename ?? '';
                         return Dialog(
+                          backgroundColor: AppColors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16.r),
                           ),
                           child: Padding(
                             padding: EdgeInsets.all(16.w),
                             child: Form(
-                              key: _formKey,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
+                              key: formKey,
+                              child: ListView(
+                                shrinkWrap: true,
                                 children: [
                                   Text(
                                     report.name ?? '',
@@ -103,12 +104,14 @@ class _ReportListViewState extends State<ReportListView> {
                                       color: Colors.black,
                                     ),
                                     textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.fade,
                                   ),
                                   SizedBox(height: 32.h),
                                   LabeledTextFormField(
                                     label: 'Edit Folder Name',
                                     hint: '',
-                                    controller: _fileReNameController,
+                                    controller: fileReNameController,
                                     validator: (value){
                                       if (value == null || value.isEmpty) {
                                         return 'Please enter Folder Name';
@@ -123,8 +126,8 @@ class _ReportListViewState extends State<ReportListView> {
                                     child: CustomButton(
                                       text: 'Save',
                                       onPressed: () async {
-                                        if(_formKey.currentState?.validate() ?? false){
-                                          final response = await _repository.renameFile(report.folderId, report.id, report.type, _fileReNameController.text);
+                                        if(formKey.currentState?.validate() ?? false){
+                                          final response = await _repository.renameFile(report.folderId, report.id, report.type, fileReNameController.text);
                                           response.fold((failure){
                                             if(context.mounted){
                                               Navigator.of(context).pop();

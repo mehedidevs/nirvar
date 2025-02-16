@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // For Clipboard
+// For Clipboard
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:nirvar/repository/patient_folder/patient_folder_repository.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/utils/helper.dart';
@@ -25,44 +26,52 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      appBar: AppBar(
-        title: Text(
-          'Scan QR Code',
-          style: TextStyle(
-            fontSize: 20.sp,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        if(!didPop){
+          context.pop(true);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.white,
+        appBar: AppBar(
+          title: Text(
+            'Scan QR Code',
+            style: TextStyle(
+              fontSize: 20.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+            onPressed: () => Navigator.of(context).pop(),
           ),
         ),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () => Navigator.of(context).pop(),
+        body: FutureBuilder(
+          future: _repository.shareFolder(widget.folderId),
+          builder: (context, snapshot) {
+            if(snapshot.connectionState == ConnectionState.waiting){
+              return Center(child: SpinKitChasingDots(color: AppColors.primary, size: 50.sp));
+            }
+
+            if (!snapshot.hasData) {
+              return const SizedBox();
+            }
+
+            return snapshot.data!.fold((failure){
+              context.flushBarErrorMessage(message: failure.message);
+              return const SizedBox();
+            }, (success){
+              return _buildUI(success);
+            });
+
+          },
         ),
-      ),
-      body: FutureBuilder(
-        future: _repository.shareFolder(widget.folderId),
-        builder: (context, snapshot) {
-          if(snapshot.connectionState == ConnectionState.waiting){
-            return Center(child: SpinKitChasingDots(color: AppColors.primary, size: 50.sp));
-          }
-
-          if (!snapshot.hasData) {
-            return const SizedBox();
-          }
-
-          return snapshot.data!.fold((failure){
-            context.flushBarErrorMessage(message: failure.message);
-            return const SizedBox();
-          }, (success){
-            return _buildUI(success);
-          });
-
-        },
       ),
     );
   }
@@ -77,10 +86,10 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
-                  height: ScreenUtil().screenHeight * .02.h,
+                  height: ScreenUtil().screenHeight * .03.h,
                 ),
                 SizedBox(
-                  height: .5.sh,
+                  height: .45.sh,
                   child: PrettyQrView.data(
                     data: url,
                     decoration: PrettyQrDecoration(
@@ -92,7 +101,7 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
                   ),
                 ),
 
-                SizedBox(height: 16.h),
+                SizedBox(height: ScreenUtil().screenHeight * .05.h),
 
                 // URL Container
                 Container(

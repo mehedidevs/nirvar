@@ -1,6 +1,7 @@
 
 //Base URL
-const String appBaseURL = 'https://admin.nirvar.synexdigital.com/api';
+//const String appBaseURL = 'https://admin.nirvar.synexdigital.com/api';
+const String appBaseURL = 'https://admin.nirvartech.com/api';
 
 
 //End Points
@@ -42,6 +43,7 @@ const String patientLatestTwoFiles = '/patient/files/latest/two';
 const String patientFileUpload = '/patient/file/upload';
 const String patientFileDelete = '/patient/file/delete/';
 const String patientFileRename = '/patient/file/rename';
+const String patientFileDownload = '/patient/file/download/';
 
 //Blood Pressure
 const String patientBloodPressure = '/patient/blood-pressure/store';
@@ -57,6 +59,18 @@ const String patientDiabetesLastSevenDays = '/patient/diabetes/past-seven-days';
 const String patientDiabetesWeekly = '/patient/diabetes/weekly';
 const String patientDiabetesMonthly = '/patient/diabetes/monthly';
 
+
+//Doctor Speciality
+const String doctorSpecialities = '/patient/doctor/specialities';
+
+
+//Search
+const String patientSearch = '/patient/search';
+const String deviceInformation = '/patient/fcm-token';
+
+//Notification
+const String patientNotification = '/patient/notifications';
+const String patientNotificationDetails = '/patient/read/notification';
 
 
 

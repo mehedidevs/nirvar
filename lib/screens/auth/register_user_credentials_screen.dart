@@ -6,11 +6,12 @@ import 'package:nirvar/bloc/register_user_credentials/register_user_credentials_
 import 'package:nirvar/models/user_credentials/user_credentials.dart';
 import 'package:nirvar/screens/main/main_screen.dart';
 import 'package:nirvar/screens/utils/helper.dart';
-
+import 'package:nirvar/screens/utils/validation_utils.dart';
 import '../../data/preference/user_id_storage.dart';
 import '../../injection_container.dart';
 import '../utils/app_colors.dart';
 import '../widgets/custom_button.dart';
+import '../widgets/labeled_dropdown.dart';
 import '../widgets/labeled_text_form_field.dart';
 
 class RegisterUserCredentialsScreen extends StatefulWidget {
@@ -21,8 +22,7 @@ class RegisterUserCredentialsScreen extends StatefulWidget {
       _RegisterUserCredentialsScreenState();
 }
 
-class _RegisterUserCredentialsScreenState
-    extends State<RegisterUserCredentialsScreen> {
+class _RegisterUserCredentialsScreenState extends State<RegisterUserCredentialsScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final UserIdStorage userIdStorage = sl<UserIdStorage>();
@@ -31,12 +31,9 @@ class _RegisterUserCredentialsScreenState
   final TextEditingController _emailController = TextEditingController();
 
   final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
 
-  final TextEditingController _genderController = TextEditingController();
   final TextEditingController _dateOfBirthController = TextEditingController();
-  final TextEditingController _bloodGroupController = TextEditingController();
 
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
@@ -47,7 +44,16 @@ class _RegisterUserCredentialsScreenState
   bool _isNewPasswordObscured = true;
   bool _isConfirmPasswordObscured = true;
 
-  List<String> validGenders = ['Male', 'Female', 'Other'];
+  String? _selectedGender;
+  String? _selectedBloodGroup;
+
+  bool _isChecked = false;
+
+  void _toggleCheckbox() {
+    setState(() {
+      _isChecked = !_isChecked;
+    });
+  }
 
   @override
   void dispose() {
@@ -61,8 +67,6 @@ class _RegisterUserCredentialsScreenState
     _feetController.dispose();
     _inchesController.dispose();
     _dateOfBirthController.dispose();
-    _bloodGroupController.dispose();
-    _genderController.dispose();
   }
 
   void clearAllFields() {
@@ -70,9 +74,7 @@ class _RegisterUserCredentialsScreenState
     _emailController.clear();
     _newPasswordController.clear();
     _confirmPasswordController.clear();
-    _genderController.clear();
     _dateOfBirthController.clear();
-    _bloodGroupController.clear();
     _weightController.clear();
     _addressController.clear();
     _feetController.clear();
@@ -83,11 +85,11 @@ class _RegisterUserCredentialsScreenState
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => sl<RegisterUseCredentialsBloc>(),
-      child: _buildUI(),
+      child: _buildUI(context),
     );
   }
 
-  Widget _buildUI() {
+  Widget _buildUI(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
       resizeToAvoidBottomInset: false,
@@ -107,7 +109,7 @@ class _RegisterUserCredentialsScreenState
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>  MainScreen()));
+                              builder: (context) => MainScreen()));
                     }
                   });
                 } else if (state.status ==
@@ -127,7 +129,7 @@ class _RegisterUserCredentialsScreenState
                         SizedBox(height: 16.h),
                         LabeledTextFormField(
                           label: 'Name*',
-                          hint: 'Esmail khalifa',
+                          hint: 'Enter your full name',
                           controller: _nameController,
                           obscureText: false,
                           hasToggle: false,
@@ -141,24 +143,11 @@ class _RegisterUserCredentialsScreenState
                         SizedBox(height: 8.h),
                         LabeledTextFormField(
                           label: 'Email Address',
-                          hint: 'esmailkhalifa010@gmail.com',
+                          hint: 'Enter your email address',
                           controller: _emailController,
                           obscureText: false,
                           hasToggle: false,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              // Email is optional, so if it's empty, return null (no error)
-                              return null;
-                            }
-                            // Define a basic email pattern
-                            String emailPattern = r'^[^@]+@[^@]+\.[^@]+';
-                            // Use RegExp to match the email pattern
-                            RegExp regExp = RegExp(emailPattern);
-                            if (!regExp.hasMatch(value)) {
-                              return 'Please enter a valid email address';
-                            }
-                            return null; // Return null if the email is valid
-                          },
+                          validator: (value) => ValidationUtils.optionalEmailValidation(value),
                         ),
                         SizedBox(height: 8.h),
                         LabeledTextFormField(
@@ -206,64 +195,60 @@ class _RegisterUserCredentialsScreenState
                           },
                         ),
                         _generalInformationText(),
-                        LabeledTextFormField(
+                        LabeledDropdown(
                           label: 'Gender*',
-                          hint: 'ex. Male,Female',
-                          controller: _genderController,
-                          obscureText: false,
-                          hasToggle: false,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your gender'; // if the field is required
-                            }
-                            if (!validGenders.contains(value)) {
-                              return 'Enter Invalid gender';
-                            }
-
-                            return null; // No error if a valid option is selected
+                          hint: 'Select your gender',
+                          value: _selectedGender,
+                          items: genders,
+                          onChanged: (value) {
+                            _selectedGender = value;
                           },
+                          validator: (value) =>
+                              ValidationUtils.validateRequiredField(value,
+                                  fieldName: 'gender'),
                         ),
                         SizedBox(height: 8.h),
                         LabeledTextFormField(
                           label: 'Date of Birth*',
-                          hint: '2000-01-31',
+                          hint: 'Enter your date of birth (YYYY-MM-DD)',
+                          readOnly: true,
                           controller: _dateOfBirthController,
                           obscureText: false,
                           hasToggle: false,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your Date Of Birth';
-                            }
-                            return null;
-                          },
+                          suffixIcon: IconButton(
+                            icon: Icon(Icons.calendar_today,
+                                color: AppColors.primary),
+                            onPressed: () async {
+                              final selectedDate = await pickDate(context);
+                              if (!selectedDate.contains('No Date Is Found')) {
+                                _dateOfBirthController.text = selectedDate;
+                              }
+                            },
+                          ),
+                          validator: (value) =>
+                              ValidationUtils.validateRequiredField(value,
+                                  fieldName: 'Date Of Birth'),
                         ),
                         SizedBox(height: 8.h),
-                        LabeledTextFormField(
+                        LabeledDropdown(
                           label: 'Blood Group*',
-                          hint: 'A+',
-                          controller: _bloodGroupController,
-                          obscureText: false,
-                          hasToggle: false,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your Blood Group';
-                            }
-                            return null;
+                          hint: 'Select your blood group',
+                          value: _selectedBloodGroup,
+                          items: bloodGroups,
+                          onChanged: (value) {
+                            _selectedBloodGroup = value;
                           },
+                          validator: (value) => ValidationUtils.validateRequiredField(value, fieldName: 'blood group'),
                         ),
                         SizedBox(height: 8.h),
                         LabeledTextFormField(
                           label: 'Weight',
-                          hint: '72Kgs',
+                          hint: 'Enter your weight in kg',
                           controller: _weightController,
+                          keyboardType: TextInputType.number,
                           obscureText: false,
                           hasToggle: false,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return null;
-                            }
-                            return null;
-                          },
+                          validator: (value) => ValidationUtils.optionalWeightValidation(value),
                         ),
                         SizedBox(height: 8.h),
                         Row(
@@ -274,16 +259,11 @@ class _RegisterUserCredentialsScreenState
                               flex: 1,
                               child: LabeledTextFormField(
                                 label: 'Height',
-                                hint: '5FT',
+                                hint: 'FT',
                                 controller: _feetController,
                                 obscureText: false,
                                 hasToggle: false,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return null;
-                                  }
-                                  return null;
-                                },
+                                validator: (value) => ValidationUtils.optionalHeightInchesValidation(value),
                               ),
                             ),
                             SizedBox(width: 8.w),
@@ -291,16 +271,11 @@ class _RegisterUserCredentialsScreenState
                               flex: 1,
                               child: LabeledTextFormField(
                                 label: '',
-                                hint: '7IN',
+                                hint: 'IN',
                                 controller: _inchesController,
                                 obscureText: false,
                                 hasToggle: false,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return null;
-                                  }
-                                  return null;
-                                },
+                                validator: (value) => ValidationUtils.optionalHeightInchesValidation(value),
                               ),
                             ),
                           ],
@@ -308,7 +283,7 @@ class _RegisterUserCredentialsScreenState
                         SizedBox(height: 8.h),
                         LabeledTextFormField(
                           label: 'Address',
-                          hint: 'ex. House-442, Road-15, Bashundhara R/A',
+                          hint: 'Enter your address',
                           controller: _addressController,
                           obscureText: false,
                           hasToggle: false,
@@ -318,6 +293,34 @@ class _RegisterUserCredentialsScreenState
                             }
                             return null;
                           },
+                        ),
+                        SizedBox(height: 16.h),
+                        Row(
+                          children: [
+                            Flexible(
+                              flex: 1,
+                              child: Checkbox(
+                                value: _isChecked,
+                                onChanged: (_) => _toggleCheckbox(),
+                                activeColor: AppColors.primary,
+                              ),
+                            ),
+                            Flexible(
+                              flex: 2,
+                              child: GestureDetector(
+                                onTap: _toggleCheckbox,
+                                child: Text(
+                                  'Accept Terms and Data Policy.',
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: _isChecked ? AppColors.primary : AppColors.black,
+                                  ),
+                                  maxLines: 2,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         SizedBox(height: 32.h),
                         (state.status == RegisterUserCredentialsStatus.loading)
@@ -340,7 +343,8 @@ class _RegisterUserCredentialsScreenState
                                     }
 
                                     if (userId != null) {
-                                      if (context.mounted) {
+                                      if (context.mounted &&
+                                          _isChecked == true) {
                                         context
                                             .read<RegisterUseCredentialsBloc>()
                                             .add(
@@ -348,14 +352,12 @@ class _RegisterUserCredentialsScreenState
                                                 credentials: UserCredentials(
                                                   userId: userId,
                                                   name: _nameController.text,
-                                                  gender:
-                                                      _genderController.text,
+                                                  gender: _selectedGender ?? '',
                                                   dateOfBirth:
                                                       _dateOfBirthController
                                                           .text,
                                                   bloodGroup:
-                                                      _bloodGroupController
-                                                          .text,
+                                                      _selectedBloodGroup ?? '',
                                                   heightIn:
                                                       _inchesController.text,
                                                   heightFt:
@@ -375,6 +377,11 @@ class _RegisterUserCredentialsScreenState
                                             .read<RegisterUseCredentialsBloc>()
                                             .add(
                                                 RegisterUserCredentialsApiCall());
+                                      } else if (context.mounted &&
+                                          _isChecked == false) {
+                                        context.flushBarErrorMessage(
+                                            message:
+                                                'Accept Terms and Conditions');
                                       }
                                     }
                                   }

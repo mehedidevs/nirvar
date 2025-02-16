@@ -1,6 +1,6 @@
 part of 'user_profile_details_bloc.dart';
 
-enum UserProfileDetailsStatus { initial, loading, success, failure }
+enum UserProfileDetailsStatus { initial, loading,refreshing, success, failure }
 
 final class UserProfileDetailsState extends Equatable {
   final UserProfileDetailsStatus status;

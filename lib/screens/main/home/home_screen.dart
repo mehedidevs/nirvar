@@ -1,27 +1,36 @@
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:nirvar/bloc/user_profile_details/user_profile_details_bloc.dart';
 import 'package:nirvar/models/blood_pressure_last_seven_days/blood_pressure_history_for_last_7_days.dart';
-import 'package:nirvar/models/patient_blood_pressure/patient_blood_pressure.dart';
-import 'package:nirvar/models/patient_glucose/patient_glucose.dart';
 import 'package:nirvar/repository/authentication/auth_repository.dart';
 import 'package:nirvar/repository/blood_pressure/blood_pressure_repository.dart';
 import 'package:nirvar/repository/diabetes/diabetes_repository.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
+import 'package:nirvar/routes/routes_name.dart';
+import 'package:nirvar/screens/main/home/components/blood_glucose_card.dart';
+import 'package:nirvar/screens/main/home/components/blood_pressure_card.dart';
+import 'package:nirvar/screens/main/home/components/daily_blood_glucose_health_item.dart';
+import 'package:nirvar/screens/main/home/components/user_profile_picture.dart';
+import 'package:nirvar/screens/notification/firebase/firebase_api.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
-import 'package:nirvar/screens/utils/blood_sugar_utils.dart';
 import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 import 'package:nirvar/screens/widgets/file_card.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../bloc/patient_folder/patient_folder_bloc.dart';
 import '../../../core/resources/api_exception.dart';
 import '../../../injection_container.dart';
 import '../../../models/patient_folder/patient_folder.dart';
+import '../../../repository/notification/notification_repository.dart';
 import '../../../repository/patient_folder/patient_folder_repository.dart';
 import '../../notification/notification_screen.dart';
-import '../../utils/blood_pressure_utils.dart';
 import '../../widgets/health_card.dart';
+import 'components/daily_blood_pressure_health_item.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -32,6 +41,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final patientFolderRepository = sl<PatientFolderRepository>();
+  FirebaseApi firebaseApi = FirebaseApi();
   int _selectedIndex = 0;
 
   void _onTabSelected(int index) {
@@ -42,7 +52,56 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    firebaseApi.setupInteractMessageWhenTerminated();
+    context.read<PatientFolderBloc>().add(GetPatientFolderFromApi());
+    _sendDeviceInfo();
     super.initState();
+  }
+
+  Future<void> _sendDeviceInfo() async {
+    // Check if device info is already sent for the session
+    bool isDeviceInfoSent = await _isDeviceInfoAlreadySent();
+    if (isDeviceInfoSent) return;
+
+    // Call the API to send device information
+    final result = await sl<NotificationRepository>().sendDeviceCredentials();
+
+    result.fold(
+          (error) {
+        // Handle the error, maybe show a message or log it
+        print('Error sending device info: ${error.message}');
+        // Optionally retry if needed
+      },
+          (message) async {
+        print('Device info sent successfully');
+        await _markDeviceInfoAsSent();
+      },
+    );
+  }
+
+  Future<bool> _isDeviceInfoAlreadySent() async {
+    // Check SharedPreferences (or any persistent storage) for device info sent status
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('isDeviceInfoSent') ?? false;
+  }
+
+  Future<void> _markDeviceInfoAsSent() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isDeviceInfoSent', true);
+  }
+
+  @override
+  void didChangeDependencies() {
+    context.read<PatientFolderBloc>().add(GetPatientFolderFromApi());
+    super.didChangeDependencies();
+  }
+
+  @override
+  void didUpdateWidget(covariant HomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if(sl<PatientFolderBloc>().state.status == PatientFolderStatus.initial){
+      context.read<PatientFolderBloc>().add(GetPatientFolderFromApi());
+    }
   }
 
   @override
@@ -104,7 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildTabItem(String title, int index) {
-    bool isSelected = _selectedIndex  == index;
+    bool isSelected = _selectedIndex == index;
     return GestureDetector(
       onTap: () => _onTabSelected(index),
       child: Container(
@@ -125,34 +184,110 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _tabBarViewSection(){
+  Widget _tabBarViewSection() {
     return IndexedStack(
       index: _selectedIndex,
       children: [
-        _myFilesTab(),
+        _myFilesSectionAlternative(),
         _myHealthTab(),
       ],
     );
   }
 
+  //Going to implement BLOC in this section
+  Widget _myFilesSectionAlternative() {
+    return BlocBuilder<PatientFolderBloc, PatientFolderState>(
+      builder: (context, state) {
+        if (state.status == PatientFolderStatus.loading) {
+          return SizedBox(
+            height: ScreenUtil().screenHeight * 0.2,
+            child: Center(
+                child: SpinKitChasingDots(color: AppColors.primary, size: 50.sp)),
+          );
+        } else if (state.status == PatientFolderStatus.failure) {
+          // Show an error message if data fetching fails
+          return SizedBox(
+            height: ScreenUtil().screenHeight * 0.2,
+            child: Center(
+                child: Text('Error: ${state.errorMessage}',
+                    style: const TextStyle(color: AppColors.primary))),
+          );
+        } else if (state.status == PatientFolderStatus.success) {
+          return state.folderList.isEmpty
+              ? SizedBox(
+            height: ScreenUtil().screenHeight * 0.2,
+                child: const Center(
+                    child: Text(
+                    'No folders available',
+                    style: TextStyle(color: AppColors.primary),
+                  )),
+              )
+              : GridView.count(
+                  shrinkWrap: true,
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16.w,
+                  mainAxisSpacing: 16.h,
+                  childAspectRatio: 1,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: state.folderList.map((folder) {
+                    return FileCard(
+                      patientFolder: folder,
+                      onUpdateSuccess: () async {
+                        context
+                            .read<PatientFolderBloc>()
+                            .add(GetPatientFolderFromApi());
+                      },
+                      onDeleteSuccess: () async {
+                        context
+                            .read<PatientFolderBloc>()
+                            .add(GetPatientFolderFromApi());
+                      },
+                      onComingBack: () async {
+                        context
+                            .read<PatientFolderBloc>()
+                            .add(GetPatientFolderFromApi());
+                      },
+                    );
+                  }).toList(),
+                );
+        } else {
+          // Default UI when no action is happening
+          return const SizedBox();
+        }
+      },
+    );
+  }
+
+  //Going To Be replaced by BLOC
   Widget _myFilesTab() {
     return StreamBuilder<dartz.Either<ApiException, List<PatientFolder>>>(
       stream: patientFolderRepository.getAllFolders(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: SpinKitChasingDots(
-              color: AppColors.primary, size: 50.sp)); // Show a loading indicator while waiting for data
+          return Center(
+              child: SpinKitChasingDots(
+                  color: AppColors.primary,
+                  size: 50
+                      .sp)); // Show a loading indicator while waiting for data
         }
 
         if (snapshot.hasData) {
           return snapshot.data!.fold(
-                (error) => Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.h,horizontal: 8.w),
-                  child: Center(child: Text(error.message,style: const TextStyle(color: AppColors.primary),)),
-                ), // Display error if there's an issue
-                (folders) {
+            (error) => Padding(
+              padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 8.w),
+              child: Center(
+                  child: Text(
+                error.message,
+                style: const TextStyle(color: AppColors.primary),
+              )),
+            ), // Display error if there's an issue
+            (folders) {
               if (folders.isEmpty) {
-                return const Center(child: Text('No folders available',style: TextStyle(color: AppColors.primary),)); // Handle empty list
+                return const Center(
+                    child: Text(
+                  'No folders available',
+                  style: TextStyle(color: AppColors.primary),
+                )); // Handle empty list
               }
               return GridView.count(
                 shrinkWrap: true,
@@ -164,18 +299,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: folders.map((folder) {
                   return FileCard(
                     patientFolder: folder,
-                    onUpdateSuccess: ()async {
+                    onUpdateSuccess: () async {
                       setState(() {});
                       print("API CALLED AGAIN");
-                  },
-                    onDeleteSuccess: ()async {
+                    },
+                    onDeleteSuccess: () async {
                       setState(() {});
                       print("API CALLED AGAIN");
-                  },
-                    onComingBack: ()async{
-                      setState(() {
-
-                    });},
+                    },
+                    onComingBack: () async {
+                      setState(() {});
+                    },
                   );
                 }).toList(),
               );
@@ -183,7 +317,9 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         }
 
-        return Center(child: Text('Something went wrong')); // Fallback if no data is available
+        return Center(
+            child: Text(
+                'Something went wrong')); // Fallback if no data is available
       },
     );
   }
@@ -192,14 +328,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _myHealthTab() {
     return ListView(
       shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
+      physics: NeverScrollableScrollPhysics(),
       children: [
-        _healthItem('Blood Pressure', '80/120'),
-        _healthItem('Blood Glucose', '11/10'),
-        _healthItem('Heart Rate', '72 bpm'),
+        DailyBloodPressureHealthItem(),
+        DailyBloodGlucoseHealthItem(),
       ],
     );
   }
+
 
   Widget _healthItem(String title, String value) {
     return Container(
@@ -266,110 +402,15 @@ class _HomeScreenState extends State<HomeScreen> {
 Widget _headerSection(BuildContext context) {
   return Row(
     children: [
-      _getUserProfilePicture(),
+      UserProfilePicture(),
       const Spacer(),
       IconButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const NotificationScreen(hasNotification: true),
-            ),
-          );
-        },
-        icon: SvgPicture.asset(AssetsPath.notificationWithBadgeSvg)
-      )
+          onPressed: () {
+            context.pushNamed(routeName: RoutesName.notificationScreen);
+          },
+          icon: SvgPicture.asset(AssetsPath.notificationWithBadgeSvg))
     ],
   );
-}
-
-Widget _getUserProfilePicture() {
-
-  //Future<Either<ApiException, UserProfile>> getUserProfile();
-
-  final authRepository = sl<AuthRepository>();
-
-
-  return FutureBuilder(future: authRepository.getUserProfile(),
-      builder: (context,snapshot){
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: SpinKitChasingDots(
-              color: AppColors.primary, size: 50.sp)); // Show a loading indicator while waiting for data
-        }
-
-        if (!snapshot.hasData) {
-          return Container(
-            padding: EdgeInsets.all(4.w), // Border width
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: AppColors.primary, // Border color
-                width: 4.w, // Border thickness
-              ),
-            ),
-            child: CircleAvatar(
-              radius: 25.r, // Adjust the radius as needed
-              backgroundColor: Colors.transparent,
-              child: Icon(Icons.person,size: 25.r,),
-            ),
-          );
-        }
-
-
-        return snapshot.data!.fold((error){
-          return Container(
-            padding: EdgeInsets.all(4.w), // Border width
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: AppColors.primary, // Border color
-                width: 4.w, // Border thickness
-              ),
-            ),
-            child: CircleAvatar(
-              radius: 25.r, // Adjust the radius as needed
-              backgroundColor: Colors.transparent,
-              child: Icon(Icons.person,size: 25.r,),
-            ),
-          );
-        }, (success){
-          if(success.photo == null || success.photo!.isEmpty){
-            return Container(
-              padding: EdgeInsets.all(4.w), // Border width
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.primary, // Border color
-                  width: 4.w, // Border thickness
-                ),
-              ),
-              child: CircleAvatar(
-                radius: 25.r, // Adjust the radius as needed
-                backgroundColor: Colors.transparent,
-                child: Icon(Icons.person,size: 25.r,),
-              ),
-            );
-          }else{
-            return Container(
-              padding: EdgeInsets.all(4.w), // Border width
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.primary, // Border color
-                  width: 4.w, // Border thickness
-                ),
-              ),
-              child:  CircleAvatar(
-                radius: 25.r,
-                backgroundColor: AppColors.white,
-                child: ClipRRect(
-                    borderRadius: BorderRadius.circular(25.r),
-                    child: Image.network(success.photo ?? "",fit: BoxFit.cover)),
-              ),
-            );
-          }
-        });
-      },);
 }
 
 Widget _welcomeText(BuildContext context) {
@@ -400,12 +441,12 @@ Widget _healthStatus() {
       children: [
         Expanded(
           flex: 1,
-          child: _getBloodPressureAverage(),
+          child: BloodPressureCard(),
         ),
         SizedBox(width: 8.w),
         Expanded(
           flex: 1,
-          child: _getBloodGlucoseAverage(),
+          child: BloodGlucoseCard(),
         ),
       ],
     ),
@@ -413,12 +454,11 @@ Widget _healthStatus() {
 }
 
 Widget _getBloodGlucoseAverage() {
-
   final patientGlucoseRepository = sl<DiabetesRepository>();
 
   return FutureBuilder(
     future: patientGlucoseRepository.getBloodGlucoseOfLast7Days(),
-    builder: (context,snapshot){
+    builder: (context, snapshot) {
       if (snapshot.connectionState == ConnectionState.waiting) {
         return Center(child: CustomChasingDots(size: 50.sp));
       }
@@ -427,59 +467,52 @@ Widget _getBloodGlucoseAverage() {
           value: 'N/A',
           average: 'Last 7 days Avg',
           label: 'Blood Glucose',
-          onPressed: () {
-
-          },
+          onPressed: () {},
         );
-
       }
 
-      return snapshot.data!.fold((error){
+      return snapshot.data!.fold((error) {
         return HealthCard(
           value: 'N/A',
           average: 'Last 7 days Avg',
           label: 'Blood Glucose',
-          onPressed: () {
-
-          },
+          onPressed: () {},
         );
-      }, (success){
-        String glucoseLevel = (success.avgLevel != null) ? success.avgLevel.toString() : 'N/A';
+      }, (success) {
+        String glucoseLevel =
+            (success.avgLevel != null) ? success.avgLevel.toString() : 'N/A';
         return HealthCard(
-           value: '$glucoseLevel/10',
-           average: 'Last 7 days Avg',
-           label: 'Blood Glucose',
-           onPressed: () {
-
-           },
-         );
-
+          value: '$glucoseLevel/10',
+          average: 'Last 7 days Avg',
+          label: 'Blood Glucose',
+          onPressed: () {},
+        );
       });
-
-  },);
+    },
+  );
 }
 
 Widget _getBloodPressureAverage() {
-
   final patientBloodPressureRepository = sl<BloodPressureRepository>();
 
-  return FutureBuilder<dartz.Either<ApiException,BloodPressureHistoryForLast7Days>>(
-      future: patientBloodPressureRepository.getBloodPressureOfLast7Days(),
-      builder: (context,snapshot){
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return CustomChasingDots(size: 50.sp);
-        }
-        if (!snapshot.hasData) {
-          return HealthCard(
-            value: 'N/A',
-            average: 'Last 7 days Avg',
-            label: 'Blood Pressure',
-            onPressed: () {},
-          );
-        }
+  return FutureBuilder<
+      dartz.Either<ApiException, BloodPressureHistoryForLast7Days>>(
+    future: patientBloodPressureRepository.getBloodPressureOfLast7Days(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return CustomChasingDots(size: 50.sp);
+      }
+      if (!snapshot.hasData) {
+        return HealthCard(
+          value: 'N/A',
+          average: 'Last 7 days Avg',
+          label: 'Blood Pressure',
+          onPressed: () {},
+        );
+      }
 
-        return snapshot.data!.fold(
-              (error){
+      return snapshot.data!.fold(
+        (error) {
           return HealthCard(
             value: 'N/A',
             average: 'Last 7 days Avg',
@@ -489,45 +522,21 @@ Widget _getBloodPressureAverage() {
             },
           );
         },
-              (success){
-                final systole = (success.avgSystolic ?? 0) > 0 ? success.avgSystolic.toString() : 'N/A';
-                final diastole = (success.avgDiastolic ?? 0) > 0 ? success.avgDiastolic.toString() : '';
+        (success) {
+          final systole = (success.avgSystolic ?? 0) > 0
+              ? success.avgSystolic.toString()
+              : 'N/A';
+          final diastole = (success.avgDiastolic ?? 0) > 0
+              ? success.avgDiastolic.toString()
+              : '';
           return HealthCard(
             value: '$systole/$diastole',
             average: 'Last 7 days Avg',
             label: 'Blood Pressure',
             onPressed: () {},
           );
-        },);
-
         },
+      );
+    },
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

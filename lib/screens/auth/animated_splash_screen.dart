@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:nirvar/screens/auth/sign_in_screen.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
+import 'package:nirvar/routes/routes_name.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 
 import '../utils/app_colors.dart';
@@ -58,7 +59,7 @@ class _AnimatedSplashScreenState extends State<AnimatedSplashScreen> {
               ),
               SizedBox(height: ScreenUtil().screenHeight * .1.h),
               CustomButton(text: '>>', onPressed: () {
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const SignInScreen()));
+                context.pushReplacementNamed(routeName: RoutesName.signInScreen);
               })
                   .animate()
                   .fadeIn(duration: 1.seconds)

@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 
+import '../../routes/routes_name.dart';
 import '../notification/notification_screen.dart';
 import '../utils/assets_path.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
 
-  const CustomAppBar({Key? key, required this.title}) : super(key: key);
+  const CustomAppBar({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -20,37 +22,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         onTap: () => Navigator.of(context).pop(true),
         child: const Icon(Icons.arrow_back_ios, color: Colors.black),
       ),
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 20.sp,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          SizedBox(height: 2.h),
-          Container(
-            height: 2.h,
-            width: 100.w,
-            color: AppColors.shadyBlue,
-          ),
-        ],
-      ),
+      title: _credentialText(title),
       centerTitle: true,
       actions: [
         Stack(
           children: [
             IconButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const NotificationScreen(hasNotification: true),
-                    ),
-                  );
+                  context.pushNamed(routeName: RoutesName.notificationScreen);
                 },
                 icon: SvgPicture.asset(AssetsPath.notificationWithBadgeSvg)
             ),
@@ -77,4 +56,22 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
+
+  Widget _credentialText(String information) {
+    return Center(
+      child: Container(
+        decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: AppColors.primary, width: 2.h),
+            )),
+        child: Text(
+          information,
+          style: TextStyle(
+            fontSize: 24.sp,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
 }

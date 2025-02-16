@@ -4,16 +4,23 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nirvar/bloc/password_change/password_change_bloc.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/helper.dart';
 import 'package:nirvar/screens/widgets/labeled_text_form_field.dart';
+import '../../../bloc/account_holder/account_holder_bloc.dart';
+import '../../../data/local/entity/account_holder.dart';
+import '../../../data/preference/user_id_storage.dart';
 import '../../../injection_container.dart';
+import '../../../repository/account_holder/account_holder_repository.dart';
 import '../../../repository/authentication/auth_repository.dart';
 import '../../utils/assets_path.dart';
 import '../../widgets/custom_button.dart';
 import '../main_screen.dart';
 
 class AccountSettingsScreen extends StatefulWidget {
+  const AccountSettingsScreen({super.key});
+
   @override
   State<AccountSettingsScreen> createState() => _AccountSettingsScreenState();
 }
@@ -40,10 +47,16 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     );
   }
 
-  Widget _buildUI(context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Stack(
+  Widget _buildUI(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) {
+        if(!didPop){
+          context.pop(true);
+        }
+      },
+      child: Scaffold(
+        body: Stack(
           children: [
             // Background
             Container(
@@ -67,16 +80,16 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 },
               ),
             ),
-            Positioned(
-              top: 20.h,
-              right: 16.w,
-              child: IconButton(
-                icon: SvgPicture.asset(AssetsPath.notificationWithBadgeSvg),
-                onPressed: () {
-                  // Handle notification click
-                },
-              ),
-            ),
+            // Positioned(
+            //   top: 20.h,
+            //   right: 16.w,
+            //   child: IconButton(
+            //     icon: SvgPicture.asset(AssetsPath.notificationWithBadgeSvg),
+            //     onPressed: () {
+            //       // Handle notification click
+            //     },
+            //   ),
+            // ),
             Positioned(
               top: 25.h,
               left: 0,
@@ -84,10 +97,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               child: Center(
                 child: Text(
                   'Settings',
-                  style: TextStyle(
-                    fontSize: 18.sp,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: AppColors.black,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
                   ),
                 ),
               ),
@@ -105,6 +117,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               listener: (context, state) {
                 if (state.status == PasswordChangeStatus.success) {
                   context.flushBarSuccessMessage(message: state.successMessage);
+                  _updateTheAccountHolder(_confirmPasswordController.text);
                   clearController();
                   Future.delayed(const Duration(seconds: 2), () {
                     if (context.mounted) {
@@ -154,7 +167,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                                     ),
                                   ),
                                   SizedBox(height: 1.h),
-                                  Container(
+                                  SizedBox(
                                     width: 150.w,
                                     child: Divider(
                                       color: AppColors.primary,
@@ -275,122 +288,127 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   }
 
   Widget _getUserProfilePicture() {
-
     final authRepository = sl<AuthRepository>();
+
     return FutureBuilder(
       future: authRepository.getUserProfile(),
-      builder: (context,snapshot){
+      builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: SpinKitChasingDots(
-              color: AppColors.primary, size: 50.sp)); // Show a loading indicator while waiting for data
+          return _buildLoadingIndicator();
         }
 
         if (!snapshot.hasData) {
-          return Column(
-            children: [
-              Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 50.r,
-                    backgroundColor: AppColors.white,
-                    child: Icon(Icons.person, size: 60.sp),
-                  ),
-                  // Positioned Camera Icon Button
-                  Positioned(
-                    bottom: 2,
-                    right: 0,
-                    child: SvgPicture.asset(
-                      AssetsPath.cameraSvg,
-                      height: 25.h,
-                      width: 25.w,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          );
+          return _buildDefaultAvatar();
         }
 
+        return snapshot.data!.fold(
+              (error) => _buildDefaultAvatar(),
+              (success) => _buildProfileAvatar(success.photo),
+        );
+      },
+    );
+  }
 
-        return snapshot.data!.fold((error){
-          return Column(
-            children: [
-              Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 50.r,
-                    backgroundColor: AppColors.white,
-                    child: Icon(Icons.person, size: 60.sp),
-                  ),
-                  // Positioned Camera Icon Button
-                  Positioned(
-                    bottom: 2,
-                    right: 0,
-                    child: SvgPicture.asset(
-                      AssetsPath.cameraSvg,
-                      height: 25.h,
-                      width: 25.w,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+  /// Builds the loading indicator
+  Widget _buildLoadingIndicator() {
+    return Center(
+      child: SpinKitChasingDots(
+        color: AppColors.white,
+        size: 50.sp,
+      ),
+    );
+  }
+
+  /// Builds the default avatar UI
+  Widget _buildDefaultAvatar() {
+    return _buildAvatarWithIcon(
+      icon: Icons.person,
+      backgroundColor: AppColors.white,
+      iconSize: 60.sp,
+    );
+  }
+
+  /// Builds the profile avatar with a photo or a fallback if the photo is null/empty
+  Widget _buildProfileAvatar(String? photoUrl) {
+    if (photoUrl == null || photoUrl.isEmpty) {
+      return _buildDefaultAvatar();
+    }
+
+    return _buildAvatarWithPhoto(photoUrl);
+  }
+
+  /// Builds an avatar with an icon
+  Widget _buildAvatarWithIcon({
+    required IconData icon,
+    required Color backgroundColor,
+    required double iconSize,
+  }) {
+    return Column(
+      children: [
+        CircleAvatar(
+          radius: 50.r,
+          backgroundColor: backgroundColor,
+          child: Icon(icon, size: iconSize),
+        ),
+      ],
+    );
+  }
+
+  /// Builds an avatar with a photo
+  Widget _buildAvatarWithPhoto(String photoUrl) {
+    return Column(
+      children: [
+        CircleAvatar(
+          radius: 50.r,
+          backgroundColor: AppColors.white,
+          child: ClipOval(
+            child: Image.network(
+              photoUrl,
+              fit: BoxFit.cover,
+              height: 50.r * 2,
+              width: 50.r * 2,
+              errorBuilder: (context, error, stackTrace) {
+                return Icon(
+                  Icons.person,
+                  size: 50.r,
+                  color: AppColors.grey,
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+
+  Future<void> _updateTheAccountHolder(String newPassword) async {
+    try {
+      // Get the user ID from storage
+      int? userId = await sl<UserIdStorage>().getUserID();
+      // Fetch the account holder by ID using the Bloc
+      final bloc = sl<AccountHolderBloc>();
+      if (userId != null || userId != 0) {
+        var user = await sl<AccountHolderRepository>().findAccountHolderById(userId!);
+        if(user != null){
+          AccountHolder accountHolder = AccountHolder(
+            id: user.id,
+            role: user.role,
+            password: newPassword,
+            email: user.email,
+            number: user.number,
+            photo: user.photo,
+            name: user.name,
           );
-        }, (success){
-          if(success.photo == null || success.photo!.isEmpty){
-            return Column(
-              children: [
-                Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 50.r,
-                      backgroundColor: AppColors.white,
-                      child: Icon(Icons.person, size: 60.sp),
-                    ),
-                    // Positioned Camera Icon Button
-                    Positioned(
-                      bottom: 2,
-                      right: 0,
-                      child: SvgPicture.asset(
-                        AssetsPath.cameraSvg,
-                        height: 25.h,
-                        width: 25.w,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            );
-          }else{
-            return Column(
-              children: [
-                Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 50.r,
-                      backgroundColor: AppColors.white,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(50.r),
-                          child: Image.network(success.photo ?? "",fit: BoxFit.cover)),
-                    ),
-                    // Positioned Camera Icon Button
-                    Positioned(
-                      bottom: 2,
-                      right: 0,
-                      child: SvgPicture.asset(
-                        AssetsPath.cameraSvg,
-                        height: 25.h,
-                        width: 25.w,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            );
-          }
-        });
-      },);
+          bloc.add(AccountHolderUpdated(accountHolder: accountHolder));
 
+          print('User Updated');
+        }
+      }
+    } catch (e) {
+      // Handle any errors
+      print("Error updating the account holder: $e");
+    }
   }
 
   @override

@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart' as dartz;
-import 'package:fl_chart/fl_chart.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nirvar/repository/diabetes/diabetes_repository.dart';
@@ -7,7 +7,7 @@ import 'package:nirvar/screens/main/status/graph/blood_glucose/blood_glucose_inp
 import 'package:nirvar/screens/main/status/graph/blood_glucose/monthly/monthly_glucose_chart.dart';
 import 'package:nirvar/screens/main/status/graph/blood_glucose/past_7_days/daily_glucose_chart.dart';
 import 'package:nirvar/screens/main/status/graph/blood_glucose/weekly/weekly_glucose_chart.dart';
-import 'package:path/path.dart';
+
 
 import '../../../../../core/resources/api_exception.dart';
 import '../../../../../injection_container.dart';
@@ -25,16 +25,15 @@ class BloodGlucoseBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3, // Number of tabs
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(0,16.h,0,0),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(30.r),
-              topRight: Radius.circular(30.r),
-            ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30.r),
+            topRight: Radius.circular(30.r),
           ),
+        ),
+        child: Material(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -57,52 +56,63 @@ class BloodGlucoseBottomSheet extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      InkWell(onTap: () {
-                        Navigator.pushReplacement(
+                      InkWell(
+                          onTap: () async {
+                            bool? result;
+                      result = await  Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => BloodGlucoseInput()));
-                      }, child: circuler_add_button()),
-                      SizedBox(width: 16.w),
-                      Text(
-                        'Blood Glucose',
-                        style: TextStyle(
-                          fontSize: 24.sp,
-                          fontWeight: FontWeight.bold,
+                                builder: (context) => const BloodGlucoseInput()));
+
+                        print(result.toString());
+
+                        if(result == true){
+                         if(context.mounted){
+                           Navigator.of(context).pop(true);
+                         }
+                        }
+
+                        }, child: circuler_add_button()),
+                        SizedBox(width: 16.w),
+                        Text(
+                          'Blood Glucose',
+                          style: TextStyle(
+                            fontSize: 24.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(height: 16.h),
-              // Tab Bar Section
-              const TabBar(
-                labelColor: AppColors.black,
-                unselectedLabelColor: AppColors.grey,
-                indicatorColor: AppColors.primary,
-                tabs: [
-                  Tab(text: 'Daily'),
-                  Tab(text: 'Weekly'),
-                  Tab(text: 'Monthly'),
-                ],
-              ),
-              SizedBox(height: 16.h),
-              // TabBarView Section
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    _buildDailyView(),
-                    _buildWeeklyView(),
-                    _buildMonthView(),
+                      ],
+                    ),
                   ],
                 ),
-              ),
-            ],
-          ),
+                SizedBox(height: 16.h),
+                // Tab Bar Section
+                const TabBar(
+                  labelColor: AppColors.black,
+                  unselectedLabelColor: AppColors.grey,
+                  indicatorColor: AppColors.primary,
+                  tabs: [
+                    Tab(text: 'Daily'),
+                    Tab(text: 'Weekly'),
+                    Tab(text: 'Monthly'),
+                  ],
+                ),
+                SizedBox(height: 16.h),
+                // TabBarView Section
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      _buildDailyView(),
+                      _buildWeeklyView(),
+                      _buildMonthView(),
+                    ],
+                  ),
+                ),
+              ],
+            ),
         ),
-      ),
-    );
+        ),
+      );
   }
 
   Widget _buildDailyView() {
@@ -222,7 +232,7 @@ class BloodGlucoseBottomSheet extends StatelessWidget {
               (error){
             return Padding(
               padding: EdgeInsets.symmetric(vertical: 16.h,horizontal: 8.w),
-              child: Center(child: Text(snapshot.error.toString(),style: const TextStyle(color: AppColors.primary),)),
+              child: Center(child: Text(error.message,style: const TextStyle(color: AppColors.primary),)),
             );
           },
               (success){

@@ -7,11 +7,11 @@ class DisabledButton extends StatelessWidget {
   final double heightFactor;
 
   const DisabledButton({
-    Key? key,
+    super.key,
     required this.buttonText,
     this.widthFactor = 0.9,
     this.heightFactor = 0.08,
-  }): super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

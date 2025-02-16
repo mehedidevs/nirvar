@@ -10,13 +10,13 @@ class HealthCardWidget extends StatelessWidget {
   final String unit;
 
   const HealthCardWidget({
-    Key? key,
+    super.key,
     required this.backgroundColor,
     required this.title,
     required this.value,
     required this.svgPath,
     required this.unit,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -6,6 +6,7 @@ import 'package:dartz/dartz.dart';
 import '../../core/resources/api_exception.dart';
 import '../../models/latest_uploaded_files/latest_uploaded_file.dart';
 import '../../models/patient_files/patient_file.dart';
+import '../../models/preccription_data/prescription_data.dart';
 
 abstract class PatientFileRepository {
 
@@ -25,5 +26,9 @@ abstract class PatientFileRepository {
   });
 
   Future<Either<ApiException,List<LatestUploadedFile>>> getLatestUploadedFiles();
+
+  Future<Either<ApiException,String>> downloadFiles(String fileId);
+
+  Stream<Either<ApiException, PrescriptionData>> getAllPatientFiles(int folderID);
 
 }

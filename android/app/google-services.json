@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "534392329466",
+    "project_id": "nirvar-baffb",
+    "storage_bucket": "nirvar-baffb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:534392329466:android:cee3ad021f7d7f2591e543",
+        "android_client_info": {
+          "package_name": "com.nirvar.tech.patient.nirvar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkURVibZus5GwbDSjSk1OsAqe-3-zVCOA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

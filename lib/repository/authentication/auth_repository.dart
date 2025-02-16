@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import '../../core/resources/api_exception.dart';
 import '../../models/register_otp/register_otp.dart';
+
 import '../../models/user/user.dart';
 import '../../models/user_credentials/user_credentials.dart';
 import '../../models/user_profile/user_profile.dart';

@@ -3,10 +3,15 @@ import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:nirvar/core/resources/api_exception.dart';
+import 'package:nirvar/models/patient_files/patient_file.dart';
 import 'package:nirvar/models/patient_folder/patient_folder.dart';
+import 'package:nirvar/models/search_response/search_response_data.dart';
 import 'package:nirvar/models/selected_folder/selected_folder.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../../../core/constants/constants.dart';
+import '../../../core/resources/custom_interceptor.dart';
+import '../../../injection_container.dart';
 import '../../../models/created_folder_for_prescription/created_folder_for_prescription.dart';
 import '../../preference/token_storage.dart';
 import '../../preference/user_id_storage.dart';
@@ -17,7 +22,7 @@ class FolderApiService {
   final UserIdStorage _userIdStorage;
 
   FolderApiService(this._dio, this._tokenStorage, this._userIdStorage) {
-    _dio.interceptors.add(
+    _dio.interceptors.addAll([
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           options.headers['Accept'] = 'accept/json';
@@ -40,7 +45,16 @@ class FolderApiService {
           return handler.next(e);
         },
       ),
-    );
+      PrettyDioLogger(
+        requestHeader: true,
+        requestBody: true,
+        responseBody: true,
+        responseHeader: false,
+        compact: true,
+        maxWidth: 90,
+      ),
+      sl<CustomInterceptor>(),
+    ]);
   }
 
   Stream<Either<ApiException, List<PatientFolder>>> getAllFolders() async* {
@@ -214,13 +228,13 @@ class FolderApiService {
       print('ResponseData : ${response.data}');
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = jsonDecode(response.data);
+        final Map<String, dynamic> responseData = response.data;
         if (responseData['status'] == 1) {
           final folder = CreatedFolderForPrescription.fromJson(responseData['data']);
           print('Created Folder: $folder');
           return Right(folder);
         } else {
-          return Left(ApiException(responseData['message']));
+          return Left(ApiException(responseData['message'] ?? 'Unknown Problem'));
         }
       } else {
         return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
@@ -231,4 +245,76 @@ class FolderApiService {
       return Left(ApiException(e.toString()));
     }
   }
+
+  Future<Either<ApiException,List<String>>> doctorSpeciality() async{
+    try{
+      final response = await _dio.get(doctorSpecialities);
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = response.data;
+        if (responseData['status'] == 1 && responseData["message"] == "success") {
+          final List<dynamic> data = responseData['data'] ?? [];
+          final List<String> speciality = data.whereType<String>().map((e) => e.toLowerCase()).toList();
+          print(speciality.toString());
+          return Right(speciality);
+        } else {
+          return Left(ApiException(responseData['message'] ?? 'Unknown Problem '));
+        }
+      } else {
+        return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
+      }
+    }on DioException catch (e) {
+      return Left(ApiException.fromDioError(e));
+    } catch (e) {
+      return Left(ApiException(e.toString()));
+    }
+  }
+
+
+  //Search Related End Points
+  Future<Either<ApiException,SearchResponseData>> getSearchData(String searchData) async{
+    List<PatientFolder> folders = [];
+    List<PatientFile> files = [];
+
+    try{
+      var formData = FormData.fromMap({
+        'search_data': searchData,
+      });
+
+      final response = await _dio.post(patientSearch,data: formData);
+      print('Response: $response');
+      print('ResponseData: ${response.data}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> responseData = response.data;
+        if (responseData['status'] == 1 && responseData['message'] == 'success') {
+          final List<dynamic> folderJson = responseData['data']['folders'] ?? [];
+          final List<dynamic> fileJson = responseData['data']['files'] ?? [];
+
+          if(folderJson.isNotEmpty){
+            folders = folderJson
+                .map((fileJson) => PatientFolder.fromJson(fileJson as Map<String, dynamic>))
+                .toList();
+          }
+
+          if(fileJson.isNotEmpty){
+            files = fileJson
+                .map((fileJson) => PatientFile.fromJson(fileJson as Map<String, dynamic>))
+                .toList();
+          }
+
+          return Right(SearchResponseData(folders: folders,files: files));
+        } else {
+          return Left(ApiException(responseData['message']["search_data"]));
+        }
+      } else {
+        return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
+      }
+    }on DioException catch (e) {
+      return Left(ApiException.fromDioError(e));
+    } catch (e) {
+      return Left(ApiException(e.toString()));
+    }
+  }
+
+
 }

@@ -1,11 +1,11 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nirvar/repository/blood_pressure/blood_pressure_repository.dart';
 import 'package:nirvar/repository/diabetes/diabetes_repository.dart';
 import 'package:nirvar/repository/patient_file/patient_file_repository.dart';
+import 'package:nirvar/routes/navigation_helper.dart';
+import 'package:nirvar/screens/main/status/components/user_weight_card.dart';
 import 'package:nirvar/screens/main/status/graph/blood_glucose/blood_glucose_bottom_sheet.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
@@ -13,9 +13,12 @@ import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 import '../../../injection_container.dart';
 import '../../../models/patient_blood_pressure/patient_blood_pressure.dart';
 import '../../../repository/authentication/auth_repository.dart';
+import '../../../routes/routes_name.dart';
 import '../../notification/notification_screen.dart';
 import '../../utils/assets_path.dart';
 import '../../utils/blood_pressure_utils.dart';
+import 'components/blood_glucose_average_daily_card.dart';
+import 'components/blood_pressure_average_daily_card.dart';
 import 'components/blood_pressure_widget.dart';
 import 'components/health_card_widget.dart';
 import 'components/report_item.dart';
@@ -29,10 +32,9 @@ class StatsScreen extends StatefulWidget {
 }
 
 class _StatsScreenState extends State<StatsScreen> {
+
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
@@ -46,26 +48,29 @@ class _StatsScreenState extends State<StatsScreen> {
                 SizedBox(height: 8.h),
                 _headerSection(context),
                 SizedBox(height: 16.h),
-                InkWell(
-                    onTap: _showBpGraph,
-                    child: _getBloodPressureAvg(),
+
+                //BloodPressure Average of Today
+                Material(
+                  child: InkWell(
+                      onTap: _showBpGraph,
+                      child: BloodPressureAverageDailyCard(),
+                  ),
                 ),
                 SizedBox(height: 16.h),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    InkWell(
-                      onTap: () {
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Colors.transparent,
-                          builder: (context) => const BloodGlucoseBottomSheet(),
-                        );
-                      },
-                      child: _getDiabetesAvg(),
+
+                    //Diabetes Average of Today
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: _showGlucoseGraph,
+                        child: BloodGlucoseAverageDailyCard(),
+                      ),
                     ),
-                    _getUserWeight(),
+                    UserWeightCard(),
                   ],
                 ),
                 SizedBox(height: 16.h),
@@ -120,117 +125,117 @@ class _StatsScreenState extends State<StatsScreen> {
         });
   }
 
-  Widget _getUserWeight() {
-    final authRepository = sl<AuthRepository>();
-    return FutureBuilder(
-      future: authRepository.getUserProfile(),
-      builder: (context,snapshot){
+  // Widget _getUserWeight() {
+  //   final authRepository = sl<AuthRepository>();
+  //   return FutureBuilder(
+  //     future: authRepository.getUserProfile(),
+  //     builder: (context,snapshot){
+  //
+  //       String weightValue = 'N/A';
+  //       String weightUnit = '';
+  //
+  //       if (snapshot.connectionState == ConnectionState.waiting) {
+  //         return _buildHealthCardOfWeight(weightValue, weightUnit);
+  //       }
+  //
+  //       if (!snapshot.hasData) {
+  //       return _buildHealthCardOfWeight(weightValue, weightUnit);
+  //       }
+  //
+  //       return snapshot.data!.fold((error){
+  //         return _buildHealthCardOfWeight(weightValue, weightUnit);
+  //       }, (success){
+  //         if(success.photo == null || success.photo!.isEmpty){
+  //            return _buildHealthCardOfWeight(weightValue, weightUnit);
+  //         }else{
+  //           return HealthCardWidget(
+  //             backgroundColor: AppColors.yellowLight,
+  //             title: 'Weight',
+  //             value: success.weight?.toString() ?? "N/A",
+  //             svgPath: AssetsPath.weightSvg,
+  //             unit: 'kg',
+  //           );
+  //         }
+  //       });
+  //     },);
+  // }
+  //
+  // Widget _buildHealthCardOfWeight(String value, String unit) {
+  //   return HealthCardWidget(
+  //     backgroundColor: AppColors.yellowLight,
+  //     title: 'Weight',
+  //     value: value,
+  //     svgPath: AssetsPath.weightSvg,
+  //     unit: unit,
+  //   );
+  // }
 
-        String weightValue = 'N/A';
-        String weightUnit = '';
-
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildHealthCardOfWeight(weightValue, weightUnit);
-        }
-
-        if (!snapshot.hasData) {
-        return _buildHealthCardOfWeight(weightValue, weightUnit);
-        }
-
-        return snapshot.data!.fold((error){
-          return _buildHealthCardOfWeight(weightValue, weightUnit);
-        }, (success){
-          if(success.photo == null || success.photo!.isEmpty){
-             return _buildHealthCardOfWeight(weightValue, weightUnit);
-          }else{
-            return HealthCardWidget(
-              backgroundColor: AppColors.yellowLight,
-              title: 'Weight',
-              value: success.weight?.toString() ?? "N/A",
-              svgPath: AssetsPath.weightSvg,
-              unit: 'kg',
-            );
-          }
-        });
-      },);
-  }
-
-  Widget _buildHealthCardOfWeight(String value, String unit) {
-    return HealthCardWidget(
-      backgroundColor: AppColors.yellowLight,
-      title: 'Weight',
-      value: value,
-      svgPath: AssetsPath.weightSvg,
-      unit: unit,
-    );
-  }
-
-  Widget _getDiabetesAvg() {
-    final patientGlucoseRepository = sl<DiabetesRepository>();
-    return FutureBuilder(
-    future: patientGlucoseRepository.getBloodGlucoseOfToday(),
-    builder: (context,snapshot){
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return _buildHealthCardWidgetOfDiabetes('N/A','Avg.');
-      }
-      if (!snapshot.hasData) {
-        return _buildHealthCardWidgetOfDiabetes('N/A','Avg.');
-      }
-      return snapshot.data!.fold((error){
-        return _buildHealthCardWidgetOfDiabetes('N/A','Avg.');
-      }, (success){
-        String minimumLevel = success ;
-        return _buildHealthCardWidgetOfDiabetes(minimumLevel,'Avg.');
-      });
-
-    },);
-  }
-
-  Widget _buildHealthCardWidgetOfDiabetes(String value,String unit) {
-    return HealthCardWidget(
-                    backgroundColor: AppColors.purpleLight,
-                    title: 'Diabetes',
-                    value: value,
-                    svgPath: AssetsPath.bloodDropSvg,
-                    unit: unit,
-                  );
-  }
-
-  Widget _getBloodPressureAvg() {
-    final repository = sl<BloodPressureRepository>();
-    List<PatientBloodPressure> bloodPressureList = [];
-    String? systole;
-    String? diastole;
-
-    return FutureBuilder(future: repository.getBloodPressureOfToday(),
-        builder: (context,snapshot){
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return _buildBloodPressureWidget('');
-          }
-
-          if (!snapshot.hasData) {
-            return _buildBloodPressureWidget('N/A');
-          }
-
-          return snapshot.data!.fold(
-                (error){
-                  return _buildBloodPressureWidget('N/A');
-            },
-                (success){
-              bloodPressureList = success;
-              if(bloodPressureList.isEmpty){
-                return _buildBloodPressureWidget('N/A');
-              }else{
-                final average = BloodPressureUtils.calculateAverage(bloodPressureList);
-                systole = average['systolic']?.toStringAsFixed(0);
-                diastole  = average['diastolic']?.toStringAsFixed(0);
-                return _buildBloodPressureWidget('$systole/$diastole');
-              }
-            },);
-    });
-  }
-
-  Widget _buildBloodPressureWidget(String message) => BloodPressureWidget(bloodPressure: message);
+  // Widget _getDiabetesAvg() {
+  //   final patientGlucoseRepository = sl<DiabetesRepository>();
+  //   return FutureBuilder(
+  //   future: patientGlucoseRepository.getBloodGlucoseOfToday(),
+  //   builder: (context,snapshot){
+  //     if (snapshot.connectionState == ConnectionState.waiting) {
+  //       return _buildHealthCardWidgetOfDiabetes('N/A','Avg.');
+  //     }
+  //     if (!snapshot.hasData) {
+  //       return _buildHealthCardWidgetOfDiabetes('N/A','Avg.');
+  //     }
+  //     return snapshot.data!.fold((error){
+  //       return _buildHealthCardWidgetOfDiabetes('N/A','Avg.');
+  //     }, (success){
+  //       String minimumLevel = success ;
+  //       return _buildHealthCardWidgetOfDiabetes(minimumLevel,'Avg.');
+  //     });
+  //
+  //   },);
+  // }
+  //
+  // Widget _buildHealthCardWidgetOfDiabetes(String value,String unit) {
+  //   return HealthCardWidget(
+  //                   backgroundColor: AppColors.purpleLight,
+  //                   title: 'Diabetes',
+  //                   value: value,
+  //                   svgPath: AssetsPath.bloodDropSvg,
+  //                   unit: unit,
+  //                 );
+  // }
+  //
+  // Widget _getBloodPressureAvg() {
+  //   final repository = sl<BloodPressureRepository>();
+  //   List<PatientBloodPressure> bloodPressureList = [];
+  //   String? systole;
+  //   String? diastole;
+  //
+  //   return FutureBuilder(future: repository.getBloodPressureOfToday(),
+  //       builder: (context,snapshot){
+  //         if (snapshot.connectionState == ConnectionState.waiting) {
+  //           return _buildBloodPressureWidget('');
+  //         }
+  //
+  //         if (!snapshot.hasData) {
+  //           return _buildBloodPressureWidget('N/A');
+  //         }
+  //
+  //         return snapshot.data!.fold(
+  //               (error){
+  //                 return _buildBloodPressureWidget('N/A');
+  //           },
+  //               (success){
+  //             bloodPressureList = success;
+  //             if(bloodPressureList.isEmpty){
+  //               return _buildBloodPressureWidget('N/A');
+  //             }else{
+  //               final average = BloodPressureUtils.calculateAverage(bloodPressureList);
+  //               systole = average['systolic']?.toStringAsFixed(0);
+  //               diastole  = average['diastolic']?.toStringAsFixed(0);
+  //               return _buildBloodPressureWidget('$systole/$diastole');
+  //             }
+  //           },);
+  //   });
+  // }
+  //
+  // Widget _buildBloodPressureWidget(String message) => BloodPressureWidget(bloodPressure: message);
 
   void _showBpGraph() {
     showModalBottomSheet(
@@ -238,7 +243,26 @@ class _StatsScreenState extends State<StatsScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => const BloodPressureBottomSheet(),
-    );
+    ).then((result){
+      print(result.toString());
+      if(result == true){
+        setState(() {});
+      }
+    });
+  }
+
+  void _showGlucoseGraph() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const BloodGlucoseBottomSheet(),
+    ).then((result){
+      print(result.toString());
+      if(result == true){
+        setState(() {});
+      }
+    });
   }
 }
 
@@ -256,13 +280,7 @@ Widget _headerSection(BuildContext context) {
       ),
       GestureDetector(
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  const NotificationScreen(hasNotification: false),
-            ),
-          );
+          context.pushNamed(routeName: RoutesName.notificationScreen);
         },
         child: SvgPicture.asset(AssetsPath.notificationWithBadgeSvg),
       ),
