@@ -32,7 +32,7 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace "com.nirvar.medic.patient"
+    namespace "com.nirvar.tech.patient.nirvar"
     compileSdkVersion 34
     ndkVersion flutter.ndkVersion
 

@@ -142,7 +142,7 @@ void sendEmail(BuildContext context) async {
 
   final Uri emailLaunchUri = Uri(
     scheme: 'mailto',
-    path: 'teamnirvar@gmail.com',
+    path: 'team.nirvartech@gmail.com', //need to change in here
     query: encodeQueryParameters(<String, String>{
       'subject': 'Delete My Information',
       'body': 'Dear Nirvar Team,\n\n'

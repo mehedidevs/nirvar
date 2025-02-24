@@ -104,7 +104,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
           ),
           _buildSectionTitle("12. Contact Us"),
           _buildSectionContent(
-            "If you have any questions, concerns, or feedback about this Privacy Policy or Nirvar’s data practices, please contact us at teamnirvar@gmail.com.\n\n"
+            "If you have any questions, concerns, or feedback about this Privacy Policy or Nirvar’s data practices, please contact us at team.nirvartech@gmail.com.\n\n"
                 "By using Nirvar, you acknowledge that you have read and understood this Privacy Policy and agree to the terms herein.\n",
           ),
         ],

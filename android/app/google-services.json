@@ -2,14 +2,14 @@
   "project_info": {
     "project_number": "534392329466",
     "project_id": "nirvar-baffb",
-    "storage_bucket": "nirvar-baffb.appspot.com"
+    "storage_bucket": "nirvar-baffb.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:534392329466:android:cee3ad021f7d7f2591e543",
+        "mobilesdk_app_id": "1:534392329466:android:a6858baf5551b54091e543",
         "android_client_info": {
-          "package_name": "com.nirvar.tech.patient.nirvar"
+          "package_name": "com.nirvar.medic.patient"
         }
       },
       "oauth_client": [],

@@ -55,7 +55,7 @@ class DeleteInformationScreen extends StatelessWidget {
                     ),
                     children: [
                       TextSpan(
-                        text: 'teamnirvar@gmail.com',
+                        text: 'team.nirvartech@gmail.com', //need to change in here
                         style: TextStyle(
                           color: AppColors.primary,
                           // Highlighted color for the email

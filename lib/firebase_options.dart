@@ -17,7 +17,10 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -25,9 +28,15 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
-        return windows;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for windows - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -40,50 +49,20 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyAxpFoimpQB835X71JcEKAtmKHSZv-arJE',
-    appId: '1:534392329466:web:f957aa68835a224d91e543',
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyBkURVibZus5GwbDSjSk1OsAqe-3-zVCOA',
+    appId: '1:534392329466:android:a6858baf5551b54091e543',
     messagingSenderId: '534392329466',
     projectId: 'nirvar-baffb',
-    authDomain: 'nirvar-baffb.firebaseapp.com',
-    storageBucket: 'nirvar-baffb.appspot.com',
-    measurementId: 'G-QD04KK865K',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyB3dfHXyd5eBoQFhXQyQiSfM_4kQ14axCs',
-    appId: '1:534392329466:ios:2565bb3ea251cf2591e543',
-    messagingSenderId: '534392329466',
-    projectId: 'nirvar-baffb',
-    storageBucket: 'nirvar-baffb.appspot.com',
-    iosBundleId: 'com.nirvar.tech.patient.nirvar',
-  );
-
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyAxpFoimpQB835X71JcEKAtmKHSZv-arJE',
-    appId: '1:534392329466:web:43e48c44b528213291e543',
-    messagingSenderId: '534392329466',
-    projectId: 'nirvar-baffb',
-    authDomain: 'nirvar-baffb.firebaseapp.com',
-    storageBucket: 'nirvar-baffb.appspot.com',
-    measurementId: 'G-B9RJFXGJEM',
+    storageBucket: 'nirvar-baffb.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyB3dfHXyd5eBoQFhXQyQiSfM_4kQ14axCs',
-    appId: '1:534392329466:ios:2565bb3ea251cf2591e543',
+    appId: '1:534392329466:ios:11535e1f7950fb3f91e543',
     messagingSenderId: '534392329466',
     projectId: 'nirvar-baffb',
-    storageBucket: 'nirvar-baffb.appspot.com',
-    iosBundleId: 'com.nirvar.tech.patient.nirvar',
+    storageBucket: 'nirvar-baffb.firebasestorage.app',
+    iosBundleId: 'com.nirvar.medic.patient',
   );
-
-  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBkURVibZus5GwbDSjSk1OsAqe-3-zVCOA',
-    appId: '1:534392329466:android:cee3ad021f7d7f2591e543',
-    messagingSenderId: '534392329466',
-    projectId: 'nirvar-baffb',
-    storageBucket: 'nirvar-baffb.appspot.com',
-  );
-
 }
