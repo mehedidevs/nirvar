@@ -1,53 +1,112 @@
-import 'dart:ui';
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:nirvar/screens/utils/helper.dart';
-
-
+import 'package:flutter/material.dart';
+import '../../utils/helper.dart';
 
 class LocalNotificationService {
-  static bool _isInitialized = false;
+  static final LocalNotificationService _instance = LocalNotificationService._internal();
 
-  static Future<void> initialize() async {
-    await AwesomeNotifications().initialize(
-      null,
-      [
-        NotificationChannel(
-          channelKey: 'basic_channel',
-          channelName: 'Basic Notifications',
-          channelDescription: 'Notification channel for basic notifications',
-          defaultColor: const Color(0xFF6BB5BE),
-          ledColor: const Color(0xFF74B192),
-          importance: NotificationImportance.High,
-          channelShowBadge: true,
-        ),
-      ],
-    );
+  factory LocalNotificationService() => _instance;
 
-    // Request permissions for notifications
-    await _requestPermission();
-    _isInitialized = true;
+  LocalNotificationService._internal();
 
-    if (_isInitialized) {
-      //Morning Reminder Notification
-      await _scheduleDailyNotification(hour: 10, minute: 0);
-      //Evening Reminder Notification
-      await _scheduleDailyNotification(hour: 22, minute: 0);
-    } else {
-      throw Exception(
-          'NotificationService is not initialized. Call initialize() first.');
+  /// Initializes notifications.
+  Future<void> initialize() async {
+    try {
+      await AwesomeNotifications().initialize(
+        null,
+        [
+          NotificationChannel(
+            channelKey: 'basic_channel',
+            channelName: 'Basic Notifications',
+            channelDescription: 'Notification channel for basic notifications',
+            defaultColor: const Color(0xFF6BB5BE),
+            ledColor: const Color(0xFF74B192),
+            importance: NotificationImportance.High,
+            enableLights: true,
+            enableVibration: true,
+            channelShowBadge: false,
+          ),
+        ],
+      );
+
+      // Handle permission without blocking the app
+      await handleNotificationPermission();
+    } catch (e) {
+      debugPrint("Error initializing notifications: $e");
     }
   }
 
-  /// Request permissions for notifications from the user.
-  static Future<void> _requestPermission() async {
+  /// Handles notification permission
+  Future<void> handleNotificationPermission() async {
     bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
+
     if (!isAllowed) {
-      await AwesomeNotifications().requestPermissionToSendNotifications();
+      isAllowed = await AwesomeNotifications().requestPermissionToSendNotifications();
+    }
+
+    if (isAllowed) {
+      await scheduleDailyNotifications();
     }
   }
 
-  /// Show a basic notification.
-  static Future<void> showBasicNotification({
+
+  /// Schedules daily notifications.
+  Future<void> scheduleDailyNotifications() async {
+
+    // var now = DateTime.now();
+    // var startingReminderTime = DateTime(now.year, now.month, now.day, 10); // 10 AM today
+    // var endingReminderTime = DateTime(now.year, now.month, now.day, 22); // 10 PM today
+    //
+    // if(now.isAtSameMomentAs(startingReminderTime)){
+    //   await scheduleDailyNotification(hour: 10, minute: 0,notificationId: 11);
+    // }
+    //
+    // if(now.isAtSameMomentAs(endingReminderTime) ){
+    //   await scheduleDailyNotification(hour: 22, minute: 0,notificationId: 21);
+    // }
+
+    await scheduleDailyNotification(hour: 10, minute: 0,notificationId: 11);
+    await scheduleDailyNotification(hour: 22, minute: 0,notificationId: 21);
+
+  }
+
+  /// Schedules a specific notification time.
+  Future<void> scheduleDailyNotification({required int hour, required int minute, required  int notificationId}) async {
+    // int notificationId = hour * 100 + minute; // Unique ID based on time
+
+    await AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: notificationId,
+        channelKey: 'basic_channel',
+        title: 'Health Reminder',
+        body: getRandomHealthMessage(),
+        notificationLayout: NotificationLayout.Default,
+      ),
+      schedule: NotificationCalendar(
+        hour: hour,
+        minute: minute,
+        second: 0,
+        repeats: true,
+        timeZone: await AwesomeNotifications().getLocalTimeZoneIdentifier(),
+      ),
+    );
+  }
+
+  /// Cancels all notifications.
+  Future<void> cancelAllNotifications() async {
+    await AwesomeNotifications().cancelAll();
+  }
+
+  /// Checks permission on app launch and schedules notifications if granted.
+  Future<void> checkPermissionOnStartup() async {
+    bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
+    if (isAllowed) {
+      await scheduleDailyNotifications();
+    }
+  }
+
+  /// Shows a basic notification.
+  Future<void> showBasicNotification({
     required String title,
     required String body,
     String channelKey = 'basic_channel',
@@ -64,16 +123,15 @@ class LocalNotificationService {
     );
   }
 
-  //Notification with Big Picture
-  // Show a basic notification
-  static Future<void> showBasicNotificationWithImage({
+  /// Shows a notification with an image.
+  Future<void> showBasicNotificationWithImage({
     required String title,
     required String body,
     required String imageUrl,
   }) async {
     await AwesomeNotifications().createNotification(
       content: NotificationContent(
-        id: -1,
+        id: DateTime.now().millisecondsSinceEpoch.remainder(100000), // Unique ID
         channelKey: 'basic_channel',
         title: title,
         body: body,
@@ -84,32 +142,4 @@ class LocalNotificationService {
     );
   }
 
-  //Sequence Notification
-  static Future<void> _scheduleDailyNotification(
-      {required int hour, required int minute}) async {
-    int notificationId = hour * 100 + minute; // Unique ID based on time
-
-    await AwesomeNotifications().createNotification(
-      content: NotificationContent(
-        id: notificationId,
-        channelKey: 'basic_channel',
-        title: 'Reminder',
-        body: getRandomHealthMessage(),
-        notificationLayout: NotificationLayout.Default
-      ),
-      schedule: NotificationCalendar(
-        hour: hour,
-        minute: minute,
-        second: 0,
-        repeats: true,
-        timeZone: await AwesomeNotifications().getLocalTimeZoneIdentifier(),
-      ),
-    );
-  }
-
-
-  /// Cancel all notifications.
-  static Future<void> cancelAllNotifications() async {
-    await AwesomeNotifications().cancelAll();
-  }
 }

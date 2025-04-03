@@ -71,12 +71,12 @@ class BloodPressureWidget extends StatelessWidget {
               ],
             ),
           ),
-          Icon(
-            Icons.more_horiz,
-            size: 20.sp,
-            color: Colors.black,
-          ),
-          SizedBox(height: 4.h)
+          // Icon(
+          //   Icons.more_horiz,
+          //   size: 20.sp,
+          //   color: Colors.black,
+          // ),
+          // SizedBox(height: 4.h)
         ],
       ),
     );

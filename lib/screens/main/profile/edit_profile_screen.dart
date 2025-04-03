@@ -431,7 +431,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     }
                                   },
                                 ),
-                                validator: (value) => ValidationUtils.validateRequiredField(value, fieldName: 'Date Of Birth'),
+                                validator: (value) => ValidationUtils.validateAgeRequirement(value),
                             ),
                             SizedBox(height: 16.h),
                             LabeledTextFormField(

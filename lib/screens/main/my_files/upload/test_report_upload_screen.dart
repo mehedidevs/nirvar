@@ -64,6 +64,12 @@ class _TestReportUploadScreenState extends State<TestReportUploadScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    statusBarSetup();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,

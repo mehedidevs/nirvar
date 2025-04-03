@@ -1,5 +1,5 @@
 name: nirvar
-description: "A new Flutter project."
+description: "Securely manage health records, store prescriptions, and share via QR codes."
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
@@ -13,7 +13,6 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.2
   flutter_animate: ^4.5.0
-  flutter_otp_text_field: ^1.1.1
   flutter_screenutil: ^5.9.0
   flutter_svg: ^2.0.9
   pin_code_fields: ^8.0.1
@@ -25,7 +24,6 @@ dependencies:
   flutter_native_splash: ^2.4.1
   flutter_launcher_icons: ^0.14.1
   dio: ^5.7.0
-  retrofit: ^4.4.0
   logger: ^2.4.0
   json_annotation: ^4.9.0
   cached_network_image: ^3.2.0
@@ -57,6 +55,7 @@ dependencies:
   pdfx: ^2.8.0
   device_info_plus:
   rename: ^3.0.2
+  flutter_app_badge_control:
 
 
 
@@ -65,7 +64,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
-  retrofit_generator: '>=8.0.0 <10.0.0'
   floor_generator: ^1.4.2
   build_runner: ^2.3.3
   json_serializable: ^6.8.0

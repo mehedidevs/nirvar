@@ -9,6 +9,7 @@ import 'package:nirvar/screens/widgets/custom_app_bar.dart';
 
 import '../../injection_container.dart';
 import '../utils/app_colors.dart';
+import '../utils/helper.dart';
 import '../widgets/custom_chasing_dots.dart';
 
 class AccountHoldersScreen extends StatefulWidget {
@@ -22,6 +23,7 @@ class _AccountHoldersScreenState extends State<AccountHoldersScreen> {
   @override
   void initState() {
     super.initState();
+    statusBarSetup();
     context.read<AccountHolderBloc>().add(FetchAllAccountHolders());
   }
 

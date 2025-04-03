@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nirvar/screens/notification/firebase/firebase_api.dart';
 import 'package:nirvar/screens/notification/local/local_notification_service.dart';
+import 'package:nirvar/screens/utils/helper.dart';
 import 'app.dart';
 import 'injection_container.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -20,12 +21,23 @@ Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await initializeDependencies();
-  await LocalNotificationService.initialize();
-  await FirebaseApi().initNotification();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  await _localNotificationSetup();
+  await _firebasePushNotificationSetup();
+  statusBarSetup();
   runApp(const NirvarApp());
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+}
+
+
+Future<void> _firebasePushNotificationSetup() async {
+  await FirebaseApi().initNotification();
+  FirebaseApi().listenForPermissionChanges();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+}
+
+Future<void> _localNotificationSetup() async {
+  final notificationService = LocalNotificationService();
+  await notificationService.initialize();
+  await notificationService.checkPermissionOnStartup();
 }
 
 //Testing Started

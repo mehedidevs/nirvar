@@ -23,90 +23,101 @@ class BloodPressureBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3, // Number of tabs
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30.r),
-            topRight: Radius.circular(30.r),
+    return Padding(
+      padding:  EdgeInsets.only(top: 24.h),
+      child: DefaultTabController(
+        length: 3, // Number of tabs
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30.r),
+              topRight: Radius.circular(30.r),
+            ),
           ),
-        ),
-        child: Material(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              2.verticalSpace,
-              Center(
-                child: Container(
-                  height: 4.h,
-                  width: 150.w,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(20.r),
-                  ),
-                ),
-              ),
-              SizedBox(height: 8.h),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
+          child: ClipRRect(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30.r),
+              topRight: Radius.circular(30.r),
+            ),
+            child: Material(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  2.verticalSpace,
+                  Center(
+                    child: Container(
+                      height: 4.h,
+                      width: 150.w,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade400,
+                        borderRadius: BorderRadius.circular(20.r),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      InkWell(
-                          onTap: () async {
-                            bool? result;
-                           result = await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const BloodPressureInput()));
-                           if(result == true){
-                             if(context.mounted){
-                               Navigator.of(context).pop(true);
-                             }
-                           }
-                          },
-                          child: circuler_add_button()),
-                      SizedBox(width: 16.w),
-                      Text(
-                        'Blood Pressure',
-                        style: TextStyle(
-                          fontSize: 24.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      Row(
+                        children: [
+                          InkWell(
+                              onTap: () async {
+                                bool? result;
+                               result = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const BloodPressureInput()));
+                               if(result == true){
+                                 if(context.mounted){
+                                   Navigator.of(context).pop(true);
+                                 }
+                               }
+                              },
+                              child: circuler_add_button()),
+                          SizedBox(width: 16.w),
+                          Text(
+                            'Blood Pressure',
+                            style: TextStyle(
+                              fontSize: 24.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
-              SizedBox(height: 16.h),
-              // Tab Bar Section
-              const TabBar(
-                labelColor: AppColors.black,
-                unselectedLabelColor: AppColors.grey,
-                indicatorColor: AppColors.primary,
-                tabs: [
-                  Tab(
-                    text: 'Daily',
+                  SizedBox(height: 16.h),
+                  // Tab Bar Section
+                  const TabBar(
+                    labelColor: AppColors.black,
+                    unselectedLabelColor: AppColors.grey,
+                    indicatorColor: AppColors.primary,
+                    indicatorSize: TabBarIndicatorSize.label, // Ensures the indicator fits the label
+                    dividerColor: Colors.transparent, // Removes the bottom line
+                    tabs: [
+                      Tab(
+                        text: 'Daily',
+                      ),
+                      Tab(text: 'Weekly'),
+                      Tab(text: 'Monthly'),
+                    ],
                   ),
-                  Tab(text: 'Weekly'),
-                  Tab(text: 'Monthly'),
+                  SizedBox(height: 16.h),
+                  // TabBarView Section
+                  Expanded(
+                    child: TabBarView(
+                      children: [
+                        _buildDailyView(),
+                        _buildWeeklyView(),
+                        _buildMonthView(),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-              SizedBox(height: 16.h),
-              // TabBarView Section
-              Expanded(
-                child: TabBarView(
-                  children: [
-                    _buildDailyView(),
-                    _buildWeeklyView(),
-                    _buildMonthView(),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -149,7 +160,7 @@ class BloodPressureBottomSheet extends StatelessWidget {
                 children: [
                   _buildLegendItem(AppColors.primary, 'Systolic'),
                   SizedBox(width: 16.w), // Responsive space between legends
-                  _buildLegendItem(AppColors.pale, 'Diastolic'),
+                  _buildLegendItem(AppColors.softPeachy, 'Diastolic'),
                 ],
               ),
             ],

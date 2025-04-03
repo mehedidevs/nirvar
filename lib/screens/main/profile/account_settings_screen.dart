@@ -38,6 +38,12 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   bool _isConfirmPasswordObscured = true;
 
   @override
+  void initState() {
+    super.initState();
+    statusBarSetup();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [

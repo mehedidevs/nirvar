@@ -10,7 +10,7 @@ class DailyGlucoseChart extends StatefulWidget {
 
   final Map<String, GlucoseValues> apiResponse;
   final Color leftBarColor = AppColors.primary;
-  final Color rightBarColor = AppColors.pale;
+  final Color rightBarColor = AppColors.softPeachy;
   final Color avgColor = Colors.green;
 
   const DailyGlucoseChart({super.key, required this.apiResponse});
@@ -77,9 +77,9 @@ class _DailyGlucoseChartState extends State<DailyGlucoseChart> {
                 String day = getLast7Days()[group.x.toInt()];
                 String valueToShow;
                 if (rodIndex == 0) {
-                  valueToShow = 'Input1: ${rod.toY.toString()}'; // For bar 1
+                  valueToShow = 'Before Meal: ${rod.toY.toString()}'; // For bar 1
                 } else {
-                  valueToShow = 'Input2: ${rod.toY.toString()}'; // For bar 2
+                  valueToShow = 'After Meal: ${rod.toY.toString()}'; // For bar 2
                 }
 
                 return BarTooltipItem(

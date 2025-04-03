@@ -6,6 +6,7 @@ import 'package:nirvar/models/glucose_level_last_seven_days/glucose_level_for_pa
 
 import '../../../widgets/custom_chasing_dots.dart';
 import '../../../widgets/health_card.dart';
+import '../../status/graph/blood_glucose/blood_glucose_bottom_sheet.dart';
 
 class BloodGlucoseCard extends StatefulWidget {
   const BloodGlucoseCard({super.key});
@@ -43,20 +44,34 @@ class _BloodGlucoseCardState extends State<BloodGlucoseCard> {
     return HealthCard(
       value: 'N/A',
       average: 'Last 7 days Avg',
-      label: 'Blood Glucose',
-      onPressed: () {},
+      label: 'Diabetes',
+      onPressed: _showGlucoseGraph,
     );
   }
 
   Widget _successHealthCard(GlucoseLevelForPastSevenDays glucoseLevelForPastSevenDays){
     String glucoseLevel =
-    (glucoseLevelForPastSevenDays.avgLevel != null) ? '${glucoseLevelForPastSevenDays.avgLevel}/10' : 'N/A';
+    (glucoseLevelForPastSevenDays.avgLevel != null) ? '${glucoseLevelForPastSevenDays.avgLevel}' : 'N/A';
     return HealthCard(
       value: glucoseLevel,
       average: 'Last 7 days Avg',
-      label: 'Blood Glucose',
-      onPressed: () {},
+      label: 'Diabetes',
+      onPressed: _showGlucoseGraph,
     );
 
+  }
+
+  void _showGlucoseGraph() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const BloodGlucoseBottomSheet(),
+    ).then((result){
+      print(result.toString());
+      if(result == true){
+        setState(() {});
+      }
+    });
   }
 }

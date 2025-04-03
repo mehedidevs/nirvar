@@ -226,8 +226,7 @@ class _RegisterUserCredentialsScreenState extends State<RegisterUserCredentialsS
                             },
                           ),
                           validator: (value) =>
-                              ValidationUtils.validateRequiredField(value,
-                                  fieldName: 'Date Of Birth'),
+                              ValidationUtils.validateAgeRequirement(value),
                         ),
                         SizedBox(height: 8.h),
                         LabeledDropdown(

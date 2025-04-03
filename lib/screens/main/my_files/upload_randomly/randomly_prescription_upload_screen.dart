@@ -349,6 +349,7 @@ class _RandomlyPrescriptionUploadScreenState
   @override
   void initState() {
     super.initState();
+    statusBarSetup();
     _fetchSelectedFolder();
     _fetchDoctorSpeciality();
     // medicalDepartments.sort((a, b) => a.compareTo(b));

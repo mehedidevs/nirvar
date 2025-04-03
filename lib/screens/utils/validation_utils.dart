@@ -95,4 +95,80 @@ class ValidationUtils {
     }
     return null;
   }
+
+  static String? validateAgeRequirement(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Date of Birth is required';
+    }
+
+    final now = DateTime.now();
+    final birthDate = DateTime.tryParse(value);
+
+    if (birthDate == null) {
+      return 'Invalid date format';
+    }
+
+    final age = now.year - birthDate.year -
+        ((now.month > birthDate.month || (now.month == birthDate.month && now.day >= birthDate.day)) ? 0 : 1);
+
+    if (age < 18) {
+      return 'You must be at least 18 years old';
+    }
+
+    return null;
+  }
+
+  static String? validateGlucosePoint(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Glucose Point is required';
+    }
+
+    final double? glucosePoint = double.tryParse(value);
+    if (glucosePoint == null) {
+      return 'Please enter a valid number';
+    }
+
+    if (glucosePoint > 15) {
+      return 'Glucose Point cannot be more than 15';
+    }
+
+    return null;
+  }
+
+  static String? validateSystolic(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Systolic is required';
+    }
+
+    final int? systolic = int.tryParse(value);
+    if (systolic == null) {
+      return 'Please enter a valid number';
+    }
+
+    if (systolic > 180) {
+      return 'Systolic value cannot be more than 180';
+    }
+
+    return null;
+  }
+
+  static String? validateDiastolic(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Diastolic is required';
+    }
+
+    final int? diastolic = int.tryParse(value);
+    if (diastolic == null) {
+      return 'Please enter a valid number';
+    }
+
+    if (diastolic > 120) {
+      return 'Diastolic value cannot be more than 120';
+    }
+
+    return null;
+  }
+
+
+
 }

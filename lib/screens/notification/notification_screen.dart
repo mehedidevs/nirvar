@@ -13,6 +13,7 @@ import 'package:nirvar/screens/widgets/initial_state_display.dart';
 import 'package:nirvar/screens/widgets/loading_state_display.dart';
 
 import '../utils/app_colors.dart';
+import '../utils/helper.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
@@ -25,6 +26,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   void initState() {
     super.initState();
+    statusBarSetup();
     context.read<HealthStatusNotificationBloc>().add(GetNotificationFromApi());
   }
 

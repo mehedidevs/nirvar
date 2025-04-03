@@ -6,6 +6,7 @@ import 'package:nirvar/models/blood_pressure_last_seven_days/blood_pressure_hist
 
 import '../../../widgets/custom_chasing_dots.dart';
 import '../../../widgets/health_card.dart';
+import '../../status/graph/blood_pressure/blood_pressure_bottom_sheet.dart';
 
 class BloodPressureCard extends StatefulWidget {
   const BloodPressureCard({super.key});
@@ -40,9 +41,7 @@ class _BloodPressureCardState extends State<BloodPressureCard> {
       value: 'N/A',
       average: 'Last 7 days Avg',
       label: 'Blood Pressure',
-      onPressed: () {
-        // Define the action when the button is pressed
-      },
+      onPressed: _showBpGraph,
     );
   }
 
@@ -57,7 +56,21 @@ class _BloodPressureCardState extends State<BloodPressureCard> {
       value: '$systole/$diastole',
       average: 'Last 7 days Avg',
       label: 'Blood Pressure',
-      onPressed: () {},
+      onPressed: _showBpGraph,
     );
+  }
+
+  void _showBpGraph() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const BloodPressureBottomSheet(),
+    ).then((result){
+      print(result.toString());
+      if(result == true){
+        setState(() {});
+      }
+    });
   }
 }

@@ -25,6 +25,12 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
   final _repository = sl<PatientFolderRepository>();
 
   @override
+  void initState() {
+    super.initState();
+    statusBarSetup();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,

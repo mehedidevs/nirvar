@@ -1,6 +1,7 @@
 
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
@@ -112,19 +113,34 @@ Future<String> pickDate(BuildContext context) async {
 }
 
 
+// final List<String> healthMessages = [
+//   "It's health check-in time! Kindly record your blood pressure and blood glucose to stay on track with your wellness goals.",
+//   "Your health is your wealth! Please check both your blood pressure and blood glucose to keep things balanced.",
+//   "A small step for your health! Record your blood pressure and blood glucose readings to ensure you're on the right track.",
+//   "Stay proactive with your health! Take a moment to log your blood pressure and blood glucose today.",
+//   "Your well-being matters! Please measure your blood pressure and blood glucose to keep things in balance.",
+//   "Time for a quick health update! Record your blood pressure and blood glucose to stay consistent and informed.",
+//   "Your health journey starts with small steps! Take a moment to check your blood pressure and blood glucose.",
+//   "Healthy habits lead to a better you! Kindly track your blood pressure and blood glucose readings now.",
+//   "Let’s keep it steady! Record your blood pressure and blood glucose to maintain a healthy rhythm.",
+//   "A healthier tomorrow starts today! Don’t forget to log your blood pressure and blood glucose readings now.",
+//   "Your health deserves attention! Check your blood pressure and blood glucose and celebrate your progress.",
+//   "Consistency is the key to wellness! Please take a moment to measure and record your blood pressure and blood glucose.",
+// ];
+
 final List<String> healthMessages = [
-  "It's health check-in time! Kindly record your blood pressure and blood glucose to stay on track with your wellness goals.",
-  "Your health is your wealth! Please check both your blood pressure and blood glucose to keep things balanced.",
-  "A small step for your health! Record your blood pressure and blood glucose readings to ensure you're on the right track.",
-  "Stay proactive with your health! Take a moment to log your blood pressure and blood glucose today.",
-  "Your well-being matters! Please measure your blood pressure and blood glucose to keep things in balance.",
-  "Time for a quick health update! Record your blood pressure and blood glucose to stay consistent and informed.",
-  "Your health journey starts with small steps! Take a moment to check your blood pressure and blood glucose.",
-  "Healthy habits lead to a better you! Kindly track your blood pressure and blood glucose readings now.",
-  "Let’s keep it steady! Record your blood pressure and blood glucose to maintain a healthy rhythm.",
-  "A healthier tomorrow starts today! Don’t forget to log your blood pressure and blood glucose readings now.",
-  "Your health deserves attention! Check your blood pressure and blood glucose and celebrate your progress.",
-  "Consistency is the key to wellness! Please take a moment to measure and record your blood pressure and blood glucose.",
+  "Time to log your blood pressure and glucose. Stay on track!",
+  "Quick health check: Record BP and glucose levels now.",
+  "Monitor your health—log BP and glucose today.",
+  "Stay balanced! Check BP and glucose readings.",
+  "Your health matters. Log BP and glucose now.",
+  "Daily reminder: Track BP and glucose for wellness.",
+  "Keep health in check—record BP and glucose.",
+  "Small step, big impact: Log BP and glucose.",
+  "Stay proactive! Measure BP and glucose today.",
+  "Healthy habits start now. Log BP and glucose.",
+  "Consistency wins. Record BP and glucose.",
+  "Quick update: Check BP and glucose levels.",
 ];
 
 String getRandomHealthMessage() {
@@ -191,6 +207,14 @@ String? getMatchedValue(String? value, List<String> list) {
 bool isPdf(String url) {
   // Convert the string to lowercase and check if it contains '.pdf'
   return url.toLowerCase().contains('.pdf');
+}
+
+void statusBarSetup() {
+  SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+          statusBarColor: Colors.black26
+      )
+  );
 }
 
 

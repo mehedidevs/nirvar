@@ -35,6 +35,7 @@ class _ReportDetailsScreenState extends State<ReportDetailsScreen> {
   @override
   void initState() {
     super.initState();
+    statusBarSetup();
     FlDownloader.initialize();
 
     progressStream = FlDownloader.progressStream.listen((event) {

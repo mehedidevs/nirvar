@@ -9,7 +9,7 @@ import '../../../../../../models/blood_pressure_last_seven_days/blood_pressure_h
 class DailyBpChart extends StatefulWidget {
   final Map<String, BloodPressureSummary> apiResponse;
   final Color leftBarColor = AppColors.primary;
-  final Color rightBarColor = AppColors.pale;
+  final Color rightBarColor = AppColors.softPeachy;
   final Color avgColor = Colors.green;
 
   const DailyBpChart({super.key, required this.apiResponse});

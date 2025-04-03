@@ -67,6 +67,12 @@ class _RandomlyTestReportUploadScreenState
   }
 
   @override
+  void initState() {
+    super.initState();
+    statusBarSetup();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,

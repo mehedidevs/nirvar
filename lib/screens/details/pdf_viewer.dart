@@ -5,7 +5,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:pdfx/pdfx.dart'; // For PDF rendering
 import 'package:http/http.dart' as http;
 
-import '../utils/app_colors.dart'; // For fetching the PDF
+import '../utils/app_colors.dart';
+import '../utils/helper.dart'; // For fetching the PDF
 
 class PdfViewer extends StatefulWidget {
   final String pdfUrl;
@@ -23,6 +24,7 @@ class _PdfViewerState extends State<PdfViewer> {
   @override
   void initState() {
     super.initState();
+    statusBarSetup();
     _loadPdf();
   }
 

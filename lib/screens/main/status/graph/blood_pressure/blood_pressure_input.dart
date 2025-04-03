@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:nirvar/app.dart';
 import 'package:nirvar/bloc/blood_pressure_average_daily/blood_pressure_average_daily_bloc.dart';
 import 'package:nirvar/bloc/blood_pressure_average_last_seven_days/blood_pressure_average_last_seven_days_bloc.dart';
 import 'package:nirvar/repository/blood_pressure/blood_pressure_repository.dart';
@@ -15,6 +14,7 @@ import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 import 'package:nirvar/screens/widgets/custom_textInput.dart';
 
 import '../../../../../injection_container.dart';
+import '../../../../utils/validation_utils.dart';
 
 class BloodPressureInput extends StatefulWidget {
   const BloodPressureInput({super.key});
@@ -32,9 +32,15 @@ class _BloodPressureInputState extends State<BloodPressureInput> {
 
   @override
   void dispose() {
+    super.dispose();
     _systolicController.dispose();
     _diastolicController.dispose();
-    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    statusBarSetup();
   }
 
   @override
@@ -89,12 +95,13 @@ class _BloodPressureInputState extends State<BloodPressureInput> {
                       hint: 'Ex. 120',
                       keyboardType: TextInputType.number,
                       controller: _systolicController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Systolic is Required';
-                        }
-                        return null;
-                      },
+                      validator: (value) =>  ValidationUtils.validateSystolic(value),
+                      // validator: (value) {
+                      //   if (value == null || value.isEmpty) {
+                      //     return 'Systolic is Required';
+                      //   }
+                      //   return null;
+                      // },
                     ),
                     SizedBox(height: 20.h),
                     Text(
@@ -108,12 +115,13 @@ class _BloodPressureInputState extends State<BloodPressureInput> {
                       hint: 'Ex. 80',
                       keyboardType: TextInputType.number,
                       controller: _diastolicController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Diastolic is Required';
-                        }
-                        return null;
-                      },
+                      validator: (value) =>  ValidationUtils.validateDiastolic(value),
+                      // validator: (value) {
+                      //   if (value == null || value.isEmpty) {
+                      //     return 'Diastolic is Required';
+                      //   }
+                      //   return null;
+                      // },
                     ),
                     SizedBox(height: 32.h),
                     _isLoading ? const CustomChasingDots()

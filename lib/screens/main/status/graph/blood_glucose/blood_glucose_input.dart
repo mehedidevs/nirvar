@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:nirvar/app.dart';
 import 'package:nirvar/bloc/glucose_average_daily/glucose_average_daily_bloc.dart';
 import 'package:nirvar/bloc/glucose_average_last_seven_days/glucose_average_last_seven_days_bloc.dart';
+import 'package:nirvar/data/preference/blood_glucose_status_storage.dart';
 import 'package:nirvar/repository/diabetes/diabetes_repository.dart';
 import 'package:nirvar/routes/navigation_helper.dart';
 import 'package:nirvar/screens/utils/helper.dart';
@@ -12,6 +12,7 @@ import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 import '../../../../../injection_container.dart';
 import '../../../../utils/app_colors.dart';
 import '../../../../utils/assets_path.dart';
+import '../../../../utils/validation_utils.dart';
 import '../../../../widgets/custom_app_bar.dart';
 import '../../../../widgets/custom_button.dart';
 import '../../../../widgets/custom_textInput.dart';
@@ -28,12 +29,30 @@ class _BloodGlucoseInputState extends State<BloodGlucoseInput> {
   final TextEditingController _bloodGlucoseController = TextEditingController();
   final DiabetesRepository _repository = sl<DiabetesRepository>();
   bool _isLoading = false;
+  String hint = ' ';
+
+  @override
+  void initState() {
+    super.initState();
+    statusBarSetup();
+    _loadHint();
+  }
 
   @override
   void dispose() {
     _bloodGlucoseController.dispose();
     super.dispose();
   }
+
+  Future<void> _loadHint() async {
+    String loadedHint = await getHint();
+    if (mounted) {
+      setState(() {
+        hint = loadedHint;
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -84,15 +103,16 @@ class _BloodGlucoseInputState extends State<BloodGlucoseInput> {
                     ),
                     SizedBox(height: 8.h),
                     CustomTextField(
-                      hint: 'Ex. 5.5',
+                      hint: hint,
                       keyboardType: TextInputType.number,
                       controller: _bloodGlucoseController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Glucose Point is Required';
-                        }
-                        return null;
-                      },
+                      validator: (value)=> ValidationUtils.validateGlucosePoint(value),
+                      // validator: (value) {
+                      //   if (value == null || value.isEmpty) {
+                      //     return 'Glucose Point is Required';
+                      //   }
+                      //   return null;
+                      // },
                     ),
                     SizedBox(height: 32.h),
 
@@ -122,14 +142,38 @@ class _BloodGlucoseInputState extends State<BloodGlucoseInput> {
                                     message: failure.message);
 
                               },
-                              (success) {
+                              (success) async {
                                 _bloodGlucoseController.clear();
+
+                                // Get the current status
+                                final status = await sl<BloodGlucoseStatusStorage>().getStatus();
+
+                                // If status is "After Meal" (1), reset to "Before Meal" (0)
+                                if (status == 1) {
+                                  await sl<BloodGlucoseStatusStorage>().saveStatus(0); // Set to 0 (Before Meal)
+                                }
+                                // If status is "Before Meal" (0), set to "After Meal" (1)
+                                else if (status == 0) {
+                                  await sl<BloodGlucoseStatusStorage>().saveStatus(1); // Set to 1 (After Meal)
+                                }
+                                // If no status exists, default to "Before Meal"
+                                else {
+                                  await sl<BloodGlucoseStatusStorage>().saveStatus(0);
+                                }
+
+                                // Load the updated hint
+                                await _loadHint();
+
                                 setState(() {
                                   _isLoading = false;
                                 });
-                                context.read<GlucoseAverageLastSevenDaysBloc>().add(RefreshGlucoseAverageLastSevenDays());
-                                context.read<GlucoseAverageDailyBloc>().add(RefreshGlucoseAverageDaily());
-                                context.flushBarSuccessMessage(message: success);
+
+                                if(context.mounted){
+                                  context.read<GlucoseAverageLastSevenDaysBloc>().add(RefreshGlucoseAverageLastSevenDays());
+                                  context.read<GlucoseAverageDailyBloc>().add(RefreshGlucoseAverageDaily());
+                                  context.flushBarSuccessMessage(message: success);
+                                }
+
                               },
                             );
                           }

@@ -38,11 +38,11 @@ class HealthCardWidget extends StatelessWidget {
                 height: 24.h,
                 width: 24.w,
               ),
-              Icon(
-                Icons.more_horiz,
-                size: 24.sp,
-                color: Colors.black.withOpacity(0.6),
-              ),
+              // Icon(
+              //   Icons.more_horiz,
+              //   size: 24.sp,
+              //   color: Colors.black.withOpacity(0.6),
+              // ),
             ],
           ),
           SizedBox(height: 12.h),

@@ -48,7 +48,7 @@ class _FolderDetailsScreenState extends State<FolderDetailsScreen> {
   @override
   void initState() {
     super.initState();
-
+    statusBarSetup();
     context.read<PatientFileBloc>().add(GetPatientFilesFromApi(widget.folder.folderId));
     // _repository.getAllTestReports(widget.folder.folderId);
     // _repository.getAllPrescriptions(widget.folder.folderId);

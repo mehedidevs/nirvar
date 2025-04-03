@@ -22,6 +22,7 @@ import '../../../bloc/patient_folder/patient_folder_bloc.dart';
 import '../../../injection_container.dart';
 import '../../../repository/account_holder/account_holder_repository.dart';
 import '../../../repository/authentication/auth_repository.dart';
+import '../../utils/helper.dart';
 import 'account_settings_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -32,6 +33,13 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    statusBarSetup();
+  }
+
   @override
   Widget build(BuildContext context) {
     return _buildUI(context);

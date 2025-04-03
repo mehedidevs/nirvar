@@ -27,6 +27,7 @@ import 'package:nirvar/core/constants/constants.dart';
 import 'package:nirvar/core/resources/custom_interceptor.dart';
 import 'package:nirvar/data/network/diabetes/diabetes_api_service.dart';
 import 'package:nirvar/data/network/notification/notification_api_service.dart';
+import 'package:nirvar/data/preference/blood_glucose_status_storage.dart';
 import 'package:nirvar/data/preference/token_storage.dart';
 import 'package:nirvar/repository/account_holder/account_holder_repository.dart';
 import 'package:nirvar/repository/account_holder/account_holder_repository_impl.dart';
@@ -42,10 +43,6 @@ import 'package:nirvar/repository/patient_file/patient_file_repository.dart';
 import 'package:nirvar/repository/patient_file/patient_file_repository_impl.dart';
 import 'package:nirvar/repository/patient_folder/patient_folder_repository.dart';
 import 'package:nirvar/repository/patient_folder/patient_folder_repository_impl.dart';
-
-
-
-
 import 'data/local/dao/account_holder_dao.dart';
 import 'data/local/db/account_holder_database.dart';
 import 'data/network/authentication/auth_api_service.dart';
@@ -131,6 +128,7 @@ void _registerNetworkDependencies() {
 void _registerSharedPreferencesDependencies() {
   sl.registerLazySingleton<TokenStorage>(() => TokenStorage());
   sl.registerLazySingleton<UserIdStorage>(() => UserIdStorage());
+  sl.registerLazySingleton<BloodGlucoseStatusStorage>(() => BloodGlucoseStatusStorage());
 }
 
 void _registerApiServices() {
