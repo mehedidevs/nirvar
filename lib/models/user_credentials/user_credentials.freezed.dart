@@ -26,8 +26,8 @@ mixin _$UserCredentials {
   String? get email => throw _privateConstructorUsedError;
   String? get password => throw _privateConstructorUsedError;
   String get gender => throw _privateConstructorUsedError;
-  String get dateOfBirth => throw _privateConstructorUsedError;
-  String get bloodGroup => throw _privateConstructorUsedError;
+  String? get dateOfBirth => throw _privateConstructorUsedError;
+  String? get bloodGroup => throw _privateConstructorUsedError;
   String? get weight => throw _privateConstructorUsedError;
   String? get heightFt => throw _privateConstructorUsedError;
   String? get heightIn => throw _privateConstructorUsedError;
@@ -56,8 +56,8 @@ abstract class $UserCredentialsCopyWith<$Res> {
       String? email,
       String? password,
       String gender,
-      String dateOfBirth,
-      String bloodGroup,
+      String? dateOfBirth,
+      String? bloodGroup,
       String? weight,
       String? heightFt,
       String? heightIn,
@@ -85,8 +85,8 @@ class _$UserCredentialsCopyWithImpl<$Res, $Val extends UserCredentials>
     Object? email = freezed,
     Object? password = freezed,
     Object? gender = null,
-    Object? dateOfBirth = null,
-    Object? bloodGroup = null,
+    Object? dateOfBirth = freezed,
+    Object? bloodGroup = freezed,
     Object? weight = freezed,
     Object? heightFt = freezed,
     Object? heightIn = freezed,
@@ -117,14 +117,14 @@ class _$UserCredentialsCopyWithImpl<$Res, $Val extends UserCredentials>
           ? _value.gender
           : gender // ignore: cast_nullable_to_non_nullable
               as String,
-      dateOfBirth: null == dateOfBirth
+      dateOfBirth: freezed == dateOfBirth
           ? _value.dateOfBirth
           : dateOfBirth // ignore: cast_nullable_to_non_nullable
-              as String,
-      bloodGroup: null == bloodGroup
+              as String?,
+      bloodGroup: freezed == bloodGroup
           ? _value.bloodGroup
           : bloodGroup // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       weight: freezed == weight
           ? _value.weight
           : weight // ignore: cast_nullable_to_non_nullable
@@ -160,8 +160,8 @@ abstract class _$$UserCredentialsImplCopyWith<$Res>
       String? email,
       String? password,
       String gender,
-      String dateOfBirth,
-      String bloodGroup,
+      String? dateOfBirth,
+      String? bloodGroup,
       String? weight,
       String? heightFt,
       String? heightIn,
@@ -187,8 +187,8 @@ class __$$UserCredentialsImplCopyWithImpl<$Res>
     Object? email = freezed,
     Object? password = freezed,
     Object? gender = null,
-    Object? dateOfBirth = null,
-    Object? bloodGroup = null,
+    Object? dateOfBirth = freezed,
+    Object? bloodGroup = freezed,
     Object? weight = freezed,
     Object? heightFt = freezed,
     Object? heightIn = freezed,
@@ -219,14 +219,14 @@ class __$$UserCredentialsImplCopyWithImpl<$Res>
           ? _value.gender
           : gender // ignore: cast_nullable_to_non_nullable
               as String,
-      dateOfBirth: null == dateOfBirth
+      dateOfBirth: freezed == dateOfBirth
           ? _value.dateOfBirth
           : dateOfBirth // ignore: cast_nullable_to_non_nullable
-              as String,
-      bloodGroup: null == bloodGroup
+              as String?,
+      bloodGroup: freezed == bloodGroup
           ? _value.bloodGroup
           : bloodGroup // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       weight: freezed == weight
           ? _value.weight
           : weight // ignore: cast_nullable_to_non_nullable
@@ -257,8 +257,8 @@ class _$UserCredentialsImpl implements _UserCredentials {
       this.email,
       this.password,
       required this.gender,
-      required this.dateOfBirth,
-      required this.bloodGroup,
+      this.dateOfBirth,
+      this.bloodGroup,
       this.weight,
       this.heightFt,
       this.heightIn,
@@ -280,9 +280,9 @@ class _$UserCredentialsImpl implements _UserCredentials {
   @override
   final String gender;
   @override
-  final String dateOfBirth;
+  final String? dateOfBirth;
   @override
-  final String bloodGroup;
+  final String? bloodGroup;
   @override
   final String? weight;
   @override
@@ -363,8 +363,8 @@ abstract class _UserCredentials implements UserCredentials {
       final String? email,
       final String? password,
       required final String gender,
-      required final String dateOfBirth,
-      required final String bloodGroup,
+      final String? dateOfBirth,
+      final String? bloodGroup,
       final String? weight,
       final String? heightFt,
       final String? heightIn,
@@ -386,9 +386,9 @@ abstract class _UserCredentials implements UserCredentials {
   @override
   String get gender;
   @override
-  String get dateOfBirth;
+  String? get dateOfBirth;
   @override
-  String get bloodGroup;
+  String? get bloodGroup;
   @override
   String? get weight;
   @override

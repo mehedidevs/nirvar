@@ -81,6 +81,9 @@ class _RegisterUserCredentialsScreenState extends State<RegisterUserCredentialsS
     _inchesController.clear();
   }
 
+  //DOB is optional
+  //Blood Group optional
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -209,7 +212,7 @@ class _RegisterUserCredentialsScreenState extends State<RegisterUserCredentialsS
                         ),
                         SizedBox(height: 8.h),
                         LabeledTextFormField(
-                          label: 'Date of Birth*',
+                          label: 'Date of Birth',
                           hint: 'Enter your date of birth (YYYY-MM-DD)',
                           readOnly: true,
                           controller: _dateOfBirthController,
@@ -226,18 +229,18 @@ class _RegisterUserCredentialsScreenState extends State<RegisterUserCredentialsS
                             },
                           ),
                           validator: (value) =>
-                              ValidationUtils.validateAgeRequirement(value),
+                              ValidationUtils.validateAgeRequirementOptional(value),
                         ),
                         SizedBox(height: 8.h),
                         LabeledDropdown(
-                          label: 'Blood Group*',
+                          label: 'Blood Group',
                           hint: 'Select your blood group',
                           value: _selectedBloodGroup,
                           items: bloodGroups,
                           onChanged: (value) {
                             _selectedBloodGroup = value;
                           },
-                          validator: (value) => ValidationUtils.validateRequiredField(value, fieldName: 'blood group'),
+                          validator: (value) => ValidationUtils.validateOptionalField(value, fieldName: 'blood group'),
                         ),
                         SizedBox(height: 8.h),
                         LabeledTextFormField(

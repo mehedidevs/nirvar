@@ -2,6 +2,7 @@ class AssetsPath {
   static const String _imageBasePath = 'assets/images';
 
   static String entrySvg = '$_imageBasePath/entry.svg';
+  static String entryNewSvg = '$_imageBasePath/entry_new.svg';
   static String landingPng = '$_imageBasePath/landing.svg';
   static String appLogoSvg = '$_imageBasePath/appLogo.svg';
   static String splashLogoSvg = '$_imageBasePath/splashLogo.svg';
@@ -42,6 +43,8 @@ class AssetsPath {
   static String deleteLogoSvg = '$_imageBasePath/delete_logo.svg';
   static String scanNewSvg = '$_imageBasePath/scan_new.svg';
   static String penSvg = '$_imageBasePath/pen.svg';
+  static String cameraColorSvg = '$_imageBasePath/subtract.svg';
+  static String gallarySvg = '$_imageBasePath/gallary.svg';
 
 
   static String fileCardPng = '$_imageBasePath/file_card.png';

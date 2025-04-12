@@ -52,10 +52,9 @@ class LabeledTextFormField extends StatelessWidget {
           keyboardType: keyboardType,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(
-              fontSize: 14.sp,
-              color: Colors.grey[500],
-            ),
+            labelStyle: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+            floatingLabelStyle: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.appBarColor),
+            hintStyle: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.grey),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8.r),
               borderSide: BorderSide(

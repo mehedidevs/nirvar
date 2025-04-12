@@ -18,6 +18,7 @@ import 'package:nirvar/screens/main/home/components/user_profile_picture.dart';
 import 'package:nirvar/screens/notification/firebase/firebase_api.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
+import 'package:nirvar/screens/utils/theme_helper.dart';
 import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 import 'package:nirvar/screens/widgets/file_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -119,11 +120,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   _headerSection(context),
                   SizedBox(height: 16.h),
                   _welcomeText(context),
-                  SizedBox(height: 16.h),
+                   8.verticalSpace,
                   _healthStatus(),
-                  SizedBox(height: 16.h),
+                  4.verticalSpace,
                   _tabBarSection(context),
-                  SizedBox(height: 16.h),
+                  16.verticalSpace,
                   _tabBarViewSection(),
                   SizedBox(height: ScreenUtil().screenHeight * .15.h),
                 ],
@@ -142,25 +143,25 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         Text(
           "Recent Activities",
-          style: TextStyle(fontSize: 14.sp, color: Colors.grey),
+          style: context.textTheme.bodySmall?.copyWith(color: Colors.grey,fontWeight: FontWeight.w500),
         ),
         SizedBox(height: 10.h),
-        _customTabBar(),
+        _customTabBar(context),
       ],
     );
   }
 
-  Widget _customTabBar() {
+  Widget _customTabBar(BuildContext context) {
     return Row(
       children: [
-        _buildTabItem('My Files', 0),
+        _buildTabItem('My Files', 0,context),
         SizedBox(width: 16.w),
-        _buildTabItem('My Health', 1),
+        _buildTabItem('My Health', 1,context),
       ],
     );
   }
 
-  Widget _buildTabItem(String title, int index) {
+  Widget _buildTabItem(String title, int index, BuildContext context) {
     bool isSelected = _selectedIndex == index;
     return GestureDetector(
       onTap: () => _onTabSelected(index),
@@ -172,11 +173,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         child: Text(
           title,
-          style: TextStyle(
-            fontSize: 16.sp,
+          style: context.textTheme.bodyMedium?.copyWith(
             color: isSelected ? Colors.white : Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
+            fontWeight: isSelected ? FontWeight.w600 :  FontWeight.w500 ,
+          )
         ),
       ),
     );
@@ -421,12 +421,12 @@ Widget _welcomeText(BuildContext context) {
     children: [
       Text(
         "How is your health today?",
-        style: Theme.of(context).textTheme.titleLarge,
+        style: context.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
       ),
       SizedBox(height: 4.h),
       Text(
         formattedDate,
-        style: TextStyle(fontSize: 16.sp, color: Colors.grey),
+        style: context.textTheme.bodySmall?.copyWith(color: Colors.grey,fontWeight: FontWeight.w500),
       ),
     ],
   );

@@ -15,6 +15,7 @@ import '../../../../../models/glucose_level_last_seven_days/glucose_level_for_pa
 import '../../../../../models/glucose_level_monthly/blood_glucose_monthly.dart';
 import '../../../../../models/glucose_level_weekly/blood_glucose_weekly.dart';
 import '../../../../utils/app_colors.dart';
+import '../../../../utils/ui_helper.dart';
 import '../../../../widgets/circuler_add_button.dart';
 import '../../../../widgets/custom_chasing_dots.dart';
 
@@ -24,7 +25,8 @@ class BloodGlucoseBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(top: 24.h),
+      padding:  EdgeInsets.only(top: UIHelper.screenHeight * 0.1.h),
+     // padding: EdgeInsets.only(top: 24.h),
       child: DefaultTabController(
         length: 3, // Number of tabs
         child: Container(

@@ -27,11 +27,12 @@ class _QrCodeScreenState extends State<QrCodeScreen> {
   @override
   void initState() {
     super.initState();
-    statusBarSetup();
+
   }
 
   @override
   Widget build(BuildContext context) {
+    statusBarSetup();
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (bool didPop, dynamic result) {

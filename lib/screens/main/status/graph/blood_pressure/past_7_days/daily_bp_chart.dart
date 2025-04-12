@@ -67,7 +67,7 @@ class _DailyBpChartState extends State<DailyBpChart> {
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 1,
+      aspectRatio: 16/9,
       child: BarChart(
         BarChartData(
           maxY: 200, // Adjust maxY for Systolic values

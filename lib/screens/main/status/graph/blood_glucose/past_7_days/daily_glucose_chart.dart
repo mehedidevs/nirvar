@@ -66,7 +66,7 @@ class _DailyGlucoseChartState extends State<DailyGlucoseChart> {
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 1.5,
+      aspectRatio: 16/9,
       child: BarChart(
         BarChartData(
           maxY: 20, // Adjust maxY for Systolic values

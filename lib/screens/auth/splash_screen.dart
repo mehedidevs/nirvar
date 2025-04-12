@@ -48,7 +48,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SvgPicture.asset(
-        AssetsPath.entrySvg,
+        AssetsPath.entryNewSvg,
         height: double.infinity,
         width: double.infinity,
         fit: BoxFit.cover,

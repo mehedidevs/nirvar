@@ -9,6 +9,7 @@ import 'package:nirvar/routes/navigation_helper.dart';
 import 'package:nirvar/screens/search/search_screen.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/utils/helper.dart';
+import 'package:nirvar/screens/utils/theme_helper.dart';
 import 'package:nirvar/screens/widgets/action_menu_button.dart';
 import 'package:nirvar/screens/widgets/custom_alert_dialog.dart';
 import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
@@ -106,12 +107,9 @@ class _MyFilesState extends State<MyFiles> {
                   children: [
                     _searchAndNotification(context),
                     SizedBox(height: 16.h),
-                    _headerSection(context,
-                        onCreateSuccess:()async{}),
+                    _headerSection(context,onCreateSuccess:()async{}),
                     SizedBox(height: 16.h),
-
                     _myFilesSectionAlternative(),
-
                     SizedBox(height: ScreenUtil().screenHeight * .15.h),
                   ],
                 ),
@@ -300,9 +298,9 @@ class _MyFilesState extends State<MyFiles> {
           flex: 2,
           child: Text(
             "My Files",
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: AppColors.deepBlue,
-              fontWeight: FontWeight.bold,
+            style: context.textTheme.titleLarge?.copyWith(
+              color: AppColors.appBarColor,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),
@@ -317,7 +315,7 @@ class _MyFilesState extends State<MyFiles> {
               final patientFolderRepository = sl<PatientFolderRepository>();
 
               return Dialog(
-                backgroundColor: AppColors.white,
+                backgroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16.r),
                 ),

@@ -19,6 +19,7 @@ import '../../utils/validation_utils.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/labeled_dropdown.dart';
 import '../../widgets/labeled_text_form_field.dart';
+import 'components/image_picker_bottom_sheet.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -119,6 +120,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         );
       },
     );
+  }
+
+  void _showImagePickerBottomSheet(){
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24.r)),
+      ),
+      builder: (context) {
+        return ImagePickerBottomSheet(
+          onCameraTap: () {
+            Navigator.pop(context); // Close the dialog
+            _captureAndExtractText(ImageSource.camera); // Choose camera
+          },
+          onGalleryTap: () {
+            Navigator.pop(context); // Close the dialog
+            _captureAndExtractText(ImageSource.gallery); // Choose camera
+          },
+        );
+      },
+    );
+
   }
 
   @override
@@ -299,7 +322,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             bottom: 2,
                             right: 0,
                             child: InkWell(
-                                onTap: _showImageSourceDialog,
+
+                              //need to add bottom sheet here
+                              onTap: _showImagePickerBottomSheet,
+                               // onTap: _showImageSourceDialog,
                                 child: SvgPicture.asset(
                                   AssetsPath.cameraSvg,
                                   height: 25.h,
@@ -455,12 +481,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             ),
                             SizedBox(height: 16.h),
                             LabeledTextFormField(
-                              label: 'Address*',
+                              label: 'Address',
                               hint: 'Enter your full address',
                               controller: _addressController,
                               obscureText: false,
                               hasToggle: false,
-                              validator: (value) => ValidationUtils.validateRequiredField(value, fieldName: 'address'),
+                              validator: (value) => ValidationUtils.validateOptionalField(value, fieldName: 'address'),
                             ),
                             SizedBox(height: 32.h),
                             BlocConsumer<UserProfileUpdateBloc,

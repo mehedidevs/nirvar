@@ -100,7 +100,7 @@ class CustomTextField extends StatelessWidget {
           child: prefixIcon,
         ),
         labelStyle: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.grey),
-        floatingLabelStyle: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.grey),
+        floatingLabelStyle: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.appBarColor),
         hintStyle: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.grey),
         contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         border: border ??

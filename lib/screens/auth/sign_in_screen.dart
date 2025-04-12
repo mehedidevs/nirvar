@@ -11,6 +11,8 @@ import 'package:nirvar/screens/auth/sign_up_screen.dart';
 import 'package:nirvar/screens/notification/components/notification_list_view.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
 import 'package:nirvar/screens/utils/helper.dart';
+import 'package:nirvar/screens/utils/theme_helper.dart';
+import 'package:nirvar/screens/utils/validation_utils.dart';
 import 'package:nirvar/screens/widgets/custom_chasing_dots.dart';
 import 'package:nirvar/screens/widgets/welcome_screen.dart';
 
@@ -98,14 +100,15 @@ class _SignInScreenState extends State<SignInScreen> {
                       fit: BoxFit.scaleDown,
                     ),
                     controller: _phoneNumberController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Phone Number is Required';
-                      } else if (value.length < 11) {
-                        return 'Phone number must be 11 digits';
-                      }
-                      return null;
-                    },
+                    validator: (value) => ValidationUtils.validatePhoneNumber(value),
+                    // validator: (value) {
+                    //   if (value == null || value.isEmpty) {
+                    //     return 'Phone Number is Required';
+                    //   } else if (value.length < 11) {
+                    //     return 'Phone number must be 11 digits';
+                    //   }
+                    //   return null;
+                    // },
                   ),
                   10.verticalSpace,
                   CustomTextField(
@@ -125,14 +128,15 @@ class _SignInScreenState extends State<SignInScreen> {
                       });
                     },
                     controller: _passwordController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Password is required';
-                      } else if (value.length < 6) {
-                        return 'Password must be at least 6 characters';
-                      }
-                      return null;
-                    },
+                    validator: (value) => ValidationUtils.validatePassword(value) ,
+                    // validator: (value) {
+                    //   if (value == null || value.isEmpty) {
+                    //     return 'Password is required';
+                    //   } else if (value.length < 6) {
+                    //     return 'Password must be at least 6 characters';
+                    //   }
+                    //   return null;
+                    // },
                   ),
                   5.verticalSpace,
                   ForgotPasswordWidget(),
@@ -164,7 +168,7 @@ class _SignInScreenState extends State<SignInScreen> {
     );
   }
 
-  Widget _goToSignUp(context) {
+  Widget _goToSignUp(BuildContext context) {
     return Center(
       child: ClickableText(
         regularText: 'Don’t have an account?',
@@ -200,10 +204,10 @@ class ForgotPasswordWidget extends StatelessWidget {
           },
           child: Text(
             'Forgot Password?',
-            style: Theme.of(context)
+            style: context
                 .textTheme
                 .bodySmall
-                ?.copyWith(color: AppColors.black),
+                ?.copyWith(fontWeight: FontWeight.w600,color: Colors.black),
             textAlign: TextAlign.end,
           ),
         ),

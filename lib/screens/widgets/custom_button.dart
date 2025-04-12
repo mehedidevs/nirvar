@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:nirvar/screens/utils/theme_helper.dart';
 
 class CustomButton extends StatefulWidget {
   final String text;
@@ -23,6 +24,7 @@ class CustomButton extends StatefulWidget {
 
 class _CustomButtonState extends State<CustomButton> {
   bool _isPressed = false;
+
   Future<void> _handlePress() async {
     if (_isPressed) return;
     setState(() => _isPressed = true);
@@ -32,10 +34,11 @@ class _CustomButtonState extends State<CustomButton> {
       setState(() => _isPressed = false);
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap:_isPressed ? null : _handlePress,
+      onTap: _isPressed ? null : _handlePress,
       child: Container(
         width: ScreenUtil().screenWidth * widget.widthFactor,
         height: ScreenUtil().screenHeight * widget.heightFactor,
@@ -50,7 +53,11 @@ class _CustomButtonState extends State<CustomButton> {
         child: Center(
           child: Text(
             widget.text,
-            style: Theme.of(context).textTheme.titleSmall,
+            style: context.textTheme.titleSmall?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.6,
+            ),
           ),
         ),
       ),

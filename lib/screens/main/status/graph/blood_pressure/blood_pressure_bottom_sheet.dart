@@ -7,6 +7,7 @@ import 'package:nirvar/screens/main/status/graph/blood_pressure/monthly/monthly_
 import 'package:nirvar/screens/main/status/graph/blood_pressure/past_7_days/daily_bp_chart.dart';
 import 'package:nirvar/screens/main/status/graph/blood_pressure/weekly/weekly_bp_chart.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
+import 'package:nirvar/screens/utils/ui_helper.dart';
 
 import '../../../../../core/resources/api_exception.dart';
 import '../../../../../injection_container.dart';
@@ -24,7 +25,8 @@ class BloodPressureBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding:  EdgeInsets.only(top: 24.h),
+      //padding:  EdgeInsets.only(top: 30.h),
+      padding:  EdgeInsets.only(top: UIHelper.screenHeight * 0.1.h),
       child: DefaultTabController(
         length: 3, // Number of tabs
         child: Container(

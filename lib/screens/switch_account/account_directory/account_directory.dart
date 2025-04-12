@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:nirvar/data/local/entity/account_holder.dart';
 import 'package:nirvar/repository/account_holder/account_holder_repository.dart';
 import 'package:nirvar/screens/switch_account/switch_account_screen.dart';
+import 'package:nirvar/screens/utils/theme_helper.dart';
 
 import '../../../injection_container.dart';
 import '../../utils/app_colors.dart';
@@ -56,21 +57,16 @@ class AccountDirectory extends StatelessWidget {
           ),
           title: Text(
             accountHolder.name ?? '',
-            style: TextStyle(
-              fontSize: 16.sp,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF2C3E50),
-
+            style: context.textTheme.bodyLarge?.copyWith(
+              color: AppColors.appBarColor,
+              fontWeight: FontWeight.w700,
             ),
             maxLines: 1,
             overflow: TextOverflow.fade,
           ),
           subtitle:Text(
             accountHolder.number ?? "",
-            style: TextStyle(
-              fontSize: 12.sp,
-              color: Colors.grey.shade400,
-            ),
+            style: context.textTheme.bodySmall?.copyWith(),
             maxLines: 1,
             overflow: TextOverflow.fade,
           ),
@@ -92,7 +88,7 @@ class AccountDirectory extends StatelessWidget {
                           SvgPicture.asset(AssetsPath.deleteLogoSvg),
                           SizedBox(height: 16.h),
                           Text(
-                            'Are you sure you want to delete this folder?',
+                            'Are you sure you want to delete this account?',
                             style: TextStyle(
                               fontSize: 16.sp,
                               fontWeight: FontWeight.bold,
@@ -137,7 +133,7 @@ class AccountDirectory extends StatelessWidget {
                   );
                 },);
             },
-              child: SvgPicture.asset(AssetsPath.deleteLogoSvg, height: 25.h,width: 25.w)),
+              child: SvgPicture.asset(AssetsPath.deleteLogoSvg, height: 20.h,width: 20.w)),
           ),
 
         ),

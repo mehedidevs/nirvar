@@ -14,8 +14,9 @@ class AppColors {
   static const Color yellow = Color(0xFFFFCC00);
   static const Color red = Color(0xFFb70000);
   static const Color greenPale = Color(0xFF4CE5B1);
-  static const Color black = Color(0xFF000000);
+  static const Color black = Color(0xFF2E2E2E);
   static const Color white = Color(0xFFf4f4f2);
+  //static const Color white = Color(0xFFF7F6FF);
   static const Color background = Color(0xFFFFFFFF);
   static const Color hint = Colors.grey;
   static const Color grey = Colors.grey;
@@ -37,6 +38,7 @@ class AppColors {
 
   static const Color softCoral = Color(0xFFE39087);
   static const Color menuItemColor = Color(0xFFEDEDED);
+  static const Color appBarColor = Color(0xFF2F4858);
 
 
 }

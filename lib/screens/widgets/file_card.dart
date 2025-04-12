@@ -6,6 +6,7 @@ import 'package:nirvar/routes/routes_name.dart';
 import 'package:nirvar/screens/details/folder_details_screen.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
+import 'package:nirvar/screens/utils/theme_helper.dart';
 import 'package:nirvar/screens/widgets/labeled_text_form_field.dart';
 
 import '../../injection_container.dart';
@@ -36,13 +37,15 @@ class _FileCardState extends State<FileCard> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        final result = await Navigator.pushNamed(context,RoutesName.folderDetailsScreen,arguments: widget.patientFolder);
+        final result = await Navigator.pushNamed(
+            context, RoutesName.folderDetailsScreen,
+            arguments: widget.patientFolder);
         if (result != null && result == true) {
           widget.onComingBack();
         }
       },
       child: Container(
-        padding: EdgeInsets.all(12.w), // Responsive padding
+        padding: EdgeInsets.only(top: 12.h,bottom: 12.h,left: 12.w,right: 0.w), // Responsive padding
         decoration: BoxDecoration(
           color: AppColors.pale,
           borderRadius: BorderRadius.circular(16.r), // Responsive corner radius
@@ -54,47 +57,43 @@ class _FileCardState extends State<FileCard> {
             ),
           ],
         ),
+        // child: updatedFileHolder(context),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Flexible(
-              flex: 2,
+              flex: 3,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Image.asset(
                     AssetsPath.fileCardPng,
-                    width: 48.sp,
-                    height: 48.sp,
+                    fit: BoxFit.scaleDown,
                   ),
 
-                  const Spacer(), // Responsive spacing
+                 24.verticalSpace,
                   Text(
                     widget.patientFolder.name ?? '',
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
+                    style: context.textTheme.bodyMedium?.copyWith(
+                        color: AppColors.appBarColor, letterSpacing: 0,fontWeight: FontWeight.w600),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  SizedBox(height: 4.h),
+                  8.verticalSpace,
                   Text(
                     '${widget.patientFolder.fileCount ?? 0} Files',
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      color: Colors.grey,
-                    ),
+                    style: context.textTheme.bodySmall?.copyWith(
+                        color: Colors.grey, fontWeight: FontWeight.w900),
                   ),
-                  SizedBox(height: 8.h),
+
                 ],
               ),
             ),
-            Flexible(
+            Expanded(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   // GestureDetector(
                   //   onTap:(){
@@ -154,20 +153,28 @@ class _FileCardState extends State<FileCard> {
                                     ),
                                     SizedBox(height: 32.h),
                                     Padding(
-                                      padding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 16.w),
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 0.h, horizontal: 16.w),
                                       child: CustomButton(
                                         text: 'Save',
                                         onPressed: () async {
-                                          if (formKey.currentState?.validate() ?? false) {
-                                            final response = await patientFolderRepository
-                                                .updateFolder(widget.patientFolder.folderId, folderNameController.text);
+                                          if (formKey.currentState
+                                                  ?.validate() ??
+                                              false) {
+                                            final response =
+                                                await patientFolderRepository
+                                                    .updateFolder(
+                                                        widget.patientFolder
+                                                            .folderId,
+                                                        folderNameController
+                                                            .text);
                                             response.fold(
-                                                  (failure) {
+                                              (failure) {
                                                 if (context.mounted) {
                                                   Navigator.of(context).pop();
                                                 }
                                               },
-                                                  (success) {
+                                              (success) {
                                                 widget.onUpdateSuccess();
                                                 if (context.mounted) {
                                                   Navigator.of(context).pop();
@@ -181,17 +188,18 @@ class _FileCardState extends State<FileCard> {
                                     SizedBox(height: 8.h),
                                     TextButton(
                                       onPressed: () {
-                                        Navigator.of(context).pop(); // Close the dialog
+                                        Navigator.of(context)
+                                            .pop(); // Close the dialog
                                       },
                                       child: Text(
                                         'Cancel',
                                         style: TextStyle(
                                           fontSize: 14.sp,
-                                          color: AppColors.primary, // Adjust the color as needed
+                                          color: AppColors
+                                              .primary, // Adjust the color as needed
                                         ),
                                       ),
                                     ),
-
                                   ],
                                 ),
                               ),
@@ -291,7 +299,7 @@ class _FileCardState extends State<FileCard> {
                     },
                     child: Icon(
                       Icons.share,
-                      size: 20.sp,
+                      size: 14.sp,
                       color: Colors.grey,
                     ),
                   ),
@@ -301,6 +309,238 @@ class _FileCardState extends State<FileCard> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget updatedFileHolder(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Flexible(
+          child: Row(
+            children: [
+              Image.asset(
+                AssetsPath.fileCardPng,
+                fit: BoxFit.scaleDown,
+              ),
+              Spacer(),
+              EditDeleteMenu(
+                onEdit: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      final formKey = GlobalKey<FormState>();
+                      TextEditingController folderNameController =
+                          TextEditingController();
+                      folderNameController.text =
+                          widget.patientFolder.name ?? '';
+                      final patientFolderRepository =
+                          sl<PatientFolderRepository>();
+                      return Dialog(
+                        backgroundColor: AppColors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.r),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(16.w),
+                          child: Form(
+                            key: formKey,
+                            child: ListView(
+                              shrinkWrap: true,
+                              children: [
+                                Text(
+                                  widget.patientFolder.name ?? '',
+                                  style: TextStyle(
+                                    fontSize: 24.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(height: 32.h),
+                                LabeledTextFormField(
+                                  label: 'Edit Folder Name',
+                                  hint: '',
+                                  controller: folderNameController,
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter Folder Name';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                SizedBox(height: 32.h),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 0.h, horizontal: 16.w),
+                                  child: CustomButton(
+                                    text: 'Save',
+                                    onPressed: () async {
+                                      if (formKey.currentState?.validate() ??
+                                          false) {
+                                        final response =
+                                            await patientFolderRepository
+                                                .updateFolder(
+                                                    widget
+                                                        .patientFolder.folderId,
+                                                    folderNameController.text);
+                                        response.fold(
+                                          (failure) {
+                                            if (context.mounted) {
+                                              Navigator.of(context).pop();
+                                            }
+                                          },
+                                          (success) {
+                                            widget.onUpdateSuccess();
+                                            if (context.mounted) {
+                                              Navigator.of(context).pop();
+                                            }
+                                          },
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
+                                SizedBox(height: 8.h),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context)
+                                        .pop(); // Close the dialog
+                                  },
+                                  child: Text(
+                                    'Cancel',
+                                    style: TextStyle(
+                                      fontSize: 14.sp,
+                                      color: AppColors
+                                          .primary, // Adjust the color as needed
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+                onDelete: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      final patientFolderRepository =
+                          sl<PatientFolderRepository>();
+                      return Dialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.r),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(16.w),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SvgPicture.asset(AssetsPath.deleteLogoSvg),
+                              SizedBox(height: 16.h),
+                              Text(
+                                'Are you sure you want to delete this folder?',
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                                maxLines: 2,
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: 32.h),
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 0.h, horizontal: 16.w),
+                                child: CustomButton(
+                                  text: 'Delete',
+                                  onPressed: () async {
+                                    final response =
+                                        await patientFolderRepository
+                                            .deleteFolder(
+                                                widget.patientFolder.folderId);
+                                    response.fold(
+                                      (failure) {
+                                        if (context.mounted) {
+                                          Navigator.of(context).pop();
+                                        }
+                                      },
+                                      (success) {
+                                        widget.onDeleteSuccess();
+                                        if (context.mounted) {
+                                          Navigator.of(context).pop();
+                                        }
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                              SizedBox(height: 8.h),
+                              // Cancel Button
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context)
+                                      .pop(); // Close the dialog
+                                },
+                                child: Text(
+                                  'Cancel',
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    color: AppColors
+                                        .primary, // Adjust the color as needed
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+        16.verticalSpace,
+        Text(
+          widget.patientFolder.name ?? '',
+          style: context.textTheme.bodyMedium
+              ?.copyWith(color: AppColors.appBarColor, letterSpacing: 0),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        Spacer(),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('${widget.patientFolder.fileCount ?? 0} Files',
+                style: context.textTheme.bodySmall?.copyWith(
+                    color: Colors.grey, fontWeight: FontWeight.w900)),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => QrCodeScreen(
+                              folderId: widget.patientFolder.folderId,
+                            )));
+              },
+              child: Icon(
+                Icons.share,
+                size: 14.sp,
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 

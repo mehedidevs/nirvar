@@ -8,8 +8,8 @@ import '../../../utils/app_colors.dart';
 class UserProfilePicture extends StatefulWidget {
   const UserProfilePicture({super.key});
 
-  static const double avatarRadius = 25;
-  static const double borderWidth = 4;
+  static const double avatarRadius = 20;
+  static const double borderWidth = 2;
 
   @override
   State<UserProfilePicture> createState() => _UserProfilePictureState();

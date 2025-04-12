@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:nirvar/screens/utils/theme_helper.dart';
 
 import '../../../../bloc/account_holder/account_holder_bloc.dart';
 import '../../../../bloc/user_profile_details/user_profile_details_bloc.dart';
@@ -46,7 +47,7 @@ class _UserProfileDetailsState extends State<UserProfileDetails> {
             UserProfileDetailsStatus.loading => _buildLoader(),
             UserProfileDetailsStatus.success ||
             UserProfileDetailsStatus.refreshing =>
-                _buildSuccessWidget(state.userProfile),
+                _buildSuccessWidget(state.userProfile,context),
             UserProfileDetailsStatus.failure => _buildDefaultProfilePicture(),
           };
         },
@@ -69,7 +70,7 @@ class _UserProfileDetailsState extends State<UserProfileDetails> {
     );
   }
 
-  Widget _buildSuccessWidget(UserProfile userProfile){
+  Widget _buildSuccessWidget(UserProfile userProfile, BuildContext context){
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -102,17 +103,17 @@ class _UserProfileDetailsState extends State<UserProfileDetails> {
         SizedBox(height: 12.h),
         Text(
           userProfile.name ?? "N/A",
-          style: TextStyle(
-            fontSize: 20.sp,
-            fontWeight: FontWeight.bold,
-          ),
+          style: context.textTheme.bodyMedium?.copyWith(
+              color: Colors.white,
+              letterSpacing: 0.0,
+              fontWeight: FontWeight.w600)
         ),
         Text(
           userProfile.email ?? 'N/A',
-          style: TextStyle(
-            fontSize: 14.sp,
-            color: Colors.white.withOpacity(0.7),
-          ),
+          style:context.textTheme.labelSmall?.copyWith(
+              color: Colors.white,
+              letterSpacing: 0.0,
+              fontWeight: FontWeight.w400)
         ),
       ],
     );

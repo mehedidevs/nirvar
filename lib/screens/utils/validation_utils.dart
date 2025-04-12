@@ -7,6 +7,15 @@ class ValidationUtils {
     return null;
   }
 
+  /// Skips validation if the given optional field is null or empty.
+  static String? validateOptionalField(String? value, {required String fieldName}) {
+    if (value == null || value.trim().isEmpty) {
+      return null; // No error for optional fields
+    }
+    return null;
+  }
+
+
   /// Validates a required email field.
   /// Ensures the field is not empty and matches a basic email pattern.
   static String? requiredEmailValidation(String? value) {
@@ -68,17 +77,33 @@ class ValidationUtils {
     return null;
   }
 
+
   /// Validates if the given value is a valid phone number.
   static String? validatePhoneNumber(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Please enter your phone number';
     }
-    final phoneRegex = RegExp(r'^\d{10}$');
+    final phoneRegex = RegExp(r'^\d{11}$');
     if (!phoneRegex.hasMatch(value)) {
-      return 'Please enter a valid phone number (10 digits)';
+      return 'Please enter a valid phone number (11 digits)';
     }
     return null;
   }
+
+  /// Validates that the password is not empty and has at least 6 characters.
+  static String? validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Password is required';
+    }
+
+    if (value.length < 6) {
+      return 'Password must be at least 6 characters';
+    }
+
+    return null;
+  }
+
+
 
   /// Validates if the given value meets a minimum length requirement.
   static String? validateMinLength(String? value, int minLength, {required String fieldName}) {
@@ -96,6 +121,7 @@ class ValidationUtils {
     return null;
   }
 
+  //Required Age Validation
   static String? validateAgeRequirement(String? value) {
     if (value == null || value.isEmpty) {
       return 'Date of Birth is required';
@@ -117,6 +143,30 @@ class ValidationUtils {
 
     return null;
   }
+
+  //Optional Age Validation
+  /// Validates age only if value is provided; must be at least 18 years old.
+  static String? validateAgeRequirementOptional(String? value) {
+    if (value == null || value.isEmpty) {
+      return null; // Skip validation if optional
+    }
+
+    final birthDate = DateTime.tryParse(value);
+    if (birthDate == null) {
+      return 'Invalid date format';
+    }
+
+    final now = DateTime.now();
+    final age = now.year - birthDate.year -
+        ((now.month > birthDate.month || (now.month == birthDate.month && now.day >= birthDate.day)) ? 0 : 1);
+
+    if (age < 18) {
+      return 'You must be at least 18 years old';
+    }
+
+    return null;
+  }
+
 
   static String? validateGlucosePoint(String? value) {
     if (value == null || value.isEmpty) {

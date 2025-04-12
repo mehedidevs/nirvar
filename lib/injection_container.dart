@@ -43,6 +43,7 @@ import 'package:nirvar/repository/patient_file/patient_file_repository.dart';
 import 'package:nirvar/repository/patient_file/patient_file_repository_impl.dart';
 import 'package:nirvar/repository/patient_folder/patient_folder_repository.dart';
 import 'package:nirvar/repository/patient_folder/patient_folder_repository_impl.dart';
+import 'config/network_resource/custom_error_interceptor.dart';
 import 'data/local/dao/account_holder_dao.dart';
 import 'data/local/db/account_holder_database.dart';
 import 'data/network/authentication/auth_api_service.dart';
@@ -115,14 +116,16 @@ void _registerNetworkDependencies() {
     Dio(
       BaseOptions(
         baseUrl: appBaseURL,
-        connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 10),
-        sendTimeout: const Duration(seconds: 10),
+        connectTimeout: const Duration(minutes: 1),
+        receiveTimeout: const Duration(minutes: 1),
+        sendTimeout: const Duration(minutes: 1),
       ),
     ),
   );
 
   sl.registerLazySingleton<CustomInterceptor>(() => CustomInterceptor(dio: sl<Dio>()));
+  sl.registerLazySingleton<CustomErrorInterceptor>(() => CustomErrorInterceptor(dio:sl<Dio>()));
+
 }
 
 void _registerSharedPreferencesDependencies() {

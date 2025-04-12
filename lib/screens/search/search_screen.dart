@@ -74,11 +74,13 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
-    statusBarSetup();
   }
 
   @override
   Widget build(BuildContext context) {
+
+    statusBarSetup();
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (bool didPop, dynamic result) {

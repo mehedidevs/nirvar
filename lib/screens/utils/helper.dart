@@ -211,10 +211,16 @@ bool isPdf(String url) {
 
 void statusBarSetup() {
   SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-          statusBarColor: Colors.black26
+        SystemUiOverlayStyle(
+         statusBarColor: Colors.black26,
+          statusBarBrightness: Brightness.light, // Dark text for status bar
       )
   );
+
+  // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+  //   statusBarColor: Colors.transparent, // Transparent status bar
+  //   statusBarBrightness: Brightness.dark, // Dark text for status bar
+  // ));
 }
 
 

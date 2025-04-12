@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
+import 'package:nirvar/screens/utils/theme_helper.dart';
 
 class WelcomeScreen extends StatelessWidget {
   final String logoPath;
@@ -40,7 +41,7 @@ class WelcomeScreen extends StatelessWidget {
               SizedBox(height: 30.h),
               Text(
                 welcomeText,
-                style: Theme.of(context).textTheme.titleMedium,
+                style: context.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w600),
               ),
               SizedBox(height: 20.h),
               ...children, // Add the additional children widgets here

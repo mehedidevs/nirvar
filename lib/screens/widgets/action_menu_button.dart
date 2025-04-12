@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
+import 'package:nirvar/screens/utils/theme_helper.dart';
 
 class ActionMenuButton extends StatelessWidget {
 
@@ -66,22 +67,19 @@ class ActionMenuButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(30.r), // Rounded corners
         ),
         child: Padding(
-          padding:  EdgeInsets.all(4.sp),
+          padding:  EdgeInsets.all(4.w),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children:  [
               Icon(
                 Icons.add,
                 color: Colors.white, // White icon
-                size: 18.sp,
+                size: 12.sp,
               ),
               SizedBox(width:4.w),
               Text(
                 "New",
-                style: TextStyle(
-                  color: Colors.white, // White text
-                  fontSize: 16.sp,
-                ),
+                style: context.textTheme.labelMedium?.copyWith(color: Colors.white,fontWeight: FontWeight.w600)
               ),
             ],
           ),

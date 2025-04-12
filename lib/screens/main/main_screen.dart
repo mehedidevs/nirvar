@@ -17,9 +17,17 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
 
+class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
+  DateTime? _lastBackPressed;
+
+  final List<Widget> _screens = [
+    HomeScreen(),
+    MyFiles(),
+    StatsScreen(),
+    ProfileScreen(),
+  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -27,65 +35,45 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  final List<Widget> _screens = [
-    HomeScreen(),
-    MyFiles(),
-    StatsScreen(),
-    ProfileScreen()
-  ];
-
-  // @mustCallSuper
-  // void _onPopInvokedWithResult(bool didPop, dynamic result) {
-  //   // Handle back press behavior here
-  //   if (_selectedIndex <= _screens.length) {
-  //     // Allow app to exit if
-  //     return;
-  //   } else {
-  //     setState(() {
-  //       _selectedIndex = 0; // Navigate back to HomeScreen if not on it
-  //     });
-  //   }
-  // }
-
-  @mustCallSuper
-  void _onPopInvokedWithResult(bool didPop, dynamic result) {
-    // If back navigation was already handled by the system, do nothing
-    if (didPop) return;
-
-    // If we're not on the home screen, navigate back to home
+  Future<bool> _onWillPop() async {
     if (_selectedIndex != 0) {
       setState(() {
-        _selectedIndex = 0; // Navigate to HomeScreen
+        _selectedIndex = 0;
       });
+      return false;
+    }
 
-      // Optional: Show a snackbar to inform the user
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Press back again to exit'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+    final now = DateTime.now();
+    if (_lastBackPressed == null ||
+        now.difference(_lastBackPressed!) <= Duration(seconds: 1)) {
+      _lastBackPressed = now;
+
+      context.flushBarErrorMessage(message: 'Press again to exit');
+
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text('Press back again to exit'),
+      //     duration: Duration(seconds: 2),
+      //   ),
+      // );
+      return false;
     }
-    // If we're already on home screen, let system handle exit
-    else {
-      SystemNavigator.pop(); // Or let the default back behavior work
-    }
+
+    return true; // Let system pop (exit app)
   }
 
   @override
   void initState() {
     super.initState();
     FlutterAppBadgeControl.removeBadge();
-    statusBarSetup();
   }
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: true,
-      onPopInvokedWithResult: (bool didPop, dynamic result) {
-        _onPopInvokedWithResult(didPop, result); // Custom back press logic
-      },
+    statusBarSetup();
+
+    return WillPopScope(
+      onWillPop: _onWillPop,
       child: Scaffold(
         body: Stack(
           children: [
@@ -96,7 +84,7 @@ class _MainScreenState extends State<MainScreen> {
             Positioned(
               left: 0,
               right: 0,
-              bottom: 4.h, // Adjust as needed
+              bottom: 4.h, // Assuming you're using ScreenUtil
               child: Center(
                 child: FloatingBottomNavigationBar(
                   selectedIndex: _selectedIndex,
@@ -110,3 +98,4 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
+

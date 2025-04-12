@@ -3,9 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:nirvar/routes/navigation_helper.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
-
+import 'package:nirvar/screens/utils/theme_helper.dart';
 import '../../routes/routes_name.dart';
-import '../notification/notification_screen.dart';
 import '../utils/assets_path.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -22,7 +21,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         onTap: () => Navigator.of(context).pop(true),
         child: const Icon(Icons.arrow_back_ios, color: Colors.black),
       ),
-      title: _credentialText(title),
+      title: _credentialText(title,context),
       centerTitle: true,
       actions: [
         Stack(
@@ -57,7 +56,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => Size.fromHeight(kToolbarHeight);
 
-  Widget _credentialText(String information) {
+  Widget _credentialText(String information, BuildContext context) {
     return Center(
       child: Container(
         decoration: BoxDecoration(
@@ -66,9 +65,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             )),
         child: Text(
           information,
-          style: TextStyle(
-            fontSize: 24.sp,
-            fontWeight: FontWeight.bold,
+          style: context.textTheme.titleLarge?.copyWith(
+            color: AppColors.appBarColor,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),

@@ -17,7 +17,7 @@ class EditDeleteMenu extends StatelessWidget {
     return PopupMenuButton<int>(
       icon: Icon(
         Icons.more_vert,
-        size: 25.sp,
+        size: 20.sp,
         color: Colors.grey,
       ),
       color: AppColors.menuItemColor,

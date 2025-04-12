@@ -44,7 +44,7 @@ class _BloodGlucoseCardState extends State<BloodGlucoseCard> {
     return HealthCard(
       value: 'N/A',
       average: 'Last 7 days Avg',
-      label: 'Diabetes',
+      label: 'Blood Glucose',
       onPressed: _showGlucoseGraph,
     );
   }
@@ -55,7 +55,7 @@ class _BloodGlucoseCardState extends State<BloodGlucoseCard> {
     return HealthCard(
       value: glucoseLevel,
       average: 'Last 7 days Avg',
-      label: 'Diabetes',
+      label: 'Blood Glucose',
       onPressed: _showGlucoseGraph,
     );
 

@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
 import 'package:nirvar/screens/utils/assets_path.dart';
+import 'package:nirvar/screens/utils/theme_helper.dart';
 
 class HealthCard extends StatelessWidget {
   final String value;
@@ -21,36 +22,80 @@ class HealthCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const double kCardPadding = 16.0;
-    const double kCardRadius = 12.0;
+    const double kCardRadius = 14.0;
 
     return SizedBox(
-      height: 0.18.sh,
+      height: 120.h,         // 0.18.sh
       child: Container(
-        padding: EdgeInsets.all(kCardPadding.w),
+        padding: EdgeInsets.only(top: kCardPadding.h,right: kCardPadding.w,left: kCardPadding.w),
         decoration: BoxDecoration(
           color: AppColors.primary,
           borderRadius: BorderRadius.circular(kCardRadius.r),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
+
+            // ListTile(
+            //   title: Text(
+            //     value,
+            //     style: context.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600,color: Colors.white),
+            //     overflow: TextOverflow.ellipsis,
+            //     maxLines: 1,
+            //   ),
+            //   subtitle:  Text(
+            //     average,
+            //     style: context.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w400,color: Colors.white),
+            //   ),
+            //   trailing:  InkWell(
+            //     onTap: onPressed,
+            //     child: SvgPicture.asset(
+            //       AssetsPath.gotoSvg,
+            //       height: 25.h,
+            //       width: 25.w,
+            //       placeholderBuilder: (context) => Icon(
+            //         Icons.error,
+            //         size: 25.w,
+            //         color: Colors.red,
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            //
+            // Spacer(),
+            //
+            // Text(
+            //   label,
+            //   style:context.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w400,color: Colors.white),
+            // ),
+
             Flexible(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Flexible(
-                    child: Text(
-                      value,
-                      style: TextStyle(
-                        fontSize: 20.sp,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          value,
+                          style: context.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600,color: Colors.white),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                        Text(
+                          average,
+                          style:context.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w400,color: Colors.white,letterSpacing: 0.0),
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(width: 8.w),
+
+                  4.horizontalSpace,
+
                   InkWell(
                     onTap: onPressed,
                     child: SvgPicture.asset(
@@ -67,15 +112,17 @@ class HealthCard extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 8.h),
-            Text(
-              average,
-              style: TextStyle(fontSize: 14.sp, color: Colors.white),
-            ),
-            SizedBox(height: 16.h),
+            // 2.verticalSpace,
+            // Text(
+            //   average,
+            //   style:context.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w400,color: Colors.white),
+            // ),
+            16.verticalSpace,
             Text(
               label,
-              style: TextStyle(fontSize: 16.sp, color: Colors.white),
+              style: context.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500,color: Colors.white,letterSpacing: 0.0),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
             ),
           ],
         ),
