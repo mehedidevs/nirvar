@@ -34,18 +34,19 @@ class _BloodGlucoseInputState extends State<BloodGlucoseInput> {
   @override
   void initState() {
     super.initState();
-    statusBarSetup();
     _loadHint();
   }
 
   @override
   void dispose() {
-    _bloodGlucoseController.dispose();
     super.dispose();
+    _bloodGlucoseController.dispose();
   }
 
   Future<void> _loadHint() async {
     String loadedHint = await getHint();
+
+    print('Initial Setup of the Meal Status');
     if (mounted) {
       setState(() {
         hint = loadedHint;
@@ -56,6 +57,9 @@ class _BloodGlucoseInputState extends State<BloodGlucoseInput> {
 
   @override
   Widget build(BuildContext context) {
+
+    statusBarSetup();
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (bool didPop, dynamic result) {
@@ -151,14 +155,18 @@ class _BloodGlucoseInputState extends State<BloodGlucoseInput> {
                                 // If status is "After Meal" (1), reset to "Before Meal" (0)
                                 if (status == 1) {
                                   await sl<BloodGlucoseStatusStorage>().saveStatus(0); // Set to 0 (Before Meal)
+                                  print('After to Before Setup of the Meal Status');
                                 }
                                 // If status is "Before Meal" (0), set to "After Meal" (1)
                                 else if (status == 0) {
                                   await sl<BloodGlucoseStatusStorage>().saveStatus(1); // Set to 1 (After Meal)
+                                  print('Before to After Setup of the Meal Status');
                                 }
-                                // If no status exists, default to "Before Meal"
+
+                                // // If no status exists, default to "Before Meal"
                                 else {
                                   await sl<BloodGlucoseStatusStorage>().saveStatus(0);
+                                  print('For no Value Setup Setup of the Meal Status');
                                 }
 
                                 // Load the updated hint

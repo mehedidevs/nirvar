@@ -5,12 +5,16 @@ import 'package:nirvar/core/resources/api_exception.dart';
 import 'package:nirvar/models/glucose_level/glucose_level.dart';
 import 'package:nirvar/models/glucose_level_weekly/blood_glucose_weekly.dart';
 import 'package:nirvar/models/patient_glucose/patient_glucose.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../../../core/constants/constants.dart';
+import '../../../core/resources/custom_interceptor.dart';
+import '../../../injection_container.dart';
 import '../../../models/glucose_level_last_seven_days/glucose_level_for_past_seven_days.dart';
 import '../../../models/glucose_level_monthly/blood_glucose_monthly.dart';
 import '../../preference/token_storage.dart';
 import '../../preference/user_id_storage.dart';
+import '../auth_interceptor.dart';
 
 class DiabetesApiService {
   final Dio _dio;
@@ -18,29 +22,41 @@ class DiabetesApiService {
   final UserIdStorage _userIdStorage;
 
   DiabetesApiService(this._dio, this._tokenStorage, this._userIdStorage) {
-    _dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) async {
-          options.headers['Accept'] = 'accept/json';
-          if (options.extra['requiresAuth'] ?? true) {
-            String? token = await _tokenStorage.getToken();
-            if (token != null) {
-              options.headers['Authorization'] = 'Bearer $token';
-            } else {
-              print(
-                  'Warning: Trying to make an authenticated request without a token');
-            }
-          }
-          return handler.next(options);
-        },
-        onError: (DioException e, handler) {
-          if (e.response?.statusCode == 401) {
-            print('Unauthorized: Token might be invalid or expired');
-            _tokenStorage.clearToken();
-          }
-          return handler.next(e);
-        },
+    _dio.interceptors.addAll([
+      AuthInterceptor(tokenStorage: _tokenStorage, userIdStorage: _userIdStorage),
+      PrettyDioLogger(
+        requestHeader: true,
+        requestBody: true,
+        responseBody: true,
+        responseHeader: false,
+        compact: true,
+        maxWidth: 90,
       ),
+      sl<CustomInterceptor>(),
+    ]
+      // InterceptorsWrapper(
+      //   onRequest: (options, handler) async {
+      //     options.headers['Accept'] = 'accept/json';
+      //     if (options.extra['requiresAuth'] ?? true) {
+      //       String? token = await _tokenStorage.getToken();
+      //       if (token != null) {
+      //         options.headers['Authorization'] = 'Bearer $token';
+      //       } else {
+      //         print(
+      //             'Warning: Trying to make an authenticated request without a token');
+      //       }
+      //     }
+      //     return handler.next(options);
+      //   },
+      //   onError: (DioException e, handler) {
+      //     if (e.response?.statusCode == 401) {
+      //       print('Unauthorized: Token might be invalid or expired');
+      //       _tokenStorage.clearToken();
+      //     }
+      //     return handler.next(e);
+      //   },
+      // ),
+
     );
   }
 

@@ -13,6 +13,7 @@ import '../../../models/blood_pressure_monthly/blood_pressure_summary_monthly.da
 import '../../../models/blood_pressure_weekly/blood_pressure_summary_weekly.dart';
 import '../../preference/token_storage.dart';
 import '../../preference/user_id_storage.dart';
+import '../auth_interceptor.dart';
 
 class BloodPressureApiService {
   final Dio _dio;
@@ -21,28 +22,29 @@ class BloodPressureApiService {
 
   BloodPressureApiService(this._dio, this._tokenStorage, this._userIdStorage) {
     _dio.interceptors.addAll([
-      InterceptorsWrapper(
-        onRequest: (options, handler) async {
-          options.headers['Accept'] = 'accept/json';
-          if (options.extra['requiresAuth'] ?? true) {
-            String? token = await _tokenStorage.getToken();
-            if (token != null) {
-              options.headers['Authorization'] = 'Bearer $token';
-            } else {
-              print(
-                  'Warning: Trying to make an authenticated request without a token');
-            }
-          }
-          return handler.next(options);
-        },
-        onError: (DioException e, handler) {
-          if (e.response?.statusCode == 401) {
-            print('Unauthorized: Token might be invalid or expired');
-            _tokenStorage.clearToken();
-          }
-          return handler.next(e);
-        },
-      ),
+      // InterceptorsWrapper(
+      //   onRequest: (options, handler) async {
+      //     options.headers['Accept'] = 'accept/json';
+      //     if (options.extra['requiresAuth'] ?? true) {
+      //       String? token = await _tokenStorage.getToken();
+      //       if (token != null) {
+      //         options.headers['Authorization'] = 'Bearer $token';
+      //       } else {
+      //         print(
+      //             'Warning: Trying to make an authenticated request without a token');
+      //       }
+      //     }
+      //     return handler.next(options);
+      //   },
+      //   onError: (DioException e, handler) {
+      //     if (e.response?.statusCode == 401) {
+      //       print('Unauthorized: Token might be invalid or expired');
+      //       _tokenStorage.clearToken();
+      //     }
+      //     return handler.next(e);
+      //   },
+      // ),
+      AuthInterceptor(tokenStorage: _tokenStorage, userIdStorage: _userIdStorage),
       PrettyDioLogger(
         requestHeader: true,
         requestBody: true,

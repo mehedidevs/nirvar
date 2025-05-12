@@ -178,8 +178,8 @@ class ValidationUtils {
       return 'Please enter a valid number';
     }
 
-    if (glucosePoint > 15) {
-      return 'Glucose Point cannot be more than 15';
+    if (glucosePoint > 40) {
+      return 'Glucose Point cannot be more than 40';
     }
 
     return null;

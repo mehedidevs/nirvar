@@ -38,11 +38,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    statusBarSetup();
   }
 
   @override
   Widget build(BuildContext context) {
+
+    statusBarSetup();
     return _buildUI(context);
   }
 
@@ -109,7 +110,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       
             // White rounded container with list items
             Positioned(
-              top: ScreenUtil().screenHeight * 0.35.h,
+              top: ScreenUtil().screenHeight * 0.3.h,
               left: 0,
               right: 0,
               bottom: 0,
@@ -134,8 +135,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   mainAxisSize: MainAxisSize.min,
                     children: [
                       ListTile(
-                        leading: const Icon(Icons.person_outline,
-                            color: AppColors.black),
+                        dense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 8.w,vertical: 0),
+                        leading: const Icon(Icons.person_outline, color: AppColors.black),
                         title: Text('Edit Profile',
                             style: context.textTheme.bodySmall?.copyWith(color: AppColors.appBarColor,fontWeight: FontWeight.w500,)),
                         trailing: Icon(Icons.arrow_forward_ios, size: 16.sp),
@@ -150,8 +152,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           }
                         },
                       ),
-                      const Divider(),
+                      const Divider(color: AppColors.primary,),
                       ListTile(
+                        dense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 8.w,vertical: 0),
                         leading: const Icon(Icons.settings_outlined,
                             color: AppColors.black),
                         title: Text('Account settings',
@@ -165,8 +169,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           );
                         },
                       ),
-                      const Divider(),
+                      const Divider(color: AppColors.primary,),
                       ListTile(
+                        dense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 8.w,vertical: 0),
                         leading: const Icon(Icons.switch_account_outlined,
                             color: AppColors.black),
                         title: Text('Switch Account',
@@ -180,8 +186,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           );
                         },
                       ),
-                      const Divider(),
+                      const Divider(color: AppColors.primary,),
                       ListTile(
+                        dense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 8.w,vertical: 0),
                         leading: const Icon(Icons.privacy_tip_outlined, color: AppColors.red),
                         title: Text(
                           'Clear Personal Data',
@@ -197,8 +205,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           );
                         },
                       ),
-                      const Divider(),
+                      const Divider(color: AppColors.primary,),
                       ListTile(
+                        dense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 8.w,vertical: 0),
                         leading: SvgPicture.asset(AssetsPath.logoutSvg,
                             colorFilter: const ColorFilter.mode(
                                 AppColors.red, BlendMode.srcIn)),

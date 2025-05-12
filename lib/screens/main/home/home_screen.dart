@@ -28,6 +28,7 @@ import '../../../injection_container.dart';
 import '../../../models/patient_folder/patient_folder.dart';
 import '../../../repository/notification/notification_repository.dart';
 import '../../../repository/patient_folder/patient_folder_repository.dart';
+import '../../utils/helper.dart';
 import '../../widgets/health_card.dart';
 import 'components/daily_blood_pressure_health_item.dart';
 
@@ -413,7 +414,8 @@ Widget _headerSection(BuildContext context) {
 
 Widget _welcomeText(BuildContext context) {
   DateTime now = DateTime.now();
-  String formattedDate = DateFormat('EEEE, MMMM yyyy').format(now);
+  //String formattedDate = DateFormat('EEEE, MMMM yyyy').format(now);
+  String formattedDate = formatCustomDate(now);
 
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,

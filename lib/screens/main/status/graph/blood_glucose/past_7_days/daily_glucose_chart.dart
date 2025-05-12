@@ -67,11 +67,15 @@ class _DailyGlucoseChartState extends State<DailyGlucoseChart> {
   Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: 16/9,
+
       child: BarChart(
         BarChartData(
-          maxY: 20, // Adjust maxY for Systolic values
+          maxY: 40,
           barTouchData: BarTouchData(
             touchTooltipData: BarTouchTooltipData(
+              fitInsideHorizontally: true,
+              tooltipMargin: 4,
+              tooltipPadding: const EdgeInsets.all(4),
               getTooltipColor: (_) => Colors.blueGrey,
               getTooltipItem: (group, groupIndex, rod, rodIndex) {
                 String day = getLast7Days()[group.x.toInt()];
@@ -83,21 +87,23 @@ class _DailyGlucoseChartState extends State<DailyGlucoseChart> {
                 }
 
                 return BarTooltipItem(
-                  'Date: $day\n',
-                  const TextStyle(
+                  '$day\n',
+                  TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                    fontSize: 12.sp,
                     decoration: TextDecoration.none,
+                    letterSpacing: 0.0,
                   ),
                   children: <TextSpan>[
                     TextSpan(
                       text: '$valueToShow\n',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.yellow,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.w700,
                         decoration: TextDecoration.none,
+                        letterSpacing: 0.0,
                       ),
                     ),
                   ],
@@ -135,7 +141,7 @@ class _DailyGlucoseChartState extends State<DailyGlucoseChart> {
               sideTitles: SideTitles(
                 showTitles: true,
                 reservedSize: 40,
-                interval: 2,
+                interval: 5,
                 getTitlesWidget: leftTitles,
               ),
             ),
@@ -156,48 +162,46 @@ class _DailyGlucoseChartState extends State<DailyGlucoseChart> {
       case 0:
         text = '0';
         break;
-      case 2:
-        text = '2';
-        break;
-      case 4:
-        text = '4';
-        break;
-      case 6:
-        text = '6';
-        break;
-      case 8:
-        text = '8';
+      case 5:
+        text = '5';
         break;
       case 10:
         text = '10';
         break;
-      case 12:
-        text = '12';
-        break;
-      case 14:
-        text = '14';
-        break;
-      case 16:
-        text = '16';
-        break;
-      case 18:
-        text = '18';
+      case 15:
+        text = '15';
         break;
       case 20:
         text = '20';
         break;
+      case 25:
+        text = '25';
+        break;
+      case 30:
+        text = '30';
+        break;
+      case 35:
+        text = '35';
+        break;
+      case 40:
+        text = '40';
+        break;
       default:
-        return Container();
+        return Container(); // hide in-between ticks
     }
+
     return SideTitleWidget(
       axisSide: meta.axisSide,
       space: 0,
-      child: Text(text, style:  TextStyle(
-        color: AppColors.primary,
-        fontWeight: FontWeight.bold,
-        fontSize: 10.sp,
-        decoration: TextDecoration.none,
-      )),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: AppColors.primary,
+          fontWeight: FontWeight.bold,
+          fontSize: 10.sp,
+          decoration: TextDecoration.none,
+        ),
+      ),
     );
   }
 

@@ -11,7 +11,8 @@ import '../../data/local/entity/account_holder.dart';
 import '../../models/created_folder_for_prescription/created_folder_for_prescription.dart';
 import '../../models/patient_folder/patient_folder.dart';
 import '../../models/user/user.dart';
-
+import 'package:intl/intl.dart';
+import 'package:intl/intl.dart';
 // Helper method to show error message
 extension FlushBarMessage on BuildContext {
   void flushBarErrorMessage({required String message}) {
@@ -222,5 +223,37 @@ void statusBarSetup() {
   //   statusBarBrightness: Brightness.dark, // Dark text for status bar
   // ));
 }
+
+
+
+String formatCustomDate(DateTime date) {
+  final dayOfWeek = DateFormat('EEEE').format(date);
+
+  final day = date.day;
+  final suffix = getDaySuffix(day);
+
+  final monthYear = DateFormat('MMMM yyyy').format(date);
+
+  return '$dayOfWeek, ${day}$suffix $monthYear';
+}
+
+String getDaySuffix(int day) {
+  if (day >= 11 && day <= 13) {
+    return 'th';
+  }
+  switch (day % 10) {
+    case 1:
+      return 'st';
+    case 2:
+      return 'nd';
+    case 3:
+      return 'rd';
+    default:
+      return 'th';
+  }
+}
+
+
+
 
 

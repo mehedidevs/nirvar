@@ -44,7 +44,7 @@ class BloodGlucoseBottomSheet extends StatelessWidget {
             ),
             child: Material(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+               crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Header Section
                   2.verticalSpace,

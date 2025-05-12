@@ -48,7 +48,7 @@ class _BloodGlucoseAverageDailyCardState extends State<BloodGlucoseAverageDailyC
   Widget _buildHealthCardWidgetOfDiabetes(String value,String unit) {
     return HealthCardWidget(
       backgroundColor: AppColors.purpleLight,
-      title: 'Diabetes',
+      title: 'Blood Glucose',
       value: value,
       svgPath: AssetsPath.bloodDropSvg,
       unit: unit,

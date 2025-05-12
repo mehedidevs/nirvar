@@ -1,6 +1,9 @@
 import 'dart:io';
 import 'package:nirvar/bloc/account_holder/account_holder_bloc.dart';
 import 'package:nirvar/data/local/entity/account_holder.dart';
+import 'package:nirvar/data/network/auth_interceptor.dart';
+import 'package:nirvar/main.dart';
+import 'package:nirvar/routes/routes_name.dart';
 import 'package:nirvar/screens/utils/helper.dart';
 import 'package:path/path.dart' as path;
 import 'package:dartz/dartz.dart';
@@ -9,6 +12,8 @@ import 'package:nirvar/models/user_credentials/user_credentials.dart';
 import 'package:nirvar/models/user_profile/user_profile.dart';
 import 'package:nirvar/models/user_profile_update/user_profile_update.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import '../../../config/network_resource/custom_api_error_response_handler.dart';
+import '../../../config/network_resource/logger.dart';
 import '../../../core/constants/constants.dart';
 import '../../../core/resources/api_exception.dart';
 import '../../../core/resources/custom_interceptor.dart';
@@ -25,28 +30,76 @@ class AuthApiService {
 
   AuthApiService(this._dio, this._tokenStorage, this._userIdStorage) {
     _dio.interceptors.addAll([
-      InterceptorsWrapper(
-        onRequest: (options, handler) async {
-          options.headers['Accept'] = 'accept/json';
-          if (options.extra['requiresAuth'] ?? true) {
-            String? token = await _tokenStorage.getToken();
-            if (token != null) {
-              options.headers['Authorization'] = 'Bearer $token';
-            } else {
-              print(
-                  'Warning: Trying to make an authenticated request without a token');
-            }
-          }
-          return handler.next(options);
-        },
-        onError: (DioException e, handler) {
-          if (e.response?.statusCode == 401) {
-            print('Unauthorized: Token might be invalid or expired');
-            _tokenStorage.clearToken();
-          }
-          return handler.next(e);
-        },
-      ),
+      // InterceptorsWrapper(
+      //   onRequest: (options, handler) async {
+      //     options.headers['Accept'] = 'accept/json';
+      //     if (options.extra['requiresAuth'] ?? true) {
+      //       String? token = await _tokenStorage.getToken();
+      //       if (token != null) {
+      //         options.headers['Authorization'] = 'Bearer $token';
+      //       } else {
+      //         print(
+      //             'Warning: Trying to make an authenticated request without a token');
+      //       }
+      //     }
+      //     return handler.next(options);
+      //   },
+      //   onError: (DioException e, handler) async {
+      //     if (e.response?.statusCode == 401) {
+      //       print('Unauthorized: Token might be invalid or expired');
+      //       await _tokenStorage.clearToken();
+      //       await _userIdStorage.clearUserID();
+      //       navigatorKey.currentState?.pushNamedAndRemoveUntil(
+      //         RoutesName.signInScreen,
+      //         (route) => false,
+      //       );
+      //     }
+      //     return handler.next(e);
+      //   },
+      // ),
+
+      // InterceptorsWrapper(
+      //   onRequest: (options, handler) async {
+      //     options.headers['Accept'] = 'accept/json';
+      //
+      //     // Attach token if authentication is required
+      //     if (options.extra['requiresAuth'] ?? true) {
+      //       final token = await _tokenStorage.getToken();
+      //       if (token != null && token.isNotEmpty) {
+      //         options.headers['Authorization'] = 'Bearer $token';
+      //       } else {
+      //         logger.e(
+      //           '[Interceptor] Warning: Auth request attempted without token',
+      //         );
+      //       }
+      //     }
+      //
+      //     return handler.next(options);
+      //   },
+      //
+      //   onError: (DioException e, handler) async {
+      //     final statusCode = e.response?.statusCode;
+      //
+      //     if (statusCode == 401) {
+      //       logger.e('[Interceptor] 401 Unauthorized: Token expired or invalid');
+      //
+      //       // Clear sensitive data
+      //       await _tokenStorage.clearToken();
+      //       await _userIdStorage.clearUserID();
+      //
+      //       // Navigate to login screen safely
+      //       navigatorKey.currentState?.pushNamedAndRemoveUntil(
+      //         RoutesName.signInScreen,
+      //             (route) => false,
+      //       );
+      //     }
+      //
+      //     return handler.next(e); // Forward error
+      //   },
+      // ),
+
+      AuthInterceptor(tokenStorage: _tokenStorage, userIdStorage: _userIdStorage),
+
       PrettyDioLogger(
         requestHeader: true,
         requestBody: true,
@@ -83,7 +136,8 @@ class AuthApiService {
           //Going to work on here for Account Holder Local Database
           //this is mainly used for the Account Switching
           final accountHolder = data.toAccountHolder(password);
-          sl<AccountHolderBloc>().add(UpsertAccountHolder(accountHolder: accountHolder));
+          sl<AccountHolderBloc>()
+              .add(UpsertAccountHolder(accountHolder: accountHolder));
 
           _tokenStorage.saveToken(responseData['token']);
           _userIdStorage.saveUserID(data.id);
@@ -239,8 +293,12 @@ class AuthApiService {
           "date_of_birth": credentials.dateOfBirth,
           "blood_group": credentials.bloodGroup,
           "weight": credentials.weight,
-          "height_ft": credentials.heightFt != null ? '${credentials.heightFt} FT' : null,
-          "height_in": credentials.heightIn  != null ? '${credentials.heightIn} IN' : null,
+          "height_ft": credentials.heightFt != null
+              ? '${credentials.heightFt} FT'
+              : null,
+          "height_in": credentials.heightIn != null
+              ? '${credentials.heightIn} IN'
+              : null,
           "address": credentials.address,
         },
       );
@@ -255,23 +313,36 @@ class AuthApiService {
           String phoneNumber = responseData['number'];
 
           //handling the local database for account switching
-          final accountHolder = AccountHolder(id: userId,
-              name: credentials.name,
-              photo: credentials.photo,
-              number: phoneNumber,
-              email: credentials.email,
-              password: credentials.password,
+          final accountHolder = AccountHolder(
+            id: userId,
+            name: credentials.name,
+            photo: credentials.photo,
+            number: phoneNumber,
+            email: credentials.email,
+            password: credentials.password,
           );
-          sl<AccountHolderBloc>().add(InsertAccountHolder(accountHolder: accountHolder));
+          sl<AccountHolderBloc>()
+              .add(InsertAccountHolder(accountHolder: accountHolder));
           return Right(data);
         } else if (responseData['status'] == 0) {
-          // Get error message (like the email already taken)
-          final Map<String, dynamic> message = responseData['message'];
-          if (message.containsKey('email')) {
-            String emailError = message['email'][0];
-            return Left(ApiException(emailError)); // Handle the error here
+          final rawMessage = responseData['message'];
+
+          if (rawMessage is Map<String, dynamic>) {
+            // Prioritize known error key
+            if (rawMessage.containsKey('email')) {
+              final emailErrors = rawMessage['email'];
+              if (emailErrors is List && emailErrors.isNotEmpty) {
+                return Left(ApiException(emailErrors[0].toString()));
+              }
+            }
+            // Fallback: Use your custom formatter for unknown map structure
+            final customMessage = CustomApiErrorResponseHandler(rawMessage);
+            return Left(ApiException(customMessage.userMessage));
           }
-          return Left(ApiException('Unknown Error'));
+
+          // Fallback: If message is not a map
+          return Left(ApiException(
+              rawMessage?.toString() ?? 'An unexpected error occurred.'));
         } else {
           return Left(ApiException('Something Went Wrong'));
         }
@@ -366,7 +437,8 @@ class AuthApiService {
     }
   }
 
-  Future<Either<ApiException, String>> forgotPasswordReset(String password) async {
+  Future<Either<ApiException, String>> forgotPasswordReset(
+      String password) async {
     int? userId = await _userIdStorage.getUserID();
     if (userId == null) {
       return Left(ApiException('User ID is missing'));
@@ -445,8 +517,8 @@ class AuthApiService {
     }
   }
 
-  Future<Either<ApiException, String>> changeUserPassword(String oldPassword, String newPassword) async {
-
+  Future<Either<ApiException, String>> changeUserPassword(
+      String oldPassword, String newPassword) async {
     try {
       final response = await _dio.post(patientPasswordChange, data: {
         "old_password": oldPassword,
@@ -475,16 +547,14 @@ class AuthApiService {
     }
   }
 
-  Future<Either<ApiException, UserProfile>> getUserProfile() async{
+  Future<Either<ApiException, UserProfile>> getUserProfile() async {
     int? userId = await _userIdStorage.getUserID();
     if (userId == null) {
       return Left(ApiException('User ID is missing'));
     }
     print('USER ID FROM PREFS: $userId');
-    try{
-      final response = await _dio.get(
-          '$patientProfile$userId'
-      );
+    try {
+      final response = await _dio.get('$patientProfile$userId');
 
       print('RESPONSE : $response');
       print('ResponseData : ${response.data}');
@@ -502,17 +572,15 @@ class AuthApiService {
       } else {
         return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
       }
-
     } on DioException catch (e) {
       return Left(ApiException.fromDioError(e));
     } catch (e) {
       return Left(ApiException(e.toString()));
     }
-
   }
 
-  Future<Either<ApiException, String>> updateUserProfile(UserProfileUpdate profile,File? imageFile) async{
-
+  Future<Either<ApiException, String>> updateUserProfile(
+      UserProfileUpdate profile, File? imageFile) async {
     FormData formData = FormData.fromMap({
       'name': profile.name,
       'email': profile.email,
@@ -526,13 +594,14 @@ class AuthApiService {
       if (imageFile != null)
         'photo': await MultipartFile.fromFile(
           imageFile.path,
-          filename: path.basename(imageFile.path),),
+          filename: path.basename(imageFile.path),
+        ),
     });
 
-    try{
+    try {
       final response = await _dio.post(
-          patientProfileUpdate,
-          data: formData,
+        patientProfileUpdate,
+        data: formData,
       );
 
       print('RESPONSE : $response');
@@ -544,14 +613,15 @@ class AuthApiService {
           String data = responseData['message'];
           return Right(data);
         } else if (responseData['status'] == 0) {
-          return Left(ApiException(responseData['message']));
+          var customMessage =
+              CustomApiErrorResponseHandler(responseData['message']);
+          return Left(ApiException(customMessage.userMessage));
         } else {
           return Left(ApiException('Something Went Wrong'));
         }
       } else {
         return Left(ApiException.fromStatusCode(response.statusCode ?? 0));
       }
-
     } on DioException catch (e) {
       return Left(ApiException.fromDioError(e));
     } catch (e) {
@@ -559,7 +629,6 @@ class AuthApiService {
     }
   }
 }
-
 
 String _getFileExtension(String filePath) {
   final extension = filePath.split('.').last.toLowerCase();

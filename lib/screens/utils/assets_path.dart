@@ -45,6 +45,7 @@ class AssetsPath {
   static String penSvg = '$_imageBasePath/pen.svg';
   static String cameraColorSvg = '$_imageBasePath/subtract.svg';
   static String gallarySvg = '$_imageBasePath/gallary.svg';
+  static String glucometerSvg = '$_imageBasePath/glucometer.svg';
 
 
   static String fileCardPng = '$_imageBasePath/file_card.png';

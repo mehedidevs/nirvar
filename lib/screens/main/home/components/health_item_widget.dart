@@ -68,13 +68,13 @@ class HealthItemWidget extends StatelessWidget {
             ),
           ),
           // Overflow Menu Icon
-          IconButton(
-            icon: const Icon(
-              Icons.more_vert,
-              color: Color(0xFF2B3A4B),
-            ),
-            onPressed: onMenuPressed,
-          ),
+          // IconButton(
+          //   icon: const Icon(
+          //     Icons.more_vert,
+          //     color: Color(0xFF2B3A4B),
+          //   ),
+          //   onPressed: onMenuPressed,
+          // ),
         ],
       ),
     );

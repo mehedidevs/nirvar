@@ -40,11 +40,14 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   @override
   void initState() {
     super.initState();
-    statusBarSetup();
+
   }
 
   @override
   Widget build(BuildContext context) {
+
+    statusBarSetup();
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => sl<PasswordChangeBloc>()),
@@ -61,233 +64,235 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
           context.pop(true);
         }
       },
-      child: Scaffold(
-        body: Stack(
-          children: [
-            // Background
-            Container(
-              height: ScreenUtil().screenHeight,
-              color: AppColors.primary,
-            ),
-            // Top Right Decorative SVG
-            Positioned(
-              top: 0,
-              right: 0,
-              child: SvgPicture.asset(AssetsPath.profileDesignSvg),
-            ),
-            // Custom App Bar (Settings Title and Icons)
-            Positioned(
-              top: 20.h,
-              left: 16.w,
-              child: IconButton(
-                icon: SvgPicture.asset(AssetsPath.backArrowSvg),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
+      child: SafeArea(
+        child: Scaffold(
+          body: Stack(
+            children: [
+              // Background
+              Container(
+                height: ScreenUtil().screenHeight,
+                color: AppColors.primary,
               ),
-            ),
-            // Positioned(
-            //   top: 20.h,
-            //   right: 16.w,
-            //   child: IconButton(
-            //     icon: SvgPicture.asset(AssetsPath.notificationWithBadgeSvg),
-            //     onPressed: () {
-            //       // Handle notification click
-            //     },
-            //   ),
-            // ),
-            Positioned(
-              top: 25.h,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Text(
-                  'Settings',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppColors.black,
-                    fontWeight: FontWeight.bold,
+              // Top Right Decorative SVG
+              Positioned(
+                top: 0,
+                right: 0,
+                child: SvgPicture.asset(AssetsPath.profileDesignSvg),
+              ),
+              // Custom App Bar (Settings Title and Icons)
+              Positioned(
+                top: 20.h,
+                left: 16.w,
+                child: IconButton(
+                  icon: SvgPicture.asset(AssetsPath.backArrowSvg),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
+              // Positioned(
+              //   top: 20.h,
+              //   right: 16.w,
+              //   child: IconButton(
+              //     icon: SvgPicture.asset(AssetsPath.notificationWithBadgeSvg),
+              //     onPressed: () {
+              //       // Handle notification click
+              //     },
+              //   ),
+              // ),
+              Positioned(
+                top: 25.h,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: Text(
+                    'Settings',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: AppColors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
-            ),
-            // Profile Image Need to Implement Profile API
-            Positioned(
-              top: ScreenUtil().screenHeight * .1.h,
-              left: 0,
-              right: 0,
-              child: _getUserProfilePicture(),
-            ),
-            // Profile Card with Form Change Password API
+              // Profile Image Need to Implement Profile API
+              Positioned(
+                top: ScreenUtil().screenHeight * .1.h,
+                left: 0,
+                right: 0,
+                child: _getUserProfilePicture(),
+              ),
+              // Profile Card with Form Change Password API
 
-            BlocConsumer<PasswordChangeBloc, PasswordChangeState>(
-              listener: (context, state) {
-                if (state.status == PasswordChangeStatus.success) {
-                  context.flushBarSuccessMessage(message: state.successMessage);
-                  _updateTheAccountHolder(_confirmPasswordController.text);
-                  clearController();
-                  Future.delayed(const Duration(seconds: 2), () {
-                    if (context.mounted) {
-                      //not worked
-                     // Navigator.of(context, rootNavigator: true).pop();
+              BlocConsumer<PasswordChangeBloc, PasswordChangeState>(
+                listener: (context, state) {
+                  if (state.status == PasswordChangeStatus.success) {
+                    context.flushBarSuccessMessage(message: state.successMessage);
+                    _updateTheAccountHolder(_confirmPasswordController.text);
+                    clearController();
+                    Future.delayed(const Duration(seconds: 2), () {
+                      if (context.mounted) {
+                        //not worked
+                       // Navigator.of(context, rootNavigator: true).pop();
 
-                      //Alternative
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) => MainScreen()));
-                      print('Worked');
-                    }
-                  });
-                } else if (state.status == PasswordChangeStatus.failure) {
-                  context.flushBarErrorMessage(message: state.errorMessage);
-                }
-              },
-              builder: (context, state) {
-                return Positioned(
-                  top: ScreenUtil().screenHeight * 0.3.h,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: Container(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(40.r),
-                        topRight: Radius.circular(40.r),
+                        //Alternative
+                        Navigator.pushReplacement(context,
+                            MaterialPageRoute(builder: (context) => MainScreen()));
+                        print('Worked');
+                      }
+                    });
+                  } else if (state.status == PasswordChangeStatus.failure) {
+                    context.flushBarErrorMessage(message: state.errorMessage);
+                  }
+                },
+                builder: (context, state) {
+                  return Positioned(
+                    top: ScreenUtil().screenHeight * 0.3.h,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(40.r),
+                          topRight: Radius.circular(40.r),
+                        ),
                       ),
-                    ),
-                    child: SingleChildScrollView(
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Center(
-                              child: Column(
-                                children: [
-                                  Text(
-                                    'Change Password',
-                                    style: TextStyle(
-                                      fontSize: 16.sp,
-                                      fontWeight: FontWeight.bold,
+                      child: SingleChildScrollView(
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Center(
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      'Change Password',
+                                      style: TextStyle(
+                                        fontSize: 16.sp,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(height: 1.h),
-                                  SizedBox(
-                                    width: 150.w,
-                                    child: Divider(
-                                      color: AppColors.primary,
-                                      thickness: 2.h,
+                                    SizedBox(height: 1.h),
+                                    SizedBox(
+                                      width: 150.w,
+                                      child: Divider(
+                                        color: AppColors.primary,
+                                        thickness: 2.h,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            SizedBox(height: 16.h),
-                            LabeledTextFormField(
-                              label: 'Current Password',
-                              hint: '********',
-                              controller: _currentPasswordController,
-                              obscureText: _isCurrentPasswordObscured,
-                              hasToggle: true,
-                              onVisibilityToggle: () {
-                                setState(() {
-                                  _isCurrentPasswordObscured =
-                                      !_isCurrentPasswordObscured;
-                                });
-                              },
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your current password';
-                                } else if (value.length < 6) {
-                                  return 'Password must be at least 6 characters';
-                                }
-                                return null;
-                              },
-                            ),
-                            SizedBox(height: 16.h),
-                            LabeledTextFormField(
-                              label: 'New Password',
-                              hint: '********',
-                              controller: _newPasswordController,
-                              obscureText: _isNewPasswordObscured,
-                              hasToggle: true,
-                              onVisibilityToggle: () {
-                                setState(() {
-                                  _isNewPasswordObscured =
-                                      !_isNewPasswordObscured;
-                                });
-                              },
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter a new password';
-                                } else if (value.length < 6) {
-                                  return 'Password must be at least 6 characters';
-                                }
-                                return null;
-                              },
-                            ),
-                            SizedBox(height: 16.h),
-                            LabeledTextFormField(
-                              label: 'Confirm New Password',
-                              hint: '********',
-                              controller: _confirmPasswordController,
-                              obscureText: _isConfirmPasswordObscured,
-                              hasToggle: true,
-                              onVisibilityToggle: () {
-                                setState(() {
-                                  _isConfirmPasswordObscured =
-                                      !_isConfirmPasswordObscured;
-                                });
-                              },
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please confirm your new password';
-                                } else if (value !=
-                                    _newPasswordController.text) {
-                                  return 'Passwords do not match';
-                                } else if (value.length < 6) {
-                                  return 'Password must be at least 6 characters';
-                                }
-                                return null;
-                              },
-                            ),
-                            SizedBox(height: 32.h),
-                            state.status == PasswordChangeStatus.loading
-                                ? SpinKitChasingDots(
-                                    color: AppColors.primary, size: 25.sp)
-                                : CustomButton(
-                                    text: 'Save Changes',
-                                    onPressed: () {
-                                      if (_formKey.currentState?.validate() ??
-                                          false) {
-                                        context.read<PasswordChangeBloc>().add(
-                                            GetOldPassword(
-                                                oldPassword:
-                                                    _currentPasswordController
-                                                        .text));
-                                        context.read<PasswordChangeBloc>().add(
-                                            GetNewPassword(
-                                                newPassword:
-                                                    _confirmPasswordController
-                                                        .text));
-                                        context
-                                            .read<PasswordChangeBloc>()
-                                            .add(PasswordChangeApiCall());
-                                      }
-                                    },
-                                  ),
-                            SizedBox(
-                                height: ScreenUtil().screenHeight * 0.05.h),
-                          ],
+                              SizedBox(height: 16.h),
+                              LabeledTextFormField(
+                                label: 'Current Password',
+                                hint: '********',
+                                controller: _currentPasswordController,
+                                obscureText: _isCurrentPasswordObscured,
+                                hasToggle: true,
+                                onVisibilityToggle: () {
+                                  setState(() {
+                                    _isCurrentPasswordObscured =
+                                        !_isCurrentPasswordObscured;
+                                  });
+                                },
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your current password';
+                                  } else if (value.length < 6) {
+                                    return 'Password must be at least 6 characters';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              SizedBox(height: 16.h),
+                              LabeledTextFormField(
+                                label: 'New Password',
+                                hint: '********',
+                                controller: _newPasswordController,
+                                obscureText: _isNewPasswordObscured,
+                                hasToggle: true,
+                                onVisibilityToggle: () {
+                                  setState(() {
+                                    _isNewPasswordObscured =
+                                        !_isNewPasswordObscured;
+                                  });
+                                },
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter a new password';
+                                  } else if (value.length < 6) {
+                                    return 'Password must be at least 6 characters';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              SizedBox(height: 16.h),
+                              LabeledTextFormField(
+                                label: 'Confirm New Password',
+                                hint: '********',
+                                controller: _confirmPasswordController,
+                                obscureText: _isConfirmPasswordObscured,
+                                hasToggle: true,
+                                onVisibilityToggle: () {
+                                  setState(() {
+                                    _isConfirmPasswordObscured =
+                                        !_isConfirmPasswordObscured;
+                                  });
+                                },
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please confirm your new password';
+                                  } else if (value !=
+                                      _newPasswordController.text) {
+                                    return 'Passwords do not match';
+                                  } else if (value.length < 6) {
+                                    return 'Password must be at least 6 characters';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              SizedBox(height: 32.h),
+                              state.status == PasswordChangeStatus.loading
+                                  ? SpinKitChasingDots(
+                                      color: AppColors.primary, size: 25.sp)
+                                  : CustomButton(
+                                      text: 'Save Changes',
+                                      onPressed: () {
+                                        if (_formKey.currentState?.validate() ??
+                                            false) {
+                                          context.read<PasswordChangeBloc>().add(
+                                              GetOldPassword(
+                                                  oldPassword:
+                                                      _currentPasswordController
+                                                          .text));
+                                          context.read<PasswordChangeBloc>().add(
+                                              GetNewPassword(
+                                                  newPassword:
+                                                      _confirmPasswordController
+                                                          .text));
+                                          context
+                                              .read<PasswordChangeBloc>()
+                                              .add(PasswordChangeApiCall());
+                                        }
+                                      },
+                                    ),
+                              SizedBox(
+                                  height: ScreenUtil().screenHeight * 0.05.h),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
-          ],
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

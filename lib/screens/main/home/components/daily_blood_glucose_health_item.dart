@@ -35,8 +35,8 @@ class _DailyBloodGlucoseHealthItemState extends State<DailyBloodGlucoseHealthIte
   Widget _defaultHealthItem(){
     return HealthItemWidget(
       title: 'Diabetes',
-      value: 'N/A',
-      svgAsset: AssetsPath.bloodPressureSvg,
+      value: 'Insert Glucose Data',
+      svgAsset: AssetsPath.glucometerSvg,
       onMenuPressed: () {
         // Handle menu action
         print('Menu pressed for Blood Pressure');
@@ -48,7 +48,7 @@ class _DailyBloodGlucoseHealthItemState extends State<DailyBloodGlucoseHealthIte
     return HealthItemWidget(
       title: 'Diabetes',
       value: glucoseLevel,
-      svgAsset: AssetsPath.bloodPressureSvg,
+      svgAsset: AssetsPath.glucometerSvg,
       onMenuPressed: () {
         print('Menu pressed for Blood Pressure');
       },

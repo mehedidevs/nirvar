@@ -40,7 +40,7 @@ class _DailyBloodPressureHealthItemState
   Widget _defaultHealthItem(){
     return HealthItemWidget(
       title: 'Blood Pressure',
-      value: 'N/A',
+      value: 'Insert BP data',
       svgAsset: AssetsPath.bloodPressureSvg,
       onMenuPressed: () {
         // Handle menu action

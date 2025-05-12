@@ -73,6 +73,9 @@ class _DailyBpChartState extends State<DailyBpChart> {
           maxY: 200, // Adjust maxY for Systolic values
           barTouchData: BarTouchData(
             touchTooltipData: BarTouchTooltipData(
+              fitInsideHorizontally: true,
+              tooltipMargin: 4,
+              tooltipPadding: const EdgeInsets.all(4),
               getTooltipColor: (_) => Colors.blueGrey,
               getTooltipItem: (group, groupIndex, rod, rodIndex) {
                 String day = getLast7Days()[group.x.toInt()];
@@ -81,30 +84,33 @@ class _DailyBpChartState extends State<DailyBpChart> {
                 double diastolic = group.barRods[1].toY; // Second rod represents Diastolic
 
                 return BarTooltipItem(
-                  'Date: $day\n',
-                  const TextStyle(
+                  '$day\n',
+                  TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                    fontSize: 12.sp,
                     decoration: TextDecoration.none,
+                    letterSpacing: 0.0,
                   ),
                   children: <TextSpan>[
                     TextSpan(
                       text: 'Systolic: $systolic\n',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.yellow,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.w700,
                         decoration: TextDecoration.none,
+                        letterSpacing: 0.0,
                       ),
                     ),
                     TextSpan(
                       text: 'Diastolic: $diastolic',
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.yellow,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.w700,
                         decoration: TextDecoration.none,
+                        letterSpacing: 0.0,
                       ),
                     ),
                   ],

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:nirvar/screens/utils/app_colors.dart';
+import 'package:nirvar/screens/utils/theme_helper.dart';
+
+import '../utils/ui_helper.dart';
 
 class EditDeleteMenu extends StatelessWidget {
   final VoidCallback onEdit;
@@ -20,10 +23,12 @@ class EditDeleteMenu extends StatelessWidget {
         size: 20.sp,
         color: Colors.grey,
       ),
-      color: AppColors.menuItemColor,
-      constraints: BoxConstraints(minWidth: 20.w),
+      color: AppColors.menuItemColor.withOpacity(0.95),
+      constraints: BoxConstraints(minWidth: 25.w),
       position: PopupMenuPosition.over,
-      offset: const Offset(0, 6),
+      offset: const Offset(-2, 16),
+      padding: EdgeInsets.zero,
+      menuPadding: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16.r),
       ),
@@ -37,17 +42,31 @@ class EditDeleteMenu extends StatelessWidget {
       itemBuilder: (context) => [
         PopupMenuItem(
           value: 1,
-          child: ListTile(
-            title: Text('Edit', style: TextStyle(fontSize: 12.sp)),
-            trailing:   Icon(Icons.edit, color: Colors.black,size: 20.sp,),
+          padding: UIHelper.symmetricPadding(vertical: 0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+             Text('Edit',  style: context.textTheme.labelMedium?.copyWith(
+                letterSpacing: 0.0,
+                color: Colors.black,
+              ),),
+             Icon(Icons.edit, color: Colors.black,size: 16.sp,),
+            ],
           ),
         ),
-        PopupMenuDivider(height: 8.h),
+        PopupMenuDivider(height: 4.h),
         PopupMenuItem(
           value: 2,
-          child: ListTile(
-            title: Text('Delete', style: TextStyle(fontSize: 12.sp, color: const Color(0xFFE39087))),
-            trailing:   Icon(Icons.delete_forever, color: Color(0xFFE39087),size: 20.sp,),
+            padding: UIHelper.symmetricPadding(vertical: 0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+           children: [
+            Text('Delete',  style: context.textTheme.labelMedium?.copyWith(
+               letterSpacing: 0.0,
+               color: const Color(0xFFE39087),
+             ),),
+             Icon(Icons.delete_forever, color: Color(0xFFE39087),size: 16.sp,),
+           ],
           )
         ),
       ],
